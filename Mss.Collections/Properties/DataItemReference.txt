@@ -1,0 +1,481 @@
+﻿        /*
+         *DataItemPropertyAttribute Properties (Type Name = DefaultValue)
+         * 
+         * int MaxLength = -1 (required for strings) 
+         * int ArrayLength = -1 (required for arrays)
+         * bool MirrorToChildTable = false
+         * bool IsMirrored = true
+         * bool ExpandFlagsInDataItemGrid = false (applies to flag style enums)
+         * string Comment = string.Empty
+         * string DefaultValue = string.Empty
+         * string DefaultValueArrayDelimiter = ","
+         * bool ReplicateSingleDefaultValue = true
+         * XTextCase ConvertCaseTo = XTextCase.Default (applies to strings, chars, and corresponding arrays)
+         * bool Collapse = false (applies to DataItems and arrays in DataItemGrid)
+         * bool ReadOnlyInDataItemGrid = false
+        */
+
+        [XDataItemProperty(
+            Comment = "")]
+        public bool BoolExample
+        {
+            get => GetBoolean("BoolExample");
+            set => SetBoolean("BoolExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            MaxLength = Constant.MaxStringLength)]
+        public string StringExample
+        {
+            get => GetString("StringExample");
+            set => SetString("StringExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public EnumType EnumExample
+        {
+            get => GetEnum("EnumExample");
+            set => SetEnum("EnumExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public int Int32Example
+        {
+            get => GetInt32("Int32Example");
+            set => SetInt32("Int32Example", value);
+        }
+
+
+        [XDataItemProperty(
+            Comment = "")]
+        public DataItemType DataItemExample
+        {
+            get => GetDataItem<DataItemType>("DataItemExample");
+            set => SetDataItem("DataItemExample", value);
+        }
+
+
+        [XDataItemProperty(
+            Comment = "")]
+        public DateTime DateTimeExample
+        {
+            get => GetDateTime("DateTimeExample");
+            set => SetDateTime("DateTimeExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public ObjectType ObjectExample
+        {
+            get => GetObject<ObjectType>("ObjectExample");
+            set => SetObject("ObjectExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public ObjectType[] DataItemArrayExample
+        {
+            get => GetObjectArray<ObjectType>("DataItemArrayExample");
+            set => SetObjectArray("DataItemArrayExample", value);
+        }
+
+        public ObjectType GetDataItemArrayElement(int index)
+        {
+            return GetObjectArrayElement<ObjectType>("DataItemArrayExample", index);
+        }
+
+        public void SetObjectArrayElement(int index, ObjectType dataItem)
+        {
+            SetObjectArrayElement("DataItemArrayExample", index, dataItem);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public float FloatExample
+        {
+            get => GetSingle("FloatExample");
+            set => SetSingle("FloatExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public float[] FloatArrayExample
+        {
+            get => GetSingleArray("FloatArrayExample");
+            set => SetSingleArray("FloatArrayExample", value);
+        }
+
+        public float GetFloatArrayElement(int index)
+        {
+            return GetSingleArrayElement("FloatArrayExample", index);
+        }
+
+        public void SetFloatArrayElement(int index, float value)
+        {
+            SetSingleArrayElement("FloatArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public uint UInt32Example
+        {
+            get => GetUInt32("UInt32Example");
+            set => SetUInt32("UInt32Example", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public uint[] UInt32ArrayExample
+        {
+            get => GetUInt32Array("UInt32ArrayExample");
+            set => SetUInt32Array("UInt32ArrayExample", value);
+        }
+
+        public uint GetUInt32ArrayElement(int index)
+        {
+            return GetUInt32ArrayElement("UInt32ArrayExample", index);
+        }
+
+        public void SetUInt32ArrayElement(int index, uint value)
+        {
+            SetUInt32ArrayElement("UInt32ArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public ushort UInt16Example
+        {
+            get => GetUInt16("UInt16Example");
+            set => SetUInt16("UInt16Example", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public ushort[] UInt16ArrayExample
+        {
+            get => GetUInt16Array("UInt16ArrayExample");
+            set => SetUInt16Array("UInt16ArrayExample", value);
+        }
+
+        public ushort GetUInt16ArrayElement(int index)
+        {
+            return GetUInt16ArrayElement("UInt16ArrayExample", index);
+        }
+
+        public void SetUInt16ArrayElement(int index, ushort value)
+        {
+            SetUInt16ArrayElement("UInt16ArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public short Int16Example
+        {
+            get => GetInt16("Int16Example");
+            set => SetInt16("Int16Example", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public short[] Int16ArrayExample
+        {
+            get => GetInt16Array("Int16ArrayExample");
+            set => SetInt16Array("Int16ArrayExample", value);
+        }
+
+        public short GetInt16ArrayElement(int index)
+        {
+            return GetInt16ArrayElement("Int16ArrayExample", index);
+        }
+
+        public void SetInt16ArrayElement(int index, short value)
+        {
+            SetInt16ArrayElement("Int16ArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public decimal DecimalExample
+        {
+            get => GetDecimal("DecimalExample");
+            set => SetDecimal("DecimalExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public decimal[] DecimalArrayExample
+        {
+            get => GetDecimalArray("DecimalArrayExample");
+            set => SetDecimalArray("DecimalArrayExample", value);
+        }
+
+        public decimal GetDecimalArrayElement(int index)
+        {
+            return GetDecimalArrayElement("DecimalArrayExample", index);
+        }
+
+        public void SetDecimalArrayElement(int index, decimal value)
+        {
+            SetDecimalArrayElement("DecimalArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public double DoubleExample
+        {
+            get => GetDouble("DoubleExample");
+            set => SetDouble("DoubleExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public double[] DoubleArrayExample
+        {
+            get => GetDoubleArray("DoubleArrayExample");
+            set => SetDoubleArray("DoubleArrayExample", value);
+        }
+
+        public double GetDoubleArrayElement(int index)
+        {
+            return GetDoubleArrayElement("DoubleArrayExample", index);
+        }
+
+        public void SetDoubleArrayElement(int index, double value)
+        {
+            SetDoubleArrayElement("DoubleArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public byte ByteExample
+        {
+            get => GetByte("ByteExample");
+            set => SetByte("ByteExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public byte[] ByteArrayExample
+        {
+            get => GetByteArray("ByteArrayExample");
+            set => SetByteArray("ByteArrayExample", value);
+        }
+
+        public byte GetByteArrayElement(int index)
+        {
+            return GetByteArrayElement("ByteArrayExample", index);
+        }
+
+        public void SetByteArrayElement(int index, byte value)
+        {
+            SetByteArrayElement("ByteArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public char CharExample
+        {
+            get => GetChar("CharExample");
+            set => SetChar("CharExample", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public char[] CharArrayExample
+        {
+            get => GetCharArray("CharArrayExample");
+            set => SetCharArray("CharArrayExample", value);
+        }
+
+        public char GetCharArrayElement(int index)
+        {
+            return GetCharArrayElement("CharArrayExample", index);
+        }
+
+        public void SetCharArrayElement(int index, char value)
+        {
+            SetCharArrayElement("CharArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public ulong UInt64Example
+        {
+            get => GetUInt64("UInt64Example");
+            set => SetUInt64("UInt64Example", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public ulong[] UInt64ArrayExample
+        {
+            get => GetUInt64Array("UInt64ArrayExample");
+            set => SetUInt64Array("UInt64ArrayExample", value);
+        }
+
+        public ulong GetUInt64ArrayElement(int index)
+        {
+            return GetUInt64ArrayElement("UInt64ArrayExample", index);
+        }
+
+        public void SetUInt64ArrayElement(int index, ulong value)
+        {
+            SetUInt64ArrayElement("UInt64ArrayExample", index, value);
+        }
+
+
+        [XDataItemProperty(
+            Comment = "")]
+        public long Int64Example
+        {
+            get => GetInt64("Int64Example");
+            set => SetInt64("Int64Example", value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public long[] Int64ArrayExample
+        {
+            get => GetInt64Array("Int64ArrayExample");
+            set => SetInt64Array("Int64ArrayExample", value);
+        }
+
+        public long GetInt64ArrayElement(int index)
+        {
+            return GetInt64ArrayElement("Int64ArrayExample", index);
+        }
+
+        public void SetInt64ArrayElement(int index, long value)
+        {
+            SetInt64ArrayElement("Int64ArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            MaxLength = Constant.MaxStringLength,
+            ArrayLength = Constant.MaxArrayLength)]
+        public string[] StringArrayExample
+        {
+            get => GetStringArray("StringArrayExample");
+            set => SetStringArray("StringArrayExample", value);
+        }
+
+        public string GetStringArrayElement(int index)
+        {
+            return GetStringArrayElement("StringArrayExample", index);
+        }
+
+        public void SetStringArrayElement(int index, string value)
+        {
+            SetStringArrayElement("StringArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public int[] Int32ArrayExample
+        {
+            get => GetInt32Array("Int32ArrayExample");
+            set => SetInt32Array("Int32ArrayExample", value);
+        }
+
+        public int GetInt32ArrayElement(int index)
+        {
+            return GetInt32ArrayElement("Int32ArrayExample", index);
+        }
+
+        public void SetInt32ArrayElement(int index, int value)
+        {
+            SetInt32ArrayElement("Int32ArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public bool[] BoolArrayExample
+        {
+            get => GetBooleanArray("BoolArrayExample");
+            set => SetBooleanArray("BoolArrayExample", value);
+        }
+
+        public bool GetBoolArrayElement(int index)
+        {
+            return GetBooleanArrayElement("BoolArrayExample", index);
+        }
+
+        public void SetBoolArrayElement(int index, bool value)
+        {
+            SetBooleanArrayElement("BoolArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public DataItemType[] DataItemArrayExample
+        {
+            get => GetDataItemArray<DataItemType>("DataItemArrayExample");
+            set => SetDataItemArray("DataItemArrayExample", value);
+        }
+
+        public DataItemType GetDataItemArrayElement(int index)
+        {
+            return GetDataItemArrayElement<DataItemType>("DataItemArrayExample", index);
+        }
+
+        public void SetDataItemArrayElement(int index, DataItemType dataItem)
+        {
+            SetDataItemArrayElement("DataItemArrayExample", index, dataItem);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public EnumType[] EnumArrayExample
+        {
+            get => GetEnumArray<EnumType>("EnumArrayExample");
+            set => SetEnumArray("EnumArrayExample", value);
+        }
+
+
+        public EnumType GetEnumArrayElement(int index)
+        {
+            return GetEnumArrayElement<EnumType>("EnumArrayExample", index);
+        }
+
+        public void SetEnumArrayElement(int index, EnumType value)
+        {
+            SetEnumArrayElement("EnumArrayExample", index, value);
+        }
+
+        [XDataItemProperty(
+            Comment = "",
+            ArrayLength = Constant.MaxArrayLength)]
+        public DateTime[] DateTimeArrayExample
+        {
+            get => GetDateTimeArray("DateTimeArrayExample");
+            set => SetDateTimeArray("DateTimeArrayExample", value);
+        }
+
+        public DateTime GetDateTimeArrayElement(int index)
+        {
+            return GetDateTimeArrayElement("DateTimeArrayExample", index);
+        }
+
+        public void SetDateTimeArrayElement(int index, DateTime datetime)
+        {
+            SetDateTimeArrayElement("DateTimeArrayExample", index, datetime);
+        }

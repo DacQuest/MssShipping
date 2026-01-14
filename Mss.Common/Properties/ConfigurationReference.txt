@@ -1,0 +1,72 @@
+﻿    /*
+        *ConfigurationPropertyAttribute Properties (Type Name = DefaultValue (notes)) 
+        * 
+        *  XConfigurationPropertyAttribute(string propertyDescription, bool isRequired); 
+        *  string Description = required set by parameter (always used in the first parameter position)
+        *  bool IsRequired = required set by parameter (used in the second parameter position. If false, a default value must be provided)
+        *  string DefaultValue = string.Empty (necessary if IsRequired is false)
+        *  string ValidationRegexString = string.Empty
+        *  XConfigurationValueList PickListValueList = null
+        *  Regex ValidationRegex = null
+        *  Type IsKindOfType = null
+        *  bool IsMultivaluePickList = false
+        *  string PrivateFieldName = string.Empty
+        *  XConfigurationDirectives ValidDirectives = XConfigurationDirectives.None
+        *  Type PropertyParserType = null
+        *  string PickListValues = string.Empty
+        *  string PairDelimiter = XConfigurationManager.DefaultPairDelimiter
+        *  string SetDelimiter = XConfigurationManager.DefaultSetDelimiter
+        *  string ListDelimiter = XConfigurationManager.DefaultListDelimiter
+        *  string ObjectValuePairDelimiter = XConfigurationManager.DefaultTypeValuePairDelimiter
+        */
+
+
+    private bool _boolExample = false;
+    [XConfigurationProperty(
+        @"",
+        false,
+        DefaultValue = "false",
+        PickListValues = "true,false")]
+    public bool BoolExample => _boolExample;
+
+
+    private int _intExample = 0;
+    [XConfigurationProperty(
+        @"",
+        true,
+        ValidationRegexString = "^[1-3]$",
+        PickListValues = "1,2,3")]
+    public int IntExample => _intExample;
+
+
+    private string _stringExample = string.Empty;
+    [XConfigurationProperty(
+        @"",
+        true,
+        ValidDirectives = XConfigurationDirectives.AliasAndEncrypt)]
+    public string StringExample => _stringExample;
+
+
+    private XConfigurationValueList _valueListExample = null;
+    [XConfigurationProperty(
+        @"",
+        true,
+        ValidDirectives = XConfigurationDirectives.AliasAndEncrypt)]
+    public XConfigurationValueList ValueListExample => _valueListExample;
+
+
+    private EnumType _enumExample = EnumTyple.Default;
+    [XConfigurationProperty(
+        @"",
+        true,
+        ValidationRegexString = "^Upper$|^Lower$",
+        PickListValues = "Upper,Lower")]
+    public EnumType EnumExample => _enumExample;
+
+
+    private PropertyType _objectExample = null;
+    [XConfigurationProperty(
+        @"",
+        true,
+        PropertyParserType = ParserType)]
+    public PropertyType ObjectExample => _objectExample;
