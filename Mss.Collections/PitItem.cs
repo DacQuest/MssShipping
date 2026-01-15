@@ -44,8 +44,6 @@ namespace Mss.Collections
                         return CraneNumber.Crane3;
                     case PitCode.Assigned4:
                         return CraneNumber.Crane4;
-                    case PitCode.Assigned5:
-                        return CraneNumber.Crane5;
                     default:
                         return CraneNumber.None;
                 }

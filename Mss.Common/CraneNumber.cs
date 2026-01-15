@@ -14,24 +14,28 @@ namespace Mss.Common
         Crane3 = 3,
         Crane4 = 4,
     }
-    public static int Index(this CraneNumber craneNumber)
-    => (int)craneNumber;
-
-    public static PitCode AssignedPitCode(this CraneNumber craneNumber)
+    
+    public static class CraneNumberExtensions
     {
-        switch (craneNumber)
+        public static int Index(this CraneNumber craneNumber) => (int)craneNumber;
+
+        public static PitCode AssignedPitCode(this CraneNumber craneNumber)
         {
-            case CraneNumber.Crane1:
-                return PitCode.Assigned1;
-            case CraneNumber.Crane2:
-                return PitCode.Assigned2;
-            case CraneNumber.Crane3:
-                return PitCode.Assigned3;
-            case CraneNumber.Crane4:
-                return PitCode.Assigned4;
-            default:
-                return PitCode.None;
+            switch (craneNumber)
+            {
+                case CraneNumber.Crane1:
+                    return PitCode.Assigned1;
+                case CraneNumber.Crane2:
+                    return PitCode.Assigned2;
+                case CraneNumber.Crane3:
+                    return PitCode.Assigned3;
+                case CraneNumber.Crane4:
+                    return PitCode.Assigned4;
+                default:
+                    return PitCode.None;
+            }
         }
     }
+
 
 }
