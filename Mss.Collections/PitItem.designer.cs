@@ -23,10 +23,10 @@ namespace Mss.Collections
         [XDataItemProperty(
             Comment = "",
             MaxLength = Constant.PalletIDLength)]
-        public int PalletID
+        public string PalletID
         {
-            get => GetInt32(nameof(PalletID));
-            set => SetInt32(nameof(PalletID), value);
+            get => GetString(nameof(PalletID));
+            set => SetString(nameof(PalletID), value);
         }
 
 

@@ -46,15 +46,28 @@ namespace Mss.Collections
 
         [XDataItemProperty(
     Comment = ".")]
-        public Int32 PickModeKey
+        public string PickModePalletID
         {
             get
             {
-                return GetInt32("PickModeKey");
+                return GetString("PickModePalletID");
             }
             set
             {
-                SetInt32("PickModeKey", value);
+                SetString("PickModePalletID", value);
+            }
+        }
+        [XDataItemProperty(
+    Comment = ".")]
+        public Int32 PickModeJobID
+        {
+            get
+            {
+                return GetInt32("PickModeJobID");
+            }
+            set
+            {
+                SetInt32("PickModeJobID", value);
             }
         }
 
@@ -72,25 +85,6 @@ namespace Mss.Collections
                 SetDataItem("Pallet", value);
             }
         }
-        [XDataItemProperty(
-    Comment = "The letter of the Slug.",
-    ReadOnlyInDataItemGrid = true)]
-        public SlugLetter SlugLetter
-        {
-            get => GetEnum<SlugLetter>(nameof(SlugLetter));
-            // DO NOT SET LoadName IN CODE!
-            set
-            {
-                if (SlugLetter > SlugLetter.None)
-                {
-                    throw new InvalidOperationException("Cannot set LoadItem.SlugLetter in code!");
-                }
-                SetEnum(nameof(SlugLetter), value);
-            }
-        }
-
-
-
 
 
 

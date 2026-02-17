@@ -1,6 +1,7 @@
 ﻿using DacQuest.DFX.Core;
 using DacQuest.DFX.Core.DataItems;
 using DacQuest.DFX.Core.DataItems.Proxy;
+using DacQuest.DFX.Core.Strings;
 using Mss.Common;
 using System;
 using System.Collections.Generic;
@@ -95,6 +96,14 @@ namespace Mss.Collections
                 .Distinct()
                 .ToList();
         }
+        public List<string> GetAllPalletIDsInStorage()
+    => Items
+        .Select(b => b.Pallet.PalletID)
+        .Where(p => !p.IsNullOrWhiteSpace())
+        .Distinct()
+        .OrderBy(p => p)
+        .ToList();
+
 
     }
 

@@ -49,6 +49,10 @@
     <Compile Include="BinItem.designer.cs">
       <DependentUpon>BinItem.cs</DependentUpon>
     </Compile>
+    <Compile Include="HoldCodeItem.cs" />
+    <Compile Include="HoldCodeItem.designer.cs">
+      <DependentUpon>HoldCodeItem.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoadItem.cs" />
     <Compile Include="LoadItem.designer.cs">
       <DependentUpon>LoadItem.cs</DependentUpon>
@@ -57,22 +61,16 @@
     <Compile Include="PalletItem.designer.cs">
       <DependentUpon>PalletItem.cs</DependentUpon>
     </Compile>
-    <Compile Include="Pit.cs" />
+    <Compile Include="LowerPit.cs" />
     <Compile Include="PitItem.cs" />
     <Compile Include="PitItem.designer.cs">
       <DependentUpon>PitItem.cs</DependentUpon>
     </Compile>
-    <Compile Include="PitProxy.cs" />
+    <Compile Include="LowerPitProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Load.cs" />
     <Compile Include="SlugA.cs" />
     <Compile Include="SlugB.cs" />
-    <Compile Include="SpecialPickItem.cs" />
-    <Compile Include="SpecialPickItem.designer.cs">
-      <DependentUpon>SpecialPickItem.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SpecialPicks.cs" />
-    <Compile Include="SpecialPicksProxy.cs" />
     <Compile Include="Storage.cs" />
     <Compile Include="StorageProxy.cs" />
     <Compile Include="SystemSettings.cs" />
@@ -81,6 +79,8 @@
       <DependentUpon>SystemSettingsItem.cs</DependentUpon>
     </Compile>
     <Compile Include="SystemSettingsProxy.cs" />
+    <Compile Include="UpperPit.cs" />
+    <Compile Include="UpperPitProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\DataItemReference.txt" />

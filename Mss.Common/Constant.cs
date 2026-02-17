@@ -46,11 +46,14 @@ namespace Mss.Common
 
         public const string Row1PalletIDValidatorName = "Row1PalletIDValidator";
         public const string Row2PalletIDValidatorName = "Row2PalletIDValidator";
-        public const int NoPalletID = 0;
+        public static readonly string NoPalletID = string.Empty;
         public const int NoJobID = 0;
+        public const string UpperPitName = "Upper Pit";
+        public const string LowerPitName = "Lower Pit";
 
 
 
+        public const int StoragePerCrane = MaxHorizontal * MaxVertical * CraneSides;
 
 
 
@@ -59,6 +62,10 @@ namespace Mss.Common
         public const int CommentLength = 50;
 
         public const string PalletIDSequenceTelemetryEnabledName = "PalletIDSequenceTelemetryEnabled";
+        public const string StorageViewInitialNodeIndexMessageName = "StorageViewInitialNodeIndex";
+        public const string AdminStorageViewName = "AdminStorageView";
+
+
 
 
     }

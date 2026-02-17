@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mss.Common
+namespace Mss.Views
 {
-    public enum SlugLetter
+    public interface ISearchResultsGridParent
     {
-        None = 0,
-        A = 1,
-        B = 2,
+        void GoToBinIndex(int nodeIndex);
     }
 }

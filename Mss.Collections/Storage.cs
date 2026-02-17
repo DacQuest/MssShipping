@@ -14,7 +14,7 @@ namespace Mss.Collections
 {
     public class Storage : XSharedArray<BinItem>
     {
-        public bool TryFindByPalletID(int palletID, out PalletItem palletItem)
+        public bool TryFindByPalletID(string palletID, out PalletItem palletItem)
         {
             Lock();
             try
@@ -68,11 +68,11 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public bool CompleteGet(CraneNumber craneNumber, int palletID)
+        public bool CompleteGet(CraneNumber craneNumber, string palletID)
         {
             return CompleteGet(craneNumber, palletID, false);
         }
-        public bool CompleteGet(CraneNumber craneNumber, int palletID, bool semiAutoMode)
+        public bool CompleteGet(CraneNumber craneNumber, string palletID, bool semiAutoMode)
         {
             Lock();
             try
@@ -134,27 +134,28 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public string GetSkuFromPalletID(int palletID)
-        {
-            Lock();
-            try
-            {
-                string sku = string.Empty;
-                BinItem bin = this.FirstOrDefault(b => b.Pallet.PalletID == palletID);
-                if (bin != null)
-                {
-                    sku = bin.Pallet.Sku;
-                }
-                return sku;
-            }
-            finally
-            {
-                Unlock();
-            }
-        }
+        //public string GetSkuFromPalletID(int palletID)
+        //{
+        //    Lock();
+        //    try
+        //    {
+        //        string sku = string.Empty;
+        //        BinItem bin = this.FirstOrDefault(b => b.Pallet.PalletID == palletID);
+        //        if (bin != null)
+        //        {
+        //            sku = bin.Pallet.Sku;
+        //        }
+        //        return sku;
+        //    }
+        //    finally
+        //    {
+        //        Unlock();
+        //    }
+        //}
+
         public bool TryFindPickableBinByPalletID(
             CraneNumber craneNumber,
-            int palletID,
+            string palletID,
             out BinItem binItem)
         {
             Lock();
@@ -268,11 +269,11 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public void MarkDuplicatesForAudit(int palletID)
+        public void MarkDuplicatesForAudit(string palletID)
         {
             MarkDuplicatesForAudit(palletID, -1);
         }
-        public void MarkDuplicatesForAudit(int palletID, int nodeIndexToExclude)
+        public void MarkDuplicatesForAudit(string palletID, int nodeIndexToExclude)
         {
             Lock();
             try
@@ -354,7 +355,10 @@ namespace Mss.Collections
                         case PalletStatus.Purge:
                             counts[pallet.Sku].PurgeCount += 1;
                             break;
-                        case PalletStatus.QAPick:
+                        case PalletStatus.Reserve:
+                            counts[pallet.Sku].QAPickCount += 1;
+                            break;
+                        case PalletStatus.Stack:
                             counts[pallet.Sku].QAPickCount += 1;
                             break;
                         case PalletStatus.Unknown:
@@ -506,7 +510,7 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public void ClearBinByPalletID(int palletID, bool audit)
+        public void ClearBinByPalletID(string palletID, bool audit)
         {
             if (palletID == Constant.NoPalletID)
             {
@@ -620,7 +624,7 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public bool CompletePut(CraneNumber craneNumber, int palletID, BinStatus binStatus)
+        public bool CompletePut(CraneNumber craneNumber, string palletID, BinStatus binStatus)
         {
             Lock();
             try
@@ -643,7 +647,7 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public void RollbackPut(int palletID, BinStatus binStatus, bool markForAudit)
+        public void RollbackPut(string palletID, BinStatus binStatus, bool markForAudit)
         {
             Lock();
             try
@@ -699,7 +703,7 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public void RollbackGet(int palletID, BinStatus binStatus)
+        public void RollbackGet(string palletID, BinStatus binStatus)
         {
             BinItem binItem;
             Lock();
@@ -810,7 +814,6 @@ namespace Mss.Collections
             CraneNumber craneNumber,
             string sku,
             FifoMode fifoMode,
-            SpecialPicks specialPicks,
             out BinItem binItem)
         {
             Lock();
@@ -829,8 +832,7 @@ namespace Mss.Collections
                                 && pallet.Status == PalletStatus.OK
                                 && !b.Audit
                                 && !b.Disabled
-                                && !b.NotUsable
-                                && !specialPicks.IsSpecialPickPallet(pallet.PalletID, pallet.JobID);
+                                && !b.NotUsable;
                         })
                         .OrderBy(b => b.Pallet.BuiltOn)
                         .FirstOrDefault();
@@ -846,8 +848,7 @@ namespace Mss.Collections
                                 && pallet.Status == PalletStatus.OK
                                 && !b.Audit
                                 && !b.Disabled
-                                && !b.NotUsable
-                                && !specialPicks.IsSpecialPickPallet(pallet.PalletID, pallet.JobID);
+                                && !b.NotUsable;
                         })
                         .OrderBy(b => b.Pallet.BuiltOn)
                         .FirstOrDefault();

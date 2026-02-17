@@ -17,12 +17,14 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "The fixed ID Number of the pallet.")]
-        public Int32 PalletID
+           Comment = "",
+           MaxLength = Constant.PalletIDLength)]
+        public string PalletID
         {
-            get { return GetInt32("PalletID"); }
-            set { SetInt32("PalletID", value); }
+            get => GetString(nameof(PalletID));
+            set => SetString(nameof(PalletID), value);
         }
+
 
         [XDataItemProperty(
             Comment = "The current status of this Pallet Item.")]

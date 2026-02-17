@@ -11,7 +11,6 @@ namespace Mss.Common
         BySku = 0,
         ByPalletID = 1, // checks for matching SKU
         ByJobID = 2, // checks for matching SKU
-        InsertEmpty = 3
 
     }
 }

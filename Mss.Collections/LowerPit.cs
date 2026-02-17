@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Mss.Collections
 {
-    public class Pit : XSharedDictionary<string, PitItem>
+    public class LowerPit : XSharedDictionary<string, PitItem>
     {
     }
 }

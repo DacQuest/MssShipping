@@ -1,11 +1,10 @@
 using DacQuest.DFX.Core.DataItems;
-using Mss.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using Mss.Common;
 
 
 namespace Mss.Collections
@@ -17,20 +16,10 @@ namespace Mss.Collections
             SetByteConverter<BinItem>();
             StoredOn = Constant.BeforeBeginningOfTime;
             LastAuditAttemptedOn = Constant.BeforeBeginningOfTime;
-
         }
 
-    //    [XDataItemProperty(
-    //Comment = "",
-    //ReadOnlyInDataItemGrid = true)]
-    //    public BinSize BinSize
-    //    {
-    //        get => GetEnum<BinSize>(nameof(BinSize));
-    //        set => SetEnum<BinSize>(nameof(BinSize), value);
-    //    }
-
         [XDataItemProperty(
-    Comment = "The status of the bin.")]
+            Comment = "")]
         public BinStatus BinStatus
         {
             get => GetEnum<BinStatus>(nameof(BinStatus));
@@ -38,7 +27,7 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "Indicates whether this bin needs to be audited.")]
+            Comment = "")]
         public bool Audit
         {
             get => GetBoolean(nameof(Audit));
@@ -46,7 +35,7 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "Indicates whether or not this bin is usable.",
+            Comment = "",
             ReadOnlyInDataItemGrid = true)]
         public bool NotUsable
         {
@@ -55,7 +44,7 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "Indicates whether this bin is disabled.")]
+            Comment = "")]
         public bool Disabled
         {
             get => GetBoolean(nameof(Disabled));
@@ -63,7 +52,7 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "Indicates whether this bin can only be picked from.")]
+            Comment = "")]
         public bool PickOnly
         {
             get => GetBoolean(nameof(PickOnly));
@@ -71,7 +60,7 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "The timestamp when the pallet was stored to the bin.")]
+            Comment = "")]
         public DateTime StoredOn
         {
             get => GetDateTime(nameof(StoredOn));
@@ -79,7 +68,7 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "The number of times the crane has unsuccessfully auited this bin.")]
+            Comment = "")]
         public int AuditAttempts
         {
             get => GetInt32(nameof(AuditAttempts));
@@ -95,25 +84,13 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "Pallet Item representing the pallet stored in this bin.",
+            Comment = "",
             MirrorToChildTable = true)]
         public PalletItem Pallet
         {
             get => GetDataItem<PalletItem>(nameof(Pallet));
             set => SetDataItem(nameof(Pallet), value);
         }
-
-
-
-
-
-
-
-
-
-
-
-        //See DataItemReference.txt under a DFX Collection Class Library project Properties Folder for examples.
 
     }
 }
