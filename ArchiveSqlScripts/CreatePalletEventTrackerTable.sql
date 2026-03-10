@@ -20,6 +20,7 @@ CREATE TABLE [dbo].[PalletEventTracker](
   [OperationCodeText] [varchar](10) NOT NULL,
   [PalletEvent] [int] NOT NULL,
   [PalletEventText] [varchar](20) NOT NULL,
+  [PalletEvent] [int] NOT NULL,
   [MoveCommand] [int] NOT NULL,
   [Comment] [varchar](50) NOT NULL
 ) ON [PRIMARY]
