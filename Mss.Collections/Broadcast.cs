@@ -8,10 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Mss.Collections
 {
-    public class SlugA : Load
+    public class Broadcast : XSharedDictionary<string, BroadcastItem>
     {
-
     }
 }

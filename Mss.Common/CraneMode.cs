@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Mss.Common
 {
-    public enum OutboundLevels
+    public enum CraneMode
     {
-        None = 0x00,
-        Lower = 0x01,
-        Upper = 0x02
+        Manual = 0,
+        Auto = 1,
+        SemiAuto = 2
     }
 }

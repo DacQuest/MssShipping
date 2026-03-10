@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DacQuest.DFX.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ namespace Mss.Common
                 case CraneNumber.Crane4:
                     return PitCode.Assigned4;
                 default:
-                    return PitCode.None;
+                    return PitCode.Unknown;
             }
         }
     }

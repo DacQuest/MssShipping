@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Mss.Common
 {
-    public enum  PickMode
+    public enum PickMode
     {
-        BySku = 0,
-        ByPalletID = 1, // checks for matching SKU
-        ByJobID = 2, // checks for matching SKU
+        BySku      = 0,
+        ByPalletID = 1, // checks that SKU matches
+        ByJobID    = 2, // checks that SKU matches
 
     }
 }

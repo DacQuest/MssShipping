@@ -9,14 +9,14 @@ namespace Mss.Common
     [Flags]
     public enum BinStatus
     {
-        Invalid = 0x0000,
-        Empty = 0x0001,
-        Pickable = 0x0002,
-        GetAllocated = 0x0004,
-        PutAllocated = 0x0008,
-        Offline = 0x0010,
-        OfflineNoRead = 0x0020,
-        OfflineDuplicatePalletID = 0x0040
+        Invalid                  = 0x00,
+        Empty                    = 0x01,
+        Pickable                 = 0x02,
+        GetAllocated             = 0x04,
+        PutAllocated             = 0x08,
+        Offline                  = 0x10,
+        OfflineDuplicatePalletID = 0x20,
+        OfflineNoRead            = 0x40
 
     }
 }

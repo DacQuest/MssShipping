@@ -10,25 +10,29 @@ namespace Mss.Collections
 {
     [Serializable]
     public partial class PitItem : XDataItem
-        {
-            //         public string PalletID => Pallet.PalletID;
+    {
 
-            public static PitItem Create(
-                PalletItem palletItem, PitCode pitcode)
-                => new PitItem
-                {
-                    PalletID = palletItem.PalletID,
-                    PitCode = pitcode,
-                    Pallet = palletItem,
-                    SetOn = DateTime.Now
-                };
         private static readonly PitCode[] _assignedCodes = new[]
 {
             PitCode.Assigned1,
             PitCode.Assigned2,
             PitCode.Assigned3,
-            PitCode.Assigned4,
+            PitCode.Assigned4
         };
+
+        public static PitItem Create(
+            PalletItem palletItem,
+            Levels level,
+            PitCode pitcode)
+                => new PitItem
+                {
+                    PalletID = palletItem.PalletID,
+                    Level = level,
+                    PitCode = pitcode,
+                    Pallet = palletItem,
+                    SetOn = DateTime.Now
+                };
+
 
         public CraneNumber AssignedCrane
         {

@@ -8,16 +8,26 @@ namespace Mss.Common
 {
     public enum PitCode
     {
-        None = 0,  // No valid Pit Code
+        Unknown   = 0,  // Unknown Pit Code /Unknown Pallet
         Assigned1 = 1,
         Assigned2 = 2,
         Assigned3 = 3,
-        Assigned4 = 4
- 
+        Assigned4 = 4,
+        Purge     = 5,
+        Stack     = 6
     }
 
     public static class PitCodeExtensions
     {
+        public static bool IsAssigned(this PitCode pitCode)
+            => pitCode == PitCode.Assigned1
+                || pitCode == PitCode.Assigned2
+                || pitCode == PitCode.Assigned3
+                || pitCode == PitCode.Assigned4;
+
+        public static bool IsAssigned(this PitCode pitCode, CraneNumber craneNumber)
+            => pitCode.AssignedCrane() == craneNumber;
+
         public static CraneNumber AssignedCrane(this PitCode pitCode)
         {
             switch (pitCode)

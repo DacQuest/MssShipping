@@ -11,8 +11,9 @@ namespace Mss.Common
         public string Sku { get; private set; }
         public int OKCount { get; set; } = 0;
         public int HoldCount { get; set; } = 0;
+        public int ReserveCount { get; set; } = 0;
         public int PurgeCount { get; set; } = 0;
-        public int QAPickCount { get; set; } = 0;
+        public int StackCount { get; set; } = 0;
         public int UnknownCount { get; set; } = 0;
 
         public SkuCountsByStatus(string sku)

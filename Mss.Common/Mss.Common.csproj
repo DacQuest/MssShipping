@@ -47,11 +47,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinStatus.cs" />
+    <Compile Include="BroadcastStatus.cs" />
+    <Compile Include="CraneFunction.cs" />
+    <Compile Include="CraneMode.cs" />
     <Compile Include="LoadItemStatus.cs" />
-    <Compile Include="OutboundLevels.cs" />
+    <Compile Include="Levels.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="CraneNumber.cs" />
     <Compile Include="FifoMode.cs" />
+    <Compile Include="LoadLayoutConfigurationItem.cs" />
+    <Compile Include="LoadLetter.cs" />
+    <Compile Include="LoadPickPriority.cs" />
     <Compile Include="PalletStatus.cs" />
     <Compile Include="PickMode.cs" />
     <Compile Include="PitCode.cs" />

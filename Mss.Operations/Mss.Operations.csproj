@@ -54,7 +54,29 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crane.cs" />
+    <Compile Include="CraneParameterSetWrapper.cs" />
+    <Compile Include="InboundRouter.cs" />
+    <Compile Include="InboundRouterParameterSetWrapper.cs" />
+    <Compile Include="LineOperationBase.cs" />
+    <Compile Include="OperationCode.cs" />
+    <Compile Include="PalletEvent.cs" />
+    <Compile Include="PalletEventTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mss.Collections\Mss.Collections.csproj">
+      <Project>{bd0ff459-deb4-4255-9728-031ade4d7044}</Project>
+      <Name>Mss.Collections</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mss.Common\Mss.Common.csproj">
+      <Project>{47477cff-7837-4363-9cd4-079654ed1857}</Project>
+      <Name>Mss.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mss.Data\Mss.Data.csproj">
+      <Project>{77ad0fd1-37b8-4ef6-bdcc-734d58ca2b9f}</Project>
+      <Name>Mss.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

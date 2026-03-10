@@ -28,6 +28,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configurat
 		Configuration\ShippingSystem.config = Configuration\ShippingSystem.config
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArchiveSqlScripts", "ArchiveSqlScripts", "{13B24C53-FE68-490E-8BEE-EAFA16017C4C}"
+	ProjectSection(SolutionItems) = preProject
+		ArchiveSqlScripts\CreatePalletEventTrackerTable.sql = ArchiveSqlScripts\CreatePalletEventTrackerTable.sql
+		ArchiveSqlScripts\CreateSystemEventArchiveTables.sql = ArchiveSqlScripts\CreateSystemEventArchiveTables.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MirrorSqlScripts", "MirrorSqlScripts", "{69B4569F-F496-4433-919E-9EFFF088D04F}"
+	ProjectSection(SolutionItems) = preProject
+		MirrorSqlScripts\CreateAndExpandAllMirrorTables.sql = MirrorSqlScripts\CreateAndExpandAllMirrorTables.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -2,6 +2,7 @@
 using DacQuest.DFX.Core.DataItems;
 using DacQuest.DFX.Core.DataItems.Collections;
 using DacQuest.DFX.Core.SystemEvents;
+using Mss.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,9 @@ using System.Threading.Tasks;
 
 namespace Mss.Collections
 {
-    public class LowerPit : XSharedDictionary<string, PitItem>
+    public class LowerPit : Pit
     {
+        public override Levels Level => Levels.Lower;
+
     }
 }

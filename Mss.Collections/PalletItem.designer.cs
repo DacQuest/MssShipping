@@ -30,32 +30,24 @@ namespace Mss.Collections
             Comment = "The current status of this Pallet Item.")]
         public PalletStatus Status
         {
-            get { return GetEnum<PalletStatus>("Status"); }
-            set { SetEnum("Status", value); }
+            get => GetEnum<PalletStatus>("Status");
+            set => SetEnum("Status", value);
         }
 
         [XDataItemProperty(
             Comment = "The current Hold Code applied to this Pallet Item. A value of zero means no hold is applied.")]
-        public Byte HoldCode
+        public int HoldCode
         {
-            get { return GetByte("HoldCode"); }
-            set { SetByte("HoldCode", value); }
+            get => GetInt32("HoldCode");
+            set => SetInt32("HoldCode", value);
         }
 
         [XDataItemProperty(
             Comment = "The MES-generated Job ID for the finished goods represented by this Pallet Item.")]
-        public Int32 JobID
+        public int JobID
         {
-            get { return GetInt32("JobID"); }
-            set { SetInt32("JobID", value); }
-        }
-
-        [XDataItemProperty(
-            Comment = "The timestamp when this Pallet Item was received from the MES.")]
-        public DateTime ReceivedOn
-        {
-            get { return GetDateTime("ReceivedOn"); }
-            set { SetDateTime("ReceivedOn", value); }
+            get => GetInt32("JobID");
+            set => SetInt32("JobID", value);
         }
 
         [XDataItemProperty(
@@ -77,7 +69,7 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-    Comment = "The timestamp when this Pallet Item was received from the MES.")]
+    Comment = "The timestamp when the seats on this Pallet were built.")]
         public DateTime BuiltOn
         {
             get => GetDateTime(nameof(BuiltOn));

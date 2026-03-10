@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Mss.Collections
 {
-    public class UpperPitProxy : XSharedDictionaryProxy<string, PitItem>
+    public class UpperPitProxy : PitProxy
     {
     }
 }

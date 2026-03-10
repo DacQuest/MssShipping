@@ -16,10 +16,10 @@ namespace Mss.Common
         public static bool ValidPalletID(this string palletID)
             => XValueValidator.Validate(PalletIDValidatorName, palletID);
 
-        public static bool ValidJobID(this string jobID)
-            => !jobID.IsNullOrWhiteSpace();
+//         public static bool ValidJobID(this string jobID)
+//             => !jobID.IsNullOrWhiteSpace();
 
-        public static bool ValidSku(this string sku)
+        public static bool ValidSku(this string sku) //??? USE XValueValidator?
             => !sku.IsNullOrWhiteSpace();
 
         public static int[] CreateIntArray(

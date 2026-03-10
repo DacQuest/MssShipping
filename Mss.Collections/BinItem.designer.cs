@@ -15,7 +15,7 @@ namespace Mss.Collections
         {
             SetByteConverter<BinItem>();
             StoredOn = Constant.BeforeBeginningOfTime;
-            LastAuditAttemptedOn = Constant.BeforeBeginningOfTime;
+//             LastAuditAttemptedOn = Constant.BeforeBeginningOfTime;
         }
 
         [XDataItemProperty(
@@ -67,21 +67,21 @@ namespace Mss.Collections
             set => SetDateTime(nameof(StoredOn), value);
         }
 
-        [XDataItemProperty(
-            Comment = "")]
-        public int AuditAttempts
-        {
-            get => GetInt32(nameof(AuditAttempts));
-            set => SetInt32(nameof(AuditAttempts), value);
-        }
+//         [XDataItemProperty(
+//             Comment = "")]
+//         public int AuditAttempts
+//         {
+//             get => GetInt32(nameof(AuditAttempts));
+//             set => SetInt32(nameof(AuditAttempts), value);
+//         }
 
-        [XDataItemProperty(
-            Comment = "The timestamp of the last failed Audit attempt.")]
-        public DateTime LastAuditAttemptedOn
-        {
-            get => GetDateTime(nameof(LastAuditAttemptedOn));
-            set => SetDateTime(nameof(LastAuditAttemptedOn), value);
-        }
+//         [XDataItemProperty(
+//             Comment = "The timestamp of the last failed Audit attempt.")]
+//         public DateTime LastAuditAttemptedOn
+//         {
+//             get => GetDateTime(nameof(LastAuditAttemptedOn));
+//             set => SetDateTime(nameof(LastAuditAttemptedOn), value);
+//         }
 
         [XDataItemProperty(
             Comment = "",

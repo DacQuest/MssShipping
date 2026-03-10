@@ -29,6 +29,21 @@ namespace Mss.Collections
             set => SetString(nameof(PalletID), value);
         }
 
+        [XDataItemProperty(
+         Comment = "")]
+        public PitCode PitCode
+        {
+            get => GetEnum<PitCode>(nameof(PitCode));
+            set => SetEnum(nameof(PitCode), value);
+        }
+
+        [XDataItemProperty(
+         Comment = "")]
+        public Levels Level
+        {
+            get => GetEnum<Levels>(nameof(Levels));
+            set => SetEnum(nameof(Levels), value);
+        }
 
         [XDataItemProperty(
             Comment = "")]
@@ -44,14 +59,6 @@ namespace Mss.Collections
         {
             get => GetDataItem<PalletItem>(nameof(Pallet));
             set => SetDataItem(nameof(Pallet), value);
-        }
-
-        [XDataItemProperty(
-         Comment = "")]
-        public PitCode PitCode
-        {
-            get => GetEnum<PitCode>(nameof(PitCode));
-            set => SetEnum(nameof(PitCode), value);
         }
 
 

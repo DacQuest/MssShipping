@@ -17,78 +17,96 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-    Comment = "The current status of this Load Item.")]
+            Comment = "The current status of this Load Item.")]
         public LoadItemStatus Status
         {
-            get
-            {
-                return GetEnum<LoadItemStatus>("Status");
-            }
+            get => GetEnum<LoadItemStatus>(nameof(Status));
+            set => SetEnum(nameof(Status), value);
+        }
+
+        [XDataItemProperty(
+           Comment = "")]
+        public CraneNumber Crane
+        {
+            get => GetEnum<CraneNumber>(nameof(Crane));
+            set => SetEnum(nameof(Crane), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public DateTime PickedOn
+        {
+            get => GetDateTime(nameof(PickedOn));
+            set => SetDateTime(nameof(PickedOn), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public bool Transferring
+        {
+            get => GetBoolean(nameof(Transferring));
+            set => SetBoolean(nameof(Transferring), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "The letter of the Slug.",
+            ReadOnlyInDataItemGrid = true)]
+        public LoadLetter LoadLetter
+        {
+            get => GetEnum<LoadLetter>(nameof(LoadLetter));
+            // DO NOT SET LoadLetter IN CODE!
             set
             {
-                SetEnum("Status", value);
+                if (LoadLetter > LoadLetter.None)
+                {
+                    throw new InvalidOperationException("Cannot set LoadItem.LoadLetter in code!");
+                }
+                SetEnum(nameof(LoadLetter), value);
             }
         }
 
         [XDataItemProperty(
-    Comment = ".")]
+            Comment = ".")]
         public PickMode PickMode
         {
-            get
-            {
-                return GetEnum<PickMode>("PickMode");
-            }
-            set
-            {
-                SetEnum("PickMode", value);
-            }
+            get => GetEnum<PickMode>(nameof(PickMode));
+            set => SetEnum(nameof(PickMode), value);
         }
 
         [XDataItemProperty(
-    Comment = ".")]
+            Comment = ".",
+            MaxLength = Constant.PalletIDLength)]
         public string PickModePalletID
         {
-            get
-            {
-                return GetString("PickModePalletID");
-            }
-            set
-            {
-                SetString("PickModePalletID", value);
-            }
-        }
-        [XDataItemProperty(
-    Comment = ".")]
-        public Int32 PickModeJobID
-        {
-            get
-            {
-                return GetInt32("PickModeJobID");
-            }
-            set
-            {
-                SetInt32("PickModeJobID", value);
-            }
+            get => GetString(nameof(PickModePalletID));
+            set => SetString(nameof(PickModePalletID), value);
         }
 
         [XDataItemProperty(
-    Comment = "The Pallet Item representing the pallet that fulfills this Load requirement.",
-    MirrorToChildTable = true)]
+            Comment = ".")]
+        public int PickModeJobID
+        {
+            get => GetInt32(nameof(PickModeJobID));
+            set => SetInt32(nameof(PickModeJobID), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "The Broadcast Item providing the requirements for this Load Item.",
+            MirrorToChildTable = true)]
+        public BroadcastItem Broadcast
+        {
+            get => GetDataItem<BroadcastItem>(nameof(Broadcast));
+            set => SetDataItem(nameof(Broadcast), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "The Pallet Item representing the pallet that fulfills this Load requirement.",
+            MirrorToChildTable = true)]
         public PalletItem Pallet
         {
-            get
-            {
-                return GetDataItem<PalletItem>("Pallet");
-            }
-            set
-            {
-                SetDataItem("Pallet", value);
-            }
+            get => GetDataItem<PalletItem>(nameof(Pallet));
+            set => SetDataItem(nameof(Pallet), value);
         }
-
-
-
-        //See DataItemReference.txt under a DFX Collection Class Library project Properties Folder for examples.
 
     }
 }

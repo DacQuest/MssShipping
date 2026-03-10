@@ -15,5 +15,11 @@ namespace Mss.Collections
         ? VehicleRow.Row1
         : VehicleRow.Row2;
 
+        public bool IsStack => Sku == Constant.StackSku;
+
+        public string GetPalletStateDetails(int leadingSpaceCount)
+        {
+            return string.Empty;
+        }
     }
 }

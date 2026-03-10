@@ -283,7 +283,7 @@ namespace Mss.Views
                                 : palletItem.PalletID;
                             break;
                         case VehicleRowColumnIndex:
-                            cell.Value = palletItem.Sku == Constant.StackSku
+                            cell.Value = palletItem.IsStack
                                 ? string.Empty
                                 : palletItem.VehicleRow.ToString().Left(1);
                             break;

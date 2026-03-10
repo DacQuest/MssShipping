@@ -85,7 +85,7 @@ namespace Mss.Views
 
             _cmbPalletStatus.AddEnumItem(PalletStatus.OK);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Hold);
-            _cmbPalletStatus.AddEnumItem(PalletStatus.Reserve);
+            _cmbPalletStatus.AddEnumItem(PalletStatus.Reserved);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Purge);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Stack);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Unknown);
@@ -116,7 +116,7 @@ namespace Mss.Views
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Invalid, "Audit");
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.OK);
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Hold);
-            _ = _cmbNewStatus.AddEnumItem(PalletStatus.Reserve);
+            _ = _cmbNewStatus.AddEnumItem(PalletStatus.Reserved);
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Purge);
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Stack);
 
@@ -808,7 +808,7 @@ namespace Mss.Views
             PalletStatus palletStatus = palletItem.Status;
             _txtComment.Enabled = palletStatus == PalletStatus.Hold
                 || palletStatus == PalletStatus.Unknown
-                || palletStatus == PalletStatus.Reserve
+                || palletStatus == PalletStatus.Reserved
                 || palletStatus == PalletStatus.Purge
                 || palletStatus == PalletStatus.Stack;
             _workingBinItem.Pallet = palletItem;
@@ -1744,7 +1744,7 @@ namespace Mss.Views
                     case PalletStatus.OK:
                     case PalletStatus.Hold:
                     case PalletStatus.Purge:
-                    case PalletStatus.Reserve:
+                    case PalletStatus.Reserved:
                     case PalletStatus.Stack:
                         _lblNewComment.Visible = true;
                         _lblRemainingCharacters.Visible = true;

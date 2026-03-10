@@ -19,18 +19,23 @@ namespace Mss.ShippingService
             InitializeComponent();
         }
 
-        private void ServiceHostForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void _ServiceHostForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (XMessageBox.Show(
                 this,
-                string.Format("Are you sure you want to close {0}?", XApplication.FullInstanceName),
-                "Confirm Close",
+                "Are you sure you want to shut down the Mississauga Shipping Service?",
+                "Confirm Shut Down",
                 MessageBoxButtons.OKCancel,
                 MessageBoxIcon.Question,
                 MessageBoxDefaultButton.Button2) == DialogResult.Cancel)
             {
                 e.Cancel = true;
             }
+        }
+
+        private void _BtnShutDown_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
