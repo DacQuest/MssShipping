@@ -56,8 +56,8 @@
   <ItemGroup>
     <Compile Include="Crane.cs" />
     <Compile Include="CraneParameterSetWrapper.cs" />
-    <Compile Include="InboundRouter.cs" />
-    <Compile Include="InboundRouterParameterSetWrapper.cs" />
+    <Compile Include="Router.cs" />
+    <Compile Include="RouterParameterSetWrapper.cs" />
     <Compile Include="LineOperationBase.cs" />
     <Compile Include="OperationCode.cs" />
     <Compile Include="PalletEvent.cs" />
