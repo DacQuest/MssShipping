@@ -42,7 +42,6 @@
             this._dtEnd = new VisualHint.SmartFieldPackEditor.DateTimePack.DateTimePicker();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this._chkCrane5 = new System.Windows.Forms.CheckBox();
             this._chkCrane4 = new System.Windows.Forms.CheckBox();
             this._chkCrane3 = new System.Windows.Forms.CheckBox();
             this._chkCrane2 = new System.Windows.Forms.CheckBox();
@@ -55,7 +54,6 @@
             this._chkEmpty = new System.Windows.Forms.CheckBox();
             this._chkPutAllocated = new System.Windows.Forms.CheckBox();
             this._chkRear = new System.Windows.Forms.CheckBox();
-            this._chkMid = new System.Windows.Forms.CheckBox();
             this._chkFront = new System.Windows.Forms.CheckBox();
             this._btnReset = new System.Windows.Forms.Button();
             this._chkApplyBinAttributes = new Mss.Views.CheckGroupBox();
@@ -65,8 +63,8 @@
             this._chkApplyPalletStatus = new Mss.Views.CheckGroupBox();
             this._chkOK = new System.Windows.Forms.CheckBox();
             this._chkHold = new System.Windows.Forms.CheckBox();
-            this._chkUnknown = new System.Windows.Forms.CheckBox();
-            this._chkQCSort = new System.Windows.Forms.CheckBox();
+            this._chkReserved = new System.Windows.Forms.CheckBox();
+            this._chkPurge = new System.Windows.Forms.CheckBox();
             this._chkApplyVehicleRow = new Mss.Views.CheckGroupBox();
             this._chkApplyCrane = new Mss.Views.CheckGroupBox();
             this._chkApplyBinStatus = new Mss.Views.CheckGroupBox();
@@ -76,6 +74,7 @@
             this._label5 = new System.Windows.Forms.Label();
             this._txtPrefilter = new System.Windows.Forms.TextBox();
             this._lstSkus = new System.Windows.Forms.ListBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this._groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._dtStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._dtEnd)).BeginInit();
@@ -287,19 +286,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Start Date/Time";
             // 
-            // _chkCrane5
-            // 
-            this._chkCrane5.AutoSize = true;
-            this._chkCrane5.Checked = true;
-            this._chkCrane5.CheckState = System.Windows.Forms.CheckState.Checked;
-            this._chkCrane5.Location = new System.Drawing.Point(13, 114);
-            this._chkCrane5.Name = "_chkCrane5";
-            this._chkCrane5.Size = new System.Drawing.Size(63, 17);
-            this._chkCrane5.TabIndex = 2;
-            this._chkCrane5.Text = "Crane 5";
-            this._chkCrane5.UseVisualStyleBackColor = true;
-            this._chkCrane5.CheckedChanged += new System.EventHandler(this._ChkCrane5_CheckedChanged);
-            // 
             // _chkCrane4
             // 
             this._chkCrane4.AutoSize = true;
@@ -434,26 +420,13 @@
             this._chkRear.AutoSize = true;
             this._chkRear.Checked = true;
             this._chkRear.CheckState = System.Windows.Forms.CheckState.Checked;
-            this._chkRear.Location = new System.Drawing.Point(36, 73);
+            this._chkRear.Location = new System.Drawing.Point(36, 50);
             this._chkRear.Name = "_chkRear";
             this._chkRear.Size = new System.Drawing.Size(49, 17);
             this._chkRear.TabIndex = 2;
             this._chkRear.Text = "Rear";
             this._chkRear.UseVisualStyleBackColor = true;
             this._chkRear.CheckedChanged += new System.EventHandler(this._ChkRear_CheckedChanged);
-            // 
-            // _chkMid
-            // 
-            this._chkMid.AutoSize = true;
-            this._chkMid.Checked = true;
-            this._chkMid.CheckState = System.Windows.Forms.CheckState.Checked;
-            this._chkMid.Location = new System.Drawing.Point(36, 50);
-            this._chkMid.Name = "_chkMid";
-            this._chkMid.Size = new System.Drawing.Size(43, 17);
-            this._chkMid.TabIndex = 1;
-            this._chkMid.Text = "Mid";
-            this._chkMid.UseVisualStyleBackColor = true;
-            this._chkMid.CheckedChanged += new System.EventHandler(this._ChkMid_CheckedChanged);
             // 
             // _chkFront
             // 
@@ -528,13 +501,14 @@
             // _chkApplyPalletStatus
             // 
             this._chkApplyPalletStatus.Checked = false;
+            this._chkApplyPalletStatus.Controls.Add(this.checkBox1);
             this._chkApplyPalletStatus.Controls.Add(this._chkOK);
             this._chkApplyPalletStatus.Controls.Add(this._chkHold);
-            this._chkApplyPalletStatus.Controls.Add(this._chkUnknown);
-            this._chkApplyPalletStatus.Controls.Add(this._chkQCSort);
+            this._chkApplyPalletStatus.Controls.Add(this._chkReserved);
+            this._chkApplyPalletStatus.Controls.Add(this._chkPurge);
             this._chkApplyPalletStatus.Location = new System.Drawing.Point(173, 189);
             this._chkApplyPalletStatus.Name = "_chkApplyPalletStatus";
-            this._chkApplyPalletStatus.Size = new System.Drawing.Size(129, 133);
+            this._chkApplyPalletStatus.Size = new System.Drawing.Size(129, 154);
             this._chkApplyPalletStatus.TabIndex = 73;
             this._chkApplyPalletStatus.TabStop = false;
             this._chkApplyPalletStatus.Text = "By Pallet Status";
@@ -562,37 +536,35 @@
             this._chkHold.UseVisualStyleBackColor = true;
             this._chkHold.CheckedChanged += new System.EventHandler(this._ChkHold_CheckedChanged);
             // 
-            // _chkUnknown
+            // _chkReserved
             // 
-            this._chkUnknown.AutoSize = true;
-            this._chkUnknown.Location = new System.Drawing.Point(17, 102);
-            this._chkUnknown.Name = "_chkUnknown";
-            this._chkUnknown.Size = new System.Drawing.Size(72, 17);
-            this._chkUnknown.TabIndex = 5;
-            this._chkUnknown.Text = "Unknown";
-            this._chkUnknown.UseVisualStyleBackColor = true;
-            this._chkUnknown.CheckedChanged += new System.EventHandler(this._ChkUnknown_CheckedChanged);
+            this._chkReserved.AutoSize = true;
+            this._chkReserved.Location = new System.Drawing.Point(17, 102);
+            this._chkReserved.Name = "_chkReserved";
+            this._chkReserved.Size = new System.Drawing.Size(72, 17);
+            this._chkReserved.TabIndex = 5;
+            this._chkReserved.Text = "Reserved";
+            this._chkReserved.UseVisualStyleBackColor = true;
+            this._chkReserved.CheckedChanged += new System.EventHandler(this._ChkUnknown_CheckedChanged);
             // 
-            // _chkQCSort
+            // _chkPurge
             // 
-            this._chkQCSort.AutoSize = true;
-            this._chkQCSort.Location = new System.Drawing.Point(17, 79);
-            this._chkQCSort.Name = "_chkQCSort";
-            this._chkQCSort.Size = new System.Drawing.Size(63, 17);
-            this._chkQCSort.TabIndex = 4;
-            this._chkQCSort.Text = "QC Sort";
-            this._chkQCSort.UseVisualStyleBackColor = true;
-            //this._chkQCSort.CheckedChanged += new System.EventHandler(this._ChkQCSort_CheckedChanged);
+            this._chkPurge.AutoSize = true;
+            this._chkPurge.Location = new System.Drawing.Point(17, 79);
+            this._chkPurge.Name = "_chkPurge";
+            this._chkPurge.Size = new System.Drawing.Size(54, 17);
+            this._chkPurge.TabIndex = 4;
+            this._chkPurge.Text = "Purge";
+            this._chkPurge.UseVisualStyleBackColor = true;
             // 
             // _chkApplyVehicleRow
             // 
             this._chkApplyVehicleRow.Checked = false;
             this._chkApplyVehicleRow.Controls.Add(this._chkRear);
-            this._chkApplyVehicleRow.Controls.Add(this._chkMid);
             this._chkApplyVehicleRow.Controls.Add(this._chkFront);
             this._chkApplyVehicleRow.Location = new System.Drawing.Point(173, 349);
             this._chkApplyVehicleRow.Name = "_chkApplyVehicleRow";
-            this._chkApplyVehicleRow.Size = new System.Drawing.Size(129, 100);
+            this._chkApplyVehicleRow.Size = new System.Drawing.Size(129, 84);
             this._chkApplyVehicleRow.TabIndex = 75;
             this._chkApplyVehicleRow.TabStop = false;
             this._chkApplyVehicleRow.Text = "By Vehicle Row";
@@ -601,14 +573,13 @@
             // _chkApplyCrane
             // 
             this._chkApplyCrane.Checked = false;
-            this._chkApplyCrane.Controls.Add(this._chkCrane5);
             this._chkApplyCrane.Controls.Add(this._chkCrane4);
             this._chkApplyCrane.Controls.Add(this._chkCrane1);
             this._chkApplyCrane.Controls.Add(this._chkCrane3);
             this._chkApplyCrane.Controls.Add(this._chkCrane2);
             this._chkApplyCrane.Location = new System.Drawing.Point(318, 54);
             this._chkApplyCrane.Name = "_chkApplyCrane";
-            this._chkApplyCrane.Size = new System.Drawing.Size(100, 136);
+            this._chkApplyCrane.Size = new System.Drawing.Size(100, 126);
             this._chkApplyCrane.TabIndex = 76;
             this._chkApplyCrane.TabStop = false;
             this._chkApplyCrane.Text = "By Crane";
@@ -696,6 +667,16 @@
             this._lstSkus.TabIndex = 1;
             this._lstSkus.SelectedIndexChanged += new System.EventHandler(this._LstSkus_SelectedIndexChanged);
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(17, 125);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(72, 17);
+            this.checkBox1.TabIndex = 6;
+            this.checkBox1.Text = "Unknown";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // AdvancedSearchForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -751,9 +732,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox _chkOK;
         private System.Windows.Forms.CheckBox _chkHold;
-        private System.Windows.Forms.CheckBox _chkQCSort;
-        private System.Windows.Forms.CheckBox _chkUnknown;
-        private System.Windows.Forms.CheckBox _chkCrane5;
+        private System.Windows.Forms.CheckBox _chkPurge;
+        private System.Windows.Forms.CheckBox _chkReserved;
         private System.Windows.Forms.CheckBox _chkCrane4;
         private System.Windows.Forms.CheckBox _chkCrane3;
         private System.Windows.Forms.CheckBox _chkCrane2;
@@ -764,7 +744,6 @@
         private System.Windows.Forms.CheckBox _chkGetAllocated;
         private System.Windows.Forms.CheckBox _chkPickable;
         private System.Windows.Forms.CheckBox _chkEmpty;
-        private System.Windows.Forms.CheckBox _chkMid;
         private System.Windows.Forms.CheckBox _chkFront;
         private System.Windows.Forms.CheckBox _chkPutAllocated;
         private System.Windows.Forms.Label _label4;
@@ -791,6 +770,7 @@
         private System.Windows.Forms.Label _label5;
         private System.Windows.Forms.TextBox _txtPrefilter;
         private System.Windows.Forms.ListBox _lstSkus;
+        private System.Windows.Forms.CheckBox checkBox1;
         //         private System.Windows.Forms.CheckBox _chkStack;
     }
 }

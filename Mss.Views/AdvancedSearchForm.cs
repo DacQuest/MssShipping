@@ -158,9 +158,9 @@ namespace Mss.Views
             _searchPalletStatuses = PalletStatus.Invalid;
             _chkOK.Checked = false;
             _chkHold.Checked = false;
-            _chkQCSort.Checked = false;
+            _chkPurge.Checked = false;
 //             _chkStack.Checked = false;
-            _chkUnknown.Checked = false;
+            _chkReserved.Checked = false;
 
             _chkApplyCrane.Checked = false;
 //             _searchCranes = _searchCrane1 + _searchCrane2 + _searchCrane3 + _searchCrane4;
@@ -174,7 +174,6 @@ namespace Mss.Views
 //             _searchRows = _searchRow1 + _searchRow2 + _searchRow3;
             _searchRows = SearchFront + SearchMid;
             _chkFront.Checked = true;
-            _chkMid.Checked = true;
 //             chkRow3.Checked = true;
 
             _chkApplyBinAttributes.Checked = false;
@@ -223,9 +222,9 @@ namespace Mss.Views
             {
                 _chkOK.Checked = false;
                 _chkHold.Checked = false;
-                _chkQCSort.Checked = false;
+                _chkPurge.Checked = false;
 //                 _chkStack.Checked = false;
-                _chkUnknown.Checked = false;
+                _chkReserved.Checked = false;
                 _searchPalletStatuses = PalletStatus.Invalid;
             }
             _EnableSearchButton();
@@ -317,7 +316,7 @@ namespace Mss.Views
 
         private void _ChkUnknown_CheckedChanged(object sender, EventArgs e)
         {
-            if (_chkUnknown.Checked)
+            if (_chkReserved.Checked)
             {
                 _searchPalletStatuses |= PalletStatus.Unknown;
             }
@@ -380,18 +379,6 @@ namespace Mss.Views
             _EnableSearchButton();
         }
 
-        private void _ChkCrane5_CheckedChanged(object sender, EventArgs e)
-        {
-            if (_chkCrane5.Checked)
-            {
-                _searchCranes += SearchCrane5;
-            }
-            else
-            {
-                _searchCranes -= SearchCrane5;
-            }
-            _EnableSearchButton();
-        }
 
         private void _DtStart_ValueChanged(object sender, EventArgs e)
         {
@@ -503,7 +490,6 @@ namespace Mss.Views
             if (!_chkApplyVehicleRow.Checked)
             {
                 _chkFront.Checked = true;
-                _chkMid.Checked = true;
                 _chkRear.Checked = true;
 //                 _searchRows = _searchRow1 + _searchRow2 + _searchRow3;
                 _searchRows = SearchFront + SearchMid + SearchRear;
@@ -550,18 +536,6 @@ namespace Mss.Views
             _EnableSearchButton();
         }
 
-        private void _ChkMid_CheckedChanged(object sender, EventArgs e)
-        {
-            if (_chkMid.Checked)
-            {
-                _searchRows += SearchMid;
-            }
-            else
-            {
-                _searchRows -= SearchMid;
-            }
-            _EnableSearchButton();
-        }
 
         private void _ChkRear_CheckedChanged(object sender, EventArgs e)
         {
@@ -688,5 +662,6 @@ namespace Mss.Views
         {
             _PopulateSkuListBox(_txtPrefilter.Text);
         }
+
     }
 }
