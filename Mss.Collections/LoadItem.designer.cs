@@ -49,7 +49,15 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "The letter of the Slug.",
+            Comment = "")]
+        public bool Shortage
+        {
+            get => GetBoolean(nameof(Shortage));
+            set => SetBoolean(nameof(Shortage), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "The letter of the Load (A=1 or B=2).",
             ReadOnlyInDataItemGrid = true)]
         public LoadLetter LoadLetter
         {

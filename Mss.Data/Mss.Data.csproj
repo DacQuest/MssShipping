@@ -33,10 +33,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.2.1.66\lib\net461\Dapper.dll</HintPath>
+      <HintPath>..\packages\Dapper.2.1.72\lib\net461\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper.Contrib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.Contrib.2.0.78\lib\net461\Dapper.Contrib.dll</HintPath>
     </Reference>
     <Reference Include="MicroOrm.Dapper.Repositories, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MicroOrm.Dapper.Repositories.1.30.0\lib\net462\MicroOrm.Dapper.Repositories.dll</HintPath>
+      <HintPath>..\packages\MicroOrm.Dapper.Repositories.1.31.0\lib\net462\MicroOrm.Dapper.Repositories.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.1\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -66,7 +69,15 @@
     <Compile Include="DataLayer.cs" />
     <Compile Include="LoadManager.cs" />
     <Compile Include="MesInterface.cs" />
+    <Compile Include="Pocos\BroadcastDetail.cs" />
+    <Compile Include="Pocos\BroadcastHeader.cs" />
+    <Compile Include="Pocos\BroadcastQueue.cs" />
+    <Compile Include="Pocos\HoldCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\BroadcastDetailsRepository.cs" />
+    <Compile Include="Repositories\BroadcastHeaderRepository.cs" />
+    <Compile Include="Repositories\BroadcastRepository.cs" />
+    <Compile Include="Repositories\HoldCodesRepository.cs" />
     <Compile Include="Search.cs" />
     <Compile Include="Searches.cs" />
     <Compile Include="SearchType.cs" />
@@ -84,6 +95,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)*.*" "$(SolutionDir)..\System\$(ConfigurationName)"</PostBuildEvent>

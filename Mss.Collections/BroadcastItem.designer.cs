@@ -17,8 +17,6 @@ namespace Mss.Collections
             ReceivedOn = Constant.BeginningOfTime;
         }
 
-        //See DataItemReference.txt under a DFX Collection Class Library project Properties Folder for examples.
-
         [XDataItemProperty(
             Comment = "The status of this Broadcast.")]
         public BroadcastStatus Status
@@ -28,7 +26,15 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "The Sequence Number of the Broadcast.",
+            Comment = "The Rotation Number of the Broadcast.")]
+        public int RotationNumber
+        {
+            get => GetInt32(nameof(RotationNumber));
+            set => SetInt32(nameof(RotationNumber), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "The Sequence Number of this Broadcast.",
             MaxLength = Constant.CsnLength)]
         public string Csn
         {
@@ -37,7 +43,16 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "The SKU required to fulfill the Broadcast requirement.",
+            Comment = "The SKU that pertains to the entire vehicle.",
+            MaxLength = Constant.MaxSkuLength)]
+        public string VehicleSku
+        {
+            get => GetString(nameof(VehicleSku));
+            set => SetString(nameof(VehicleSku), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "The SKU required to fulfill this Broadcast requirement.",
             MaxLength = Constant.MaxSkuLength)]
         public string Sku
         {
@@ -63,7 +78,7 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = ".")]
+            Comment = "Job ID used to pick pallet if PickMode is JobID")]
         public int PickModeJobID
         {
             get => GetInt32(nameof(PickModeJobID));
@@ -71,7 +86,7 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = ".",
+            Comment = "Pallet ID used to pick pallet if PickMode is Pallet",
             MaxLength = Constant.PalletIDLength)]
         public string PickModePalletID
         {
@@ -88,21 +103,20 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = ".")]
-        public int InternalSequenceNumber
+            Comment = "Number of Vehicle Rows associated with this Broadcast")]
+        public int VehicleRowCount
         {
-            get => GetInt32(nameof(InternalSequenceNumber));
-            set => SetInt32(nameof(InternalSequenceNumber), value);
+            get => GetInt32(nameof(VehicleRowCount));
+            set => SetInt32(nameof(VehicleRowCount), value);
         }
 
-//         [XDataItemProperty(
-//             Comment = ".",
-//             MaxLength = Constant.Row2ConsolePartLength)]
-//         public string Row2ConsolePart
-//         {
-//             get => GetString(nameof(Row2ConsolePart));
-//             set => SetString(nameof(Row2ConsolePart), value);
-//         }
+        //         [XDataItemProperty(
+        //             Comment = ".")]
+        //         public int InternalSequenceNumber
+        //         {
+        //             get => GetInt32(nameof(InternalSequenceNumber));
+        //             set => SetInt32(nameof(InternalSequenceNumber), value);
+        //         }
 
     }
 }

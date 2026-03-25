@@ -103,37 +103,21 @@ namespace Mss.Collections
                     return (Color.White, Color.Blue);
                 case LoadItemStatus.Picked:
                     return (Color.White, Color.Navy);
-                case LoadItemStatus.Sequencing:
-                    return (Color.Black, Color.Lavender);
+//                 case LoadItemStatus.Sequencing:
+//                     return (Color.Black, Color.Lavender);
                 case LoadItemStatus.Presequenced:
                     return (Color.White, Color.DarkMagenta);
                 case LoadItemStatus.Sequenced:
-                    if (transferring)
-                    {
-                        return (Color.Black, Color.Yellow);
-                    }
-                    return (Color.White, Color.Magenta);
+                    return transferring
+                        ? (Color.Black, Color.Yellow)
+                        : (Color.White, Color.Magenta);
                 case LoadItemStatus.Done:
                     return (Color.White, Color.DarkGreen);
-                case LoadItemStatus.Loadable:
-                    return (Color.Black, Color.Pink);
+//                 case LoadItemStatus.Loadable:
+//                     return (Color.Black, Color.Pink);
                 default:
                     return (Color.Yellow, Color.Red);
             }
-        }
-
-
-
-
-
-
-
-
-
-        public Boolean Shortage
-        {
-            get;
-            set;
         }
 
         public int ReportPosition

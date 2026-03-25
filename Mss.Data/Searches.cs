@@ -56,9 +56,7 @@ namespace Mss.Data
         {
             return binItems.Where(b =>
             {
-                return sku == Constant.StackSku
-                    ? sku == b.Pallet.Sku
-                    : sku.Contains(b.Pallet.Sku);
+                return sku == b.Pallet.Sku;
 
             }).ToList();
         }

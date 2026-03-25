@@ -15,7 +15,7 @@ namespace Mss.Collections
         ? VehicleRow.Row1
         : VehicleRow.Row2;
 
-        public bool IsStack => Sku == Constant.StackSku;
+        public bool IsStack => Sku == Constant.FrontStackSku || Sku == Constant.RearStackSku;
 
         public string GetPalletStateDetails(int leadingSpaceCount)
         {

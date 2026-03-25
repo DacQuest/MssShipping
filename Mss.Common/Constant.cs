@@ -29,6 +29,7 @@ namespace Mss.Common
 
         public const int PalletIDLength = 4;
         public const int SkuLength = 12;
+        public const int MaxBroadcastSkip = 100;
 
 
 
@@ -36,6 +37,8 @@ namespace Mss.Common
         //Storage
         //public const string StackPalletIDValidator = "StackPalletIDValidator";
         public const string StackSku = "STACK";
+        public const string FrontStackSku = "FSTACK";
+        public const string RearStackSku = "RSTACK";
         public const int MaxCranes = 4;
         public const int MaxHorizontal = 22;
         public const int MaxVertical = 6;
@@ -140,11 +143,6 @@ namespace Mss.Common
         public static readonly string NoPalletID = string.Empty;
         public const int NoJobID = 0;
 
-
-
-
-
-
         public const int CsnLength = 15;
         public const int MaxSkuLength = 20;
         public const int VinLength = 20;
@@ -156,39 +154,41 @@ namespace Mss.Common
 
 
         // === THESE ARRAYS APPLY TO LOADS OF 54 PALLETS ====================================================
-        //!!! STILL NEED TO BE DONE!
         public static readonly int[] PickSearchOrder = new int[]
         {
-            00, 59, 02,
-            57, 30, 27,
-            32, 29, 58,
-            01, 28, 31,
-
-            03, 56, 05,
-            54, 33, 24,
-            35, 26, 55,
-            04, 25, 34,
-
-            06, 53, 08,
-            51, 36, 21,
-            38, 23, 52,
-            07, 22, 37,
-
-            09, 50, 11,
-            48, 39, 18,
-            41, 20, 49,
-            10, 19, 40,
-
-            12, 47, 14,
-            45, 42, 15,
-            44, 17, 46,
-            13, 16, 43
+            // Row 9
+            00, 28, 02,
+            27, 01, 29,
+            // Row 1
+            24, 52, 26,
+            51, 25, 53,
+            // Row 8
+            03, 31, 05,
+            30, 04, 32,
+            // Row 2
+            21, 49, 23,
+            48, 22, 50,
+            // Row 7
+            06, 34, 08,
+            33, 07, 35,
+            // Row 3
+            18, 46, 20,
+            45, 19, 47,
+            // Row 6
+            09, 37, 11,
+            36, 10, 38,
+            // Row 4
+            15, 43, 17,
+            42, 16, 44,
+            // Row 5
+            12, 40, 14,
+            39, 13, 41
         };
 
         public const int AfterLast = -1;
         public static readonly int[] NextInLaneLoadIndex = new int[]
         {
-            //Lower Level
+            //Upper Level
             03, 04, 05,
             06, 07, 08,
             09, 10, 11,
@@ -199,20 +199,18 @@ namespace Mss.Common
             15, 16, 17,
             18, 19, 20,
             21, 22, 23,
-            24, 25, 26,
 
-            //Upper Level
+            //Lower Level
+            30, 31, 32,
             33, 34, 35,
             36, 37, 38,
             39, 40, 41,
-            42, 43, 44,
             AfterLast, AfterLast, AfterLast,
 
             AfterLast, AfterLast, AfterLast,
+            42, 43, 44,
             45, 46, 47,
-            48, 49, 50,
-            51, 52, 53,
-            54, 55, 56
+            48, 49, 50
         };
 
         public const int BeforeFirst = -1;
@@ -228,20 +226,18 @@ namespace Mss.Common
             18, 19, 20,
             21, 22, 23,
             24, 25, 26,
-            27, 28, 29,
             BeforeFirst, BeforeFirst, BeforeFirst,
 
             // Upper
             BeforeFirst, BeforeFirst, BeforeFirst,
+            27, 28, 29,
             30, 31, 32,
             33, 34, 35,
             36, 37, 38,
-            39, 40, 41,
 
+            45, 46, 47,
             48, 49, 50,
             51, 52, 53,
-            54, 55, 56,
-            57, 58, 59,
             BeforeFirst, BeforeFirst, BeforeFirst,
         };
 

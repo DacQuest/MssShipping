@@ -121,7 +121,11 @@ namespace Mss.Data
                         || loadPickPriority == LoadPickPriority.LoadBOnly));
 
                 primaryLoad = null;
-                if (slugAPicksToDo && slugBPicksToDo)
+                if (!slugAPicksToDo && !slugBPicksToDo)
+                {
+                    primaryLoad = null;
+                }
+                else if (slugAPicksToDo && slugBPicksToDo)
                 {
                     if (loadPickPriority == LoadPickPriority.LoadA
                         || loadPickPriority == LoadPickPriority.LoadAOnly)
@@ -152,10 +156,6 @@ namespace Mss.Data
                 {
                     primaryLoad = _loadB;
                 }
-                else if (!slugAPicksToDo && !slugBPicksToDo)
-                {
-                    primaryLoad = null;
-                }
                 return primaryLoad != null;
             }
             finally
@@ -164,7 +164,7 @@ namespace Mss.Data
             }
         }
 
-        internal Load GetOtherLoad(Load load) => load == _loadA ? (Load)_loadB : _loadA;
+        internal Load GetOtherLoad(Load load) => load == _loadA ? _loadB : (Load)_loadA;
 
         private bool _GetNoPriorityPrimaryLoad(out Load primaryLoad)
         {

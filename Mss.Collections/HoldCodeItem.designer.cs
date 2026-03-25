@@ -15,6 +15,7 @@ namespace Mss.Collections
         {
             SetByteConverter<HoldCodeItem>();
         }
+
         [XDataItemProperty(
         Comment = "",
         MaxLength = Constant.CommentLength)]
