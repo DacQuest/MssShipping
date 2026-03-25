@@ -1,4 +1,4 @@
-﻿USE [DecostarMirrors]
+﻿USE [MssMirrors]
 GO
 SET ANSI_NULLS ON
 GO
@@ -232,12 +232,6 @@ insert into @ColumnSets values
     ,[BuildOnlyEmptyPalletBufferThreshold] INT DEFAULT 20 NOT NULL
     ,[ShipOnlyEmptyPalletBufferThreshold] INT DEFAULT 20 NOT NULL
     ,[BuildAndShipEmptyPalletBufferThreshold] INT DEFAULT 20 NOT NULL
-    ,[RackLoad1PickBufferSize] INT DEFAULT 2 NOT NULL
-    ,[RackLoad2PickBufferSize] INT DEFAULT 2 NOT NULL
-    ,[RackLoad3PickBufferSize] INT DEFAULT 2 NOT NULL
-    ,[RackLoad1Enabled] BIT DEFAULT 0 NOT NULL
-    ,[RackLoad2Enabled] BIT DEFAULT 0 NOT NULL
-    ,[RackLoad3Enabled] BIT DEFAULT 0 NOT NULL
     ,[CurrentPalletGroupID] INT DEFAULT 0 NOT NULL
     ,[PalletIDQueueTelemetryEnabled] BIT DEFAULT 0 NOT NULL
     ,[ForcePalletDataQueryOnAudit] BIT DEFAULT 1 NOT NULL
