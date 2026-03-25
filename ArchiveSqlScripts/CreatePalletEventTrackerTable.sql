@@ -1,4 +1,4 @@
-﻿USE [DecostarArchive]
+﻿USE [MssArchive]
 GO
 
 /****** Object:  Table [dbo].[PalletEventTracker]    Script Date: 11/17/2025 1:34:02 PM ******/
