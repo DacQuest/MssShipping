@@ -1,4 +1,5 @@
 ﻿using DacQuest.DFX.Core;
+using Dapper;
 using MicroOrm.Dapper.Repositories;
 using Mss.Common;
 using Mss.Data.Pocos;
@@ -13,44 +14,72 @@ namespace Mss.Data.Repositories
 {
     public class BroadcastRepository : DapperRepository<BroadcastQueue>
     {
-//         BroadcastHeaderRepository _headerRepository = null;
 
         public BroadcastRepository(IDbConnection connection)
             : base(connection)
         {
         }
 
-        public async Task<bool> FetchRawBroadcastsAsync(Out<IEnumerable<BroadcastQueue>> rawBroadcasts)
+        public bool TryFetchRawBroadcasts(out IEnumerable<BroadcastQueue> rawBroadcasts)
         {
-            // Step 1: Get BroadcastQueue records with BroadcastHeader populated
-            rawBroadcasts.Value = (await FindAllAsync(q => !q.Processed))
-                .OrderBy(q => q.HeaderID);
-
-            if (!rawBroadcasts.Value.Any())
+            try
             {
+                // Step 1: Get BroadcastQueue records with BroadcastHeader populated
+                rawBroadcasts = FindAllAsync(q => !q.Processed)
+                    .GetAwaiter()
+                    .GetResult()
+                    .OrderBy(q => q.HeaderID);
+
+                if (!rawBroadcasts.Any())
+                {
+                    rawBroadcasts = null;
+                    return false;
+                }
+
+                // Step 2: Separately load BroadcastDetails for each header
+                DapperRepository<BroadcastDetail> detailRepo = new DapperRepository<BroadcastDetail>(Connection);
+
+                IEnumerable<int> headerIDs = rawBroadcasts
+                    .Where(r => r.BroadcastHeader != null)
+                    .OrderBy(r => r.BroadcastHeader.Rotation)
+                    .Select(r => r.BroadcastHeader.HeaderID)
+                    .Distinct();
+
+                IEnumerable<BroadcastDetail> details = detailRepo.FindAllAsync(d => headerIDs.Contains(d.HeaderID))
+                    .GetAwaiter()
+                    .GetResult();
+
+                // Step 3: Wire up BroadcastDetails onto each BroadcastHeader
+                foreach (BroadcastQueue rawBroadcast in rawBroadcasts.Where(r => r.BroadcastHeader != null))
+                {
+                    rawBroadcast.BroadcastHeader.BroadcastDetails = details
+                        .Where(d => d.HeaderID == rawBroadcast.BroadcastHeader.HeaderID)
+                        .OrderBy(d => d.VehicleRow)
+                        .ToList();
+                }
+
+                return true;
+            }
+            catch (Exception x)
+            {
+                rawBroadcasts = null;
+                x.PublishSystemEvent(nameof(TryFetchRawBroadcasts));
                 return false;
             }
+        }
 
-            // Step 2: Separately load BroadcastDetails for each header
-            DapperRepository<BroadcastHeader> headerRepo = new DapperRepository<BroadcastHeader>(Connection);
-            DapperRepository<BroadcastDetail> detailRepo = new DapperRepository<BroadcastDetail>(Connection);
+        public bool TryMarkAsProcessed(BroadcastQueue rawBroadcast)
+        {
+            string sql = @"UPDATE [SHIP_BroadcastQueue] 
+                SET [Processed] = 1, [ProcessedDTTM] = @ProcessedDTTM 
+                WHERE [KeyID] = @KeyID";
 
-            IEnumerable<int> headerIDs = rawBroadcasts.Value
-                .Where(q => q.BroadcastHeader != null)
-                .Select(q => q.BroadcastHeader.HeaderID)
-                .Distinct();
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@KeyID", rawBroadcast.ID);
+            parameters.Add("@ProcessedDTTM", DateTime.Now.ToString(Constant.DateTimeFormat));
 
-            IEnumerable<BroadcastDetail> details = (await detailRepo.FindAllAsync(d => headerIDs.Contains(d.HeaderID)));
-
-            // Step 3: Wire up BroadcastDetails onto each BroadcastHeader
-            foreach (BroadcastQueue queue in rawBroadcasts.Value.Where(q => q.BroadcastHeader != null))
-            {
-                queue.BroadcastHeader.BroadcastDetails = details
-                    .Where(d => d.HeaderID == queue.BroadcastHeader.HeaderID)
-                    .ToList();
-            }
-
-            return true;
+            int rowsAffected = Connection.Execute(sql, parameters);
+            return rowsAffected > 0;
         }
 
         //         public bool FetchRawBroadcast(out List<BroadcastQueue> broadcastQueue)
@@ -99,11 +128,6 @@ namespace Mss.Data.Repositories
         //                 broadcastQueue = null;
         //                 return false;
         //             }
-        //         }
-
-        //         public void DeleteFromQueue(int broadcastHeaderID)
-        //         {
-        // 
         //         }
 
     }

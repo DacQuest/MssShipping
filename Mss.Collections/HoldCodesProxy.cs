@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Mss.Collections
 {
-    public class LowerPitProxy : PitProxy
+    public class HoldCodesProxy : XSharedDictionaryProxy<int, HoldCodeItem>
     {
     }
 }

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace Mss.Common
 {
-    // Workaround for inability to have out parameters in async methods
-    public class Out<T>
+    public enum LoadDirectorOperatorResponse
     {
-        public T Value { get; set; } = default;
+        None = 0,
+        Accept = 1,
+        Reject = 2
     }
 }

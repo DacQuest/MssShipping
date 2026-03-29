@@ -50,6 +50,8 @@
     <Compile Include="BroadcastStatus.cs" />
     <Compile Include="CraneFunction.cs" />
     <Compile Include="CraneMode.cs" />
+    <Compile Include="LoadDirectorMode.cs" />
+    <Compile Include="LoadDirectorOperatorResponse.cs" />
     <Compile Include="LoadItemStatus.cs" />
     <Compile Include="Levels.cs" />
     <Compile Include="Constant.cs" />
@@ -58,13 +60,18 @@
     <Compile Include="LoadLayoutConfigurationItem.cs" />
     <Compile Include="LoadLetter.cs" />
     <Compile Include="LoadPickPriority.cs" />
+    <Compile Include="LoadTrailerMessageData.cs" />
     <Compile Include="Out.cs" />
     <Compile Include="PalletDestination.cs" />
     <Compile Include="PalletStatus.cs" />
     <Compile Include="PickMode.cs" />
     <Compile Include="PitCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecoverShippedBroadcastMessageData.cs" />
     <Compile Include="Ref.cs" />
+    <Compile Include="ReleaseBroadcastMessageData.cs" />
+    <Compile Include="ReprintLabelMessageData.cs" />
+    <Compile Include="RollbackLoadItemMessageData.cs" />
     <Compile Include="SkuCountByStatus.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VehicleRow.cs" />

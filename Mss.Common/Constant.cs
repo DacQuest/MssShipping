@@ -10,6 +10,7 @@ namespace Mss.Common
     {
         public static readonly DateTime BeginningOfTime = DateTime.Parse("01/01/2000 00:00:00");
         public static readonly DateTime BeforeBeginningOfTime = DateTime.Parse("12/31/1999 11:59:59");
+        public static readonly string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
 
         // Connection String Names
         public const string ArchiveConnectionStringName = "ArchiveConnectionString";
@@ -20,7 +21,10 @@ namespace Mss.Common
         public const string LowerPitName = "LowerPit";
         public const string UpperPitName = "UpperPit";
         public const string SystemSettingsName = "SystemSettings";
+        public const string HoldCodesName = "HoldCodes";
         public const string BroadcastName = "Broadcast";
+        public const string LowerRecircName = "LowerRecirc";
+        public const string UpperRecircName = "UpperRecirc";
         public const string LoadAName = "LoadA";
         public const string LoadBName = "LoadB";
 
@@ -30,9 +34,12 @@ namespace Mss.Common
         public const int PalletIDLength = 4;
         public const int SkuLength = 12;
         public const int MaxBroadcastSkip = 100;
+        public const int MaxRotation = 9998;
+        public const int PickModeValueLength = 50;
 
-
-
+        public const string VehicleRow1CsnCode = "F";
+        public const string VehicleRow2CsnCode = "B";
+        public const string RotationNumberTextFormat = "0000000";
 
         //Storage
         //public const string StackPalletIDValidator = "StackPalletIDValidator";
@@ -47,6 +54,9 @@ namespace Mss.Common
         public const int StorageSize = MaxCranes * StoragePerCrane;
 
         public const int LoadSize = 54;
+        public const int MaxActivePalletsPerLevel = 12;
+        public const int MaxActivePalletsPerLoadLevel = 6;
+        public const int MaxPalletsPerRecirc = 3;
 
         // Pallet Types
         public const string PalletTypeStore = "STORE";
@@ -64,7 +74,7 @@ namespace Mss.Common
         public const int NoPairSequence = 0;
         public const int LoadCellCharacterWidth = 25;
         public const string CalculateShortagesMessageTopicName = "CalculateShortages";
-
+        public const int LoadAllocatablePositions = 6;
 
         // Device Role Names
         public const string PlcRoleName = "CC1";
@@ -147,6 +157,7 @@ namespace Mss.Common
         public const int MaxSkuLength = 20;
         public const int VinLength = 20;
         public const int CommentLength = 50;
+        public const int HoldCodeDescriptionLength = 50;
 
         public const string PalletIDSequenceTelemetryEnabledName = "PalletIDSequenceTelemetryEnabled";
         public const string StorageViewInitialNodeIndexMessageName = "StorageViewInitialNodeIndex";
@@ -154,6 +165,10 @@ namespace Mss.Common
 
 
         // === THESE ARRAYS APPLY TO LOADS OF 54 PALLETS ====================================================
+
+        public static readonly int[] UpperLevelStartIndexes = new[] { 0, 1, 2, 24, 25, 26 };
+        public static readonly int[] LowerLevelStartIndexes = new[] { 27, 28, 29, 51, 52, 53 };
+
         public static readonly int[] PickSearchOrder = new int[]
         {
             // Row 9
@@ -214,7 +229,7 @@ namespace Mss.Common
         };
 
         public const int BeforeFirst = -1;
-        public static readonly int[] _previousInLaneLoadIndex = new int[]
+        public static readonly int[] PreviousInLaneLoadIndex = new int[]
         {
             //Lower
             BeforeFirst, BeforeFirst, BeforeFirst,

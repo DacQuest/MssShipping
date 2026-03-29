@@ -14,11 +14,12 @@ namespace Mss.Collections
     {
         public void Clear()
         {
-            Pallet = new PalletItem();
+            ClearPallet();
             Audit = false;
             BinStatus = BinStatus.Empty;
             StoredOn = Constant.BeginningOfTime;
         }
+
         public void ClearPallet()
         {
             Pallet = new PalletItem();
@@ -29,7 +30,7 @@ namespace Mss.Collections
         {
             Clear();
             Audit = true;
-            BinStatus = BinStatus.OfflineDuplicatePalletID;
+            BinStatus = BinStatus.OfflineDuplicate;
         }
 
         public void MarkAsDuplicateForAudit()

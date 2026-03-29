@@ -24,20 +24,20 @@ namespace Mss.Operations
                 {
                     case CraneNumber.Crane1:
                         return Level == Levels.Lower
-                            ? OperationCode.LIR1
-                            : OperationCode.UIR1;
+                            ? OperationCode.LR1
+                            : OperationCode.UR1;
                     case CraneNumber.Crane2:
                         return Level == Levels.Lower
-                            ? OperationCode.LIR2
-                            : OperationCode.UIR2;
+                            ? OperationCode.LR2
+                            : OperationCode.UR2;
                     case CraneNumber.Crane3:
                         return Level == Levels.Lower
-                            ? OperationCode.LIR3
-                            : OperationCode.UIR3;
+                            ? OperationCode.LR3
+                            : OperationCode.UR3;
                     case CraneNumber.Crane4:
                         return Level == Levels.Lower
-                            ? OperationCode.LIR4
-                            : OperationCode.UIR4;
+                            ? OperationCode.LR4
+                            : OperationCode.UR4;
                     default:
                         return OperationCode.Unknown;
                 }
@@ -92,7 +92,7 @@ namespace Mss.Operations
 
         protected override bool DoProcessPallet(out int moveCommand, out string extendedState)
         {
-            if (!DataLayer.ProcessPalletAtInboundRouter(
+            if (!DataLayer.ProcessPalletAtRouter(
                 CraneNumber,
                 Level,
                 PalletID,

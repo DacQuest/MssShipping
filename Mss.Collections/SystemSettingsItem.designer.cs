@@ -33,6 +33,22 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
+            Comment = "The largest Rotation Number received.")]
+        public int LargestRotationReceived
+        {
+            get => GetInt32(nameof(LargestRotationReceived));
+            set => SetInt32(nameof(LargestRotationReceived), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "The last CSN released to a load for picking.")]
+        public string LastCsnReleased
+        {
+            get => GetString(nameof(LastCsnReleased));
+            set => SetString(nameof(LastCsnReleased), value);
+        }
+
+        [XDataItemProperty(
            Comment = "Prioritizes Audit Picks over other crane functions.",
             ArrayLength = Constant.MaxCranes + 1,
             MirrorToChildTable = true)]

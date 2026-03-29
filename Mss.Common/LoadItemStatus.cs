@@ -17,7 +17,8 @@ namespace Mss.Common
         Picked       = 0x0010,  //???
         Presequenced = 0x0020,  //???
         Sequenced    = 0x0040,  // pallet passed Load Director, next in lane, sequence guaranteed
-        Done         = 0x0080   // pallet passed Transfer (move complete)
+        Done         = 0x0080,  // pallet passed Transfer (move complete)
+        Loadable     = 0x0100   // entire load Done and data has been archived
 
     }
 }

@@ -19,37 +19,24 @@ namespace Mss.Data.Repositories
         {
         }
 
-        public bool FetchHoldCodes(out List<HoldCodeItem> holdCodes)
+        public bool TryFetchRawHoldCodes(out IEnumerable<HoldCode> rawHoldCodes)
         {
-            holdCodes = new List<HoldCodeItem>();
             try
             {
-                foreach (HoldCode rawHoldCode in FindAll())
+                rawHoldCodes = FindAllAsync()
+                    .GetAwaiter()
+                    .GetResult();
+                if (!rawHoldCodes.Any())
                 {
-                    if (rawHoldCode.Active)
-                    {
-                        HoldCodeItem holdCodeItem = new HoldCodeItem
-                        {
-                            BitPosition = rawHoldCode.BitPosition,
-                            HoldCode = rawHoldCode.Code,
-                            Description = rawHoldCode.Description,
-                            CreatedOn = rawHoldCode.Inserted_DT
-                        };
-                        holdCodes.Add(holdCodeItem);
-                    }
+                    rawHoldCodes = null;
+                    return false;
                 }
                 return true;
             }
-            catch (SqlException x)
-            {
-                holdCodes = null;
-                x.PublishSystemEvent("HoldCodesRepository");
-                return false;
-            }
             catch (Exception x)
             {
-                holdCodes = null;
-                x.PublishSystemEvent("HoldCodesRepository");
+                rawHoldCodes = null;
+                x.PublishSystemEvent(nameof(TryFetchRawHoldCodes));
                 return false;
             }
         }

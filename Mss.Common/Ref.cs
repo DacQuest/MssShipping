@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mss.Common
 {
+    // Workaround for inability to have ref parameters in async methods
     public class Ref<T>
     {
         public T Value { get; set; }

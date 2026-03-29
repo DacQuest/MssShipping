@@ -30,8 +30,8 @@ namespace Mss.Views
 
         private StorageViewParameterSetWrapper _parameters;
         private StorageProxy _storageProxy;
-        private UpperPitProxy _upperPitProxy;
-        private LowerPitProxy _lowerPitProxy;
+        private PitProxy _upperPitProxy;
+        private PitProxy _lowerPitProxy;
         private BinItem _workingBinItem = new BinItem();
         private BinItem _originalBinItem = new BinItem();
         private bool _allowBinEditing = false;
@@ -81,7 +81,7 @@ namespace Mss.Views
             _cmbBinStatus.AddEnumItem(BinStatus.GetAllocated);
             _cmbBinStatus.AddEnumItem(BinStatus.PutAllocated);
             _cmbBinStatus.AddEnumItem(BinStatus.Offline);
-            _cmbBinStatus.AddEnumItem(BinStatus.OfflineDuplicatePalletID);
+            _cmbBinStatus.AddEnumItem(BinStatus.OfflineDuplicate);
 
             _cmbPalletStatus.AddEnumItem(PalletStatus.OK);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Hold);

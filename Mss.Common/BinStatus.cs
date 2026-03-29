@@ -15,8 +15,6 @@ namespace Mss.Common
         GetAllocated             = 0x04,
         PutAllocated             = 0x08,
         Offline                  = 0x10,
-        OfflineDuplicatePalletID = 0x20,
-        OfflineNoRead            = 0x40
-
+        OfflineDuplicate         = 0x20
     }
 }

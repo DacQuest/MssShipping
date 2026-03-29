@@ -77,21 +77,30 @@ namespace Mss.Collections
             set => SetEnum(nameof(PickMode), value);
         }
 
-        [XDataItemProperty(
-            Comment = "Job ID used to pick pallet if PickMode is JobID")]
-        public int PickModeJobID
-        {
-            get => GetInt32(nameof(PickModeJobID));
-            set => SetInt32(nameof(PickModeJobID), value);
-        }
+//         [XDataItemProperty(
+//             Comment = "Job ID used to pick pallet if PickMode is JobID")]
+//         public int PickModeJobID
+//         {
+//             get => GetInt32(nameof(PickModeJobID));
+//             set => SetInt32(nameof(PickModeJobID), value);
+//         }
+// 
+//         [XDataItemProperty(
+//             Comment = "Pallet ID used to pick pallet if PickMode is Pallet",
+//             MaxLength = Constant.PalletIDLength)]
+//         public string PickModePalletID
+//         {
+//             get => GetString(nameof(PickModePalletID));
+//             set => SetString(nameof(PickModePalletID), value);
+//         }
 
         [XDataItemProperty(
-            Comment = "Pallet ID used to pick pallet if PickMode is Pallet",
-            MaxLength = Constant.PalletIDLength)]
-        public string PickModePalletID
+            Comment = "Used to pick pallet based on Pick Mode other than BySku",
+            MaxLength = Constant.PickModeValueLength)]
+        public string PickModeValue
         {
-            get => GetString(nameof(PickModePalletID));
-            set => SetString(nameof(PickModePalletID), value);
+            get => GetString(nameof(PickModeValue));
+            set => SetString(nameof(PickModeValue), value);
         }
 
         [XDataItemProperty(
