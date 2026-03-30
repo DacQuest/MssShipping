@@ -17,9 +17,26 @@ namespace Mss.Collections
 
         public bool IsStack => Sku == Constant.FrontStackSku || Sku == Constant.RearStackSku;
 
-        public string GetPalletStateDetails(int leadingSpaceCount)
+        public string BuiltOnText => BuiltOn > Constant.BeginningOfTime
+            ? BuiltOn.ToString(Constant.DateTimeFormat)
+            : string.Empty;
+
+        public string GetStateDetails(int leadingSpaceCount)
         {
-            return string.Empty;
+            string spaces = string.Concat(Enumerable.Repeat(' ', leadingSpaceCount));
+
+            StringBuilder details = new StringBuilder();
+            _ = details.Append($"\r\n{spaces}Pallet ID:   {PalletID}");
+            _ = details.Append($"\r\n{spaces}Status:   {Status.ToText()}");
+            _ = details.Append($"\r\n{spaces}Hold Code:   {HoldCode}");
+            _ = details.Append($"\r\n{spaces}Sku:   {Sku}");
+            _ = details.Append($"\r\n{spaces}JobID:   {JobID}");
+            _ = details.Append($"\r\n{spaces}Vehicle Row:   {VehicleRow.ToText()}");
+            _ = details.Append($"\r\n{spaces}Built On:   {BuiltOnText}");
+            _ = details.Append($"\r\n{spaces}Comment:   {Comment}");
+
+            return details.ToString();
         }
+
     }
 }

@@ -17,12 +17,20 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-        Comment = "",
-        MaxLength = Constant.CommentLength)]
-        public string HoldCode
+        Comment = "")]
+        public int HoldCode
         {
-            get => GetString(nameof(HoldCode));
-            set => SetString(nameof(HoldCode), value);
+            get => GetInt32(nameof(HoldCode));
+            set => SetInt32(nameof(HoldCode), value);
+        }
+
+        [XDataItemProperty(
+        Comment = "",
+        MaxLength = Constant.HoldCodeDescriptionLength)]
+        public string Description
+        {
+            get => GetString(nameof(Description));
+            set => SetString(nameof(Description), value);
         }
 
 

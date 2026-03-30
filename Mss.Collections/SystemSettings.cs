@@ -26,6 +26,18 @@ namespace Mss.Collections
             set => SetItemProperty(nameof(SystemSettingsItem.FifoMode), value);
         }
 
+        public int LargestRotationReceived
+        {
+            get => GetItemProperty<int>(nameof(SystemSettingsItem.LargestRotationReceived));
+            set => SetItemProperty(nameof(SystemSettingsItem.LargestRotationReceived), value);
+        }
+
+        public string LastCsnReleased
+        {
+            get => GetItemProperty<string>(nameof(SystemSettingsItem.LastCsnReleased));
+            set => SetItemProperty(nameof(SystemSettingsItem.LastCsnReleased), value);
+        }
+
         public LoadPickPriority LoadPickPriority
         {
             get => GetItemProperty<LoadPickPriority>(nameof(SystemSettingsItem.LoadPickPriority));

@@ -56,6 +56,15 @@ namespace Mss.Operations
         private Broadcast _broadcast;
         protected Broadcast Broadcast => _broadcast;
 
+        private HoldCodes _holdCodes;
+        protected HoldCodes HoldCodes => _holdCodes;
+
+        private LowerRecirc _lowerRecirc;
+        protected LowerRecirc LowerRecirc => _lowerRecirc;
+
+        private UpperRecirc _upperRecirc;
+        protected UpperRecirc UpperRecirc => _upperRecirc;
+
         private LoadA _loadA;
         protected LoadA LoadA => _loadA;
 
@@ -97,7 +106,7 @@ namespace Mss.Operations
             {
                 SetStateDetail(
                     CurrentPalletName,
-                    CurrentPallet.GetPalletStateDetails(Constant.OperationDetailsLeadingSpaceCount),
+                    CurrentPallet.GetStateDetails(Constant.OperationDetailsLeadingSpaceCount),
                     false);
             }
             else
@@ -132,6 +141,9 @@ namespace Mss.Operations
                 out _upperPit,
                 out _systemSettings,
                 out _broadcast,
+                out _holdCodes,
+                out _lowerRecirc,
+                out _upperRecirc,
                 out _loadA,
                 out _loadB);
 
@@ -159,8 +171,11 @@ namespace Mss.Operations
 //             StopMoveCompletedConfirmationTimer();
             StopAllTagDataCapture(Constant.PlcRoleName);
 
-            DataLayer.Dispose();
-            DataLayer = null;
+            if (DataLayer != null)
+            {
+                DataLayer.Dispose();
+                DataLayer = null;
+            }
 
             base.DoStop();
         }

@@ -134,7 +134,8 @@ namespace Mss.Collections
                         .Where(b =>
                         {
                             PalletItem pallet = b.Pallet;
-                            return pallet.Sku == sku
+                            return b.CraneNumber == craneNumber
+                                && pallet.Sku == sku
                                 && pallet.Status == PalletStatus.OK
                                 && b.BinStatus == BinStatus.Pickable
                                 && !b.Audit
@@ -212,6 +213,24 @@ namespace Mss.Collections
 
 
 
+        public void ClearBinByPalletID(string palletID, bool audit)
+        {
+            if (palletID == Constant.NoPalletID)
+            {
+                return;
+            }
+            _ = Lock();
+            try
+            {
+                BinItem binItem = this.FirstOrDefault(b => b.Pallet.PalletID == palletID);
+                _ClearBin(binItem, audit);
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
         public bool TryFindByPalletID(string palletID, out PalletItem palletItem)
         {
             _ = Lock();
@@ -232,6 +251,42 @@ namespace Mss.Collections
             }
         }
 
+
+        public bool TryFindBinByPalletID(string palletID, out BinItem binItem)
+        {
+            _ = Lock();
+            try
+            {
+                binItem = this.FirstOrDefault(b => b.Pallet.PalletID == palletID);
+                return binItem != null;
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
+        public bool TryFindEmptyBin(
+            CraneNumber craneNumber,
+            out BinItem bin)
+        {
+            _ = Lock();
+            try
+            {
+                bin = this
+                    .FirstOrDefault(b =>
+                        b.CraneNumber == craneNumber
+                        && b.BinStatus == BinStatus.Empty
+                        && !b.Disabled
+                        && !b.PickOnly
+                        && !b.NotUsable);
+                return bin != null;
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
 
         public void CompleteSemiAutoStore(
             int binIndex,
@@ -742,24 +797,6 @@ namespace Mss.Collections
             }
         }
 
-        public void ClearBinByPalletID(string palletID, bool audit)
-        {
-            if (palletID == Constant.NoPalletID)
-            {
-                return;
-            }
-            _ = Lock();
-            try
-            {
-                BinItem binItem = this.FirstOrDefault(b => b.Pallet.PalletID == palletID);
-                _ClearBin(binItem, audit);
-            }
-            finally
-            {
-                Unlock();
-            }
-        }
-
         private void _ClearBin(BinItem binItem, bool audit)
         {
             if (binItem == null)
@@ -854,6 +891,42 @@ namespace Mss.Collections
 //                 }
                 this[binItem.NodeIndex] = binItem;
                 return true;
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
+        public bool AnyPickable(CraneNumber craneNumber, string sku)
+        {
+            return FindOldestPickableSku(
+                craneNumber,
+                sku,
+                out _);
+        }
+
+        public bool FindOldestPickableSku(
+            CraneNumber craneNumber,
+            string sku,
+            out BinItem binItem)
+        {
+            _ = Lock();
+            try
+            {
+                binItem = this
+                    .Where(b =>
+                        (craneNumber == CraneNumber.None
+                            || b.CraneNumber == craneNumber)
+                        && b.BinStatus == BinStatus.Pickable
+                        && b.Pallet.Status == PalletStatus.OK
+                        && b.Pallet.Sku == sku
+                        && !b.NotUsable
+                        && !b.Disabled
+                        && !b.Audit)
+                    .OrderBy(b => b.Pallet.BuiltOn)
+                    .FirstOrDefault();
+                return binItem != null;
             }
             finally
             {

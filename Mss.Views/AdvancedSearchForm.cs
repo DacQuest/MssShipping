@@ -606,11 +606,11 @@ namespace Mss.Views
         {
             if (_chkOffline.Checked)
             {
-                _searchBinStatuses |= BinStatus.Offline | BinStatus.OfflineDuplicatePalletID;
+                _searchBinStatuses |= BinStatus.Offline | BinStatus.OfflineDuplicate;
             }
             else
             {
-                _searchBinStatuses &= ~(BinStatus.Offline | BinStatus.OfflineDuplicatePalletID);
+                _searchBinStatuses &= ~(BinStatus.Offline | BinStatus.OfflineDuplicate);
             }
             _EnableSearchButton();
         }

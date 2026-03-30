@@ -20,6 +20,9 @@ namespace Mss.Data
         private UpperPit _upperPit;
         private SystemSettings _systemSettings;
         private Broadcast _broadcast;
+        private HoldCodes _holdCodes;
+        private LowerRecirc _lowerRecirc;
+        private UpperRecirc _upperRecirc;
         private LoadA _loadA;
         private LoadB _loadB;
 
@@ -31,6 +34,9 @@ namespace Mss.Data
             out UpperPit upperPit,
             out SystemSettings systemSettings,
             out Broadcast broadcast,
+            out HoldCodes holdCodes,
+            out LowerRecirc lowerRecirc,
+            out UpperRecirc upperRecirc,
             out LoadA loadA,
             out LoadB loadB)
         {
@@ -41,6 +47,9 @@ namespace Mss.Data
                 out upperPit,
                 out systemSettings,
                 out broadcast,
+                out holdCodes,
+                out lowerRecirc,
+                out upperRecirc,
                 out loadA,
                 out loadB);
         }
@@ -51,6 +60,9 @@ namespace Mss.Data
             out UpperPit upperPit,
             out SystemSettings systemSettings,
             out Broadcast broadcast,
+            out HoldCodes holdCodes,
+            out LowerRecirc lowerRecirc,
+            out UpperRecirc upperRecirc,
             out LoadA loadA,
             out LoadB loadB)
         {
@@ -59,6 +71,9 @@ namespace Mss.Data
             _ = XSharedCollection.Open(Constant.UpperPitName, out _upperPit);
             _ = XSharedCollection.Open(Constant.SystemSettingsName, out _systemSettings);
             _ = XSharedCollection.Open(Constant.BroadcastName, out _broadcast);
+            _ = XSharedCollection.Open(Constant.HoldCodesName, out _holdCodes);
+            _ = XSharedCollection.Open(Constant.LowerRecircName, out _lowerRecirc);
+            _ = XSharedCollection.Open(Constant.UpperRecircName, out _upperRecirc);
             _ = XSharedCollection.Open(Constant.LoadAName, out _loadA);
             _ = XSharedCollection.Open(Constant.LoadBName, out _loadB);
 //             _ = XSharedCollection.Open(Constant.Name, out _);
@@ -68,6 +83,9 @@ namespace Mss.Data
             upperPit = _upperPit;
             systemSettings = _systemSettings;
             broadcast = _broadcast;
+            holdCodes = _holdCodes;
+            lowerRecirc = _lowerRecirc;
+            upperRecirc = _upperRecirc;
             loadA = _loadA;
             loadB = _loadB;
             _loadManager = new LoadManager(_loadA, _loadB);
@@ -102,6 +120,21 @@ namespace Mss.Data
                 _broadcast.Dispose();
                 _broadcast = null;
             }
+            if (_holdCodes != null)
+            {
+                _holdCodes.Dispose();
+                _holdCodes = null;
+            }
+            if (_lowerRecirc != null)
+            {
+                _lowerRecirc.Dispose();
+                _lowerRecirc = null;
+            }
+            if (_upperRecirc != null)
+            {
+                _upperRecirc.Dispose();
+                _upperRecirc = null;
+            }
             if (_loadA != null)
             {
                 _loadA.Dispose();
@@ -120,17 +153,92 @@ namespace Mss.Data
             _ = _lowerPit.Lock();
             _ = _upperPit.Lock();
             _ = _systemSettings.Lock();
+            _ = _broadcast.Lock();
+            _ = _holdCodes.Lock();
+            _ = _lowerRecirc.Lock();
+            _ = _upperRecirc.Lock();
             _loadManager.Lock();
         }
 
         private void _UnlockAll()
         {
             _loadManager.Unlock();
+            _upperRecirc.Unlock();
+            _lowerRecirc.Unlock();
+            _holdCodes.Unlock();
+            _broadcast.Unlock();
             _systemSettings.Unlock();
             _upperPit.Unlock();
             _lowerPit.Unlock();
             _storage.Unlock();
         }
+
+        #region General
+
+        public void ReceiveBroadcast(List<BroadcastItem> broadcastItems)
+        {
+            _LockAll();
+            int largestRotationReceived = _systemSettings.LargestRotationReceived;
+            bool touch = false;
+            try
+            {
+                if (broadcastItems.Count() == 0)
+                {
+                    return;
+                }
+                _broadcast.PurgeOldBroadcast();
+                foreach (BroadcastItem broadcastItem in broadcastItems)
+                {
+                    _ = _broadcast.Update(broadcastItem.Csn, broadcastItem, false);
+                    if (broadcastItem.RotationNumber > largestRotationReceived)
+                    {
+                        largestRotationReceived = broadcastItem.RotationNumber;
+                    }
+                    touch = true;
+                }
+            }
+            finally
+            {
+                if (touch)
+                {
+                    _systemSettings.LargestRotationReceived = largestRotationReceived;
+                    _broadcast.Touch();
+                }
+                _UnlockAll();
+            }
+        }
+
+        public void ReceiveHoldCodes (List<HoldCodeItem> holdCodes)
+        {
+            _LockAll();
+            bool touch = false;
+            bool setting = false;
+            try
+            {
+                setting = _holdCodes.InhibitChangeNotifications;
+                if (holdCodes.Count() == 0)
+                {
+                    return;
+                }
+                touch = true;
+                _holdCodes.RemoveAll();
+                foreach (HoldCodeItem holdCode in holdCodes)
+                {
+                    _holdCodes[holdCode.HoldCode] = holdCode;
+                }
+            }
+            finally
+            {
+                _holdCodes.InhibitChangeNotifications = setting;
+                if (touch)
+                {
+                    _holdCodes.Touch();
+                }
+                _UnlockAll();
+            }
+        }
+
+        #endregion
 
         #region Upper and Lower Pit
 
@@ -144,9 +252,9 @@ namespace Mss.Data
                 nameof (level),
                 new Levels[] { Levels.Lower, Levels.Upper });
 
-            return (level == Levels.Lower)
-                ? _lowerPit.TryGetItem(palletID, out pitItem)
-                : _upperPit.TryGetItem(palletID, out pitItem);
+            return (level == Levels.Upper)
+                ? _upperPit.TryGetItem(palletID, out pitItem)
+                : _lowerPit.TryGetItem(palletID, out pitItem);
         }
 
         public void RemovePitPallet(string palletID)
@@ -154,8 +262,8 @@ namespace Mss.Data
             _LockAll();
             try
             {
-                _lowerPit.Remove(palletID);
-                _upperPit.Remove(palletID);
+                _ = _lowerPit.Remove(palletID);
+                _ = _upperPit.Remove(palletID);
             }
             finally
             {
@@ -176,9 +284,9 @@ namespace Mss.Data
             _LockAll();
             try
             {
-                Pit pit = level == Levels.Lower
-                    ? (Pit)_lowerPit
-                    : (Pit)_upperPit;
+                Pit pit = level == Levels.Upper
+                    ? (Pit)_upperPit
+                    : (Pit)_lowerPit;
                 pit.Set(palletItem, level, pitCode);
             }
             finally
@@ -243,6 +351,329 @@ namespace Mss.Data
         #endregion
 
         #region Load Manager
+
+        private bool _MatchLoadItemStatus(
+            Load load,
+            int loadIndex,
+            LoadItemStatus statusesToCompare)
+        {
+            XArgumentChecker.ThrowIfGreaterThanOrEqualTo(Constant.LoadSize, loadIndex, "loadIndex");
+            XArgumentChecker.ThrowIfLessThan(0, loadIndex, "loadIndex");
+
+            return statusesToCompare.IsFlagSet(load[loadIndex].Status);
+        }
+
+        private bool _MatchPreviousLoadItemStatus(
+            bool palletArrival,
+            Load load,
+            LoadItem loadItem,
+            LoadItemStatus targetStatus,
+            LoadItemStatus statusesToCompare,
+            out string fault)
+        {
+            int previousIndexInLane = Constant.PreviousInLaneLoadIndex[loadItem.NodeIndex];
+            if (previousIndexInLane == Constant.BeforeFirst
+                || _MatchLoadItemStatus(
+                    load,
+                    previousIndexInLane,
+                    statusesToCompare))
+            {
+                fault = string.Empty;
+                return true;
+            }
+            fault = palletArrival
+                ? $"({loadItem.Coordinates}) Attempted to set a Load position to {targetStatus.ToText()} when the previous in lane was not set to one of the following: {statusesToCompare}."
+                : $"({loadItem.Coordinates}) Attempted to set a Load position to {targetStatus.ToText()} when the previous in lane was not set to one of the following: {statusesToCompare}.";
+            XSystemEvent.Publish(
+                load.CollectionConfiguration.Name,
+                XSystemEventLevel.Error,
+                fault + " Operation faulted.");
+            return false;
+        }
+
+        public bool TrySetPicked(
+            string palletID,
+            out string fault)
+        {
+            _LockAll();
+            try
+            {
+                if (!_loadManager.TryGetLoadByPalletID(
+                    palletID,
+                    out Load load,
+                    out LoadItem loadItem))
+                {
+                    fault = $"Pallet ID {palletID} not found on either load when attempting to set status to {LoadItemStatus.Picked}.";
+                    XSystemEvent.Publish(
+                        load.CollectionConfiguration.Name,
+                        XSystemEventLevel.Error,
+                        fault);
+                    return false;
+                }
+                if (loadItem.Status != LoadItemStatus.Picking)
+                {
+                    fault = $"({loadItem.Coordinates}) Attempted to set a Load position to {LoadItemStatus.Picked.ToText()} when it was not set to {LoadItemStatus.Picking.ToText()}.";
+                    XSystemEvent.Publish(
+                        load.CollectionConfiguration.Name,
+                        XSystemEventLevel.Warning,
+                        fault);
+                    return false;
+                }
+                if (!_MatchPreviousLoadItemStatus(
+                    false,
+                    load,
+                    loadItem,
+                    LoadItemStatus.Picked,
+                    LoadItemStatus.Presequenced | LoadItemStatus.Sequenced | LoadItemStatus.Done,
+                    out fault))
+                {
+                    return false;
+                }
+                loadItem.Status = LoadItemStatus.Picked;
+                loadItem.Shortage = false;
+                load[loadItem.NodeIndex] = loadItem;
+
+                _loadManager.SetNextPickable(
+                     _systemSettings.GetItem(),
+                     load,
+                     loadItem.LoadLevel);
+                fault = string.Empty;
+                return true;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        public bool TrySetPresequenced(
+            string palletID,
+            out string fault)
+        {
+            _LockAll();
+            try
+            {
+                if (!_loadManager.TryGetLoadByPalletID(
+                    palletID,
+                    out Load load,
+                    out LoadItem loadItem))
+                {
+                    fault = $"Pallet ID {palletID} not found on either load when attempting to set status to {LoadItemStatus.Presequenced}.";
+                    XSystemEvent.Publish(
+                        load.CollectionConfiguration.Name,
+                        XSystemEventLevel.Error,
+                        fault);
+                    return false;
+                }
+                if (loadItem.Status != LoadItemStatus.Picked)
+                {
+                    fault = $"({loadItem.Coordinates}) Attempted to set a Load position to {LoadItemStatus.Presequenced.ToText()} when it was not set to {LoadItemStatus.Picked.ToText()}.";
+                    XSystemEvent.Publish(
+                        load.CollectionConfiguration.Name,
+                        XSystemEventLevel.Warning,
+                        fault);
+                    return false;
+                }
+                if (!_MatchPreviousLoadItemStatus(
+                    false,
+                    load,
+                    loadItem,
+                    LoadItemStatus.Presequenced,
+                    LoadItemStatus.Presequenced | LoadItemStatus.Sequenced | LoadItemStatus.Done,
+                    out fault))
+                {
+                    return false;
+                }
+                loadItem.Status = LoadItemStatus.Presequenced;
+                loadItem.Shortage = false;
+                load[loadItem.NodeIndex] = loadItem;
+
+               _loadManager.SetNextPickable(
+                    _systemSettings.GetItem(),
+                    load,
+                    loadItem.LoadLevel);
+                fault = string.Empty;
+                return true;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        public bool TrySetSequenced(
+            string palletID,
+            out string fault)
+        {
+            _LockAll();
+            try
+            {
+                if (!_loadManager.TryGetLoadByPalletID(
+                    palletID,
+                    out Load load,
+                    out LoadItem loadItem))
+                {
+                    fault = $"Pallet ID {palletID} not found on either load when attempting to set status to {LoadItemStatus.Sequenced}.";
+                    XSystemEvent.Publish(
+                        load.CollectionConfiguration.Name,
+                        XSystemEventLevel.Error,
+                        fault);
+                    return false;
+                }
+                if (loadItem.Status != LoadItemStatus.Presequenced)
+                {
+                    fault = $"({loadItem.Coordinates}) Attempted to set a Load position to {LoadItemStatus.Sequenced.ToText()} when it was not set to {LoadItemStatus.Presequenced.ToText()}.";
+                    XSystemEvent.Publish(
+                        load.CollectionConfiguration.Name,
+                        XSystemEventLevel.Warning,
+                        fault);
+                    return false;
+                }
+                if (!_MatchPreviousLoadItemStatus(
+                    false,
+                    load,
+                    loadItem,
+                    LoadItemStatus.Sequenced,
+                    LoadItemStatus.Sequenced | LoadItemStatus.Done,
+                    out fault))
+                {
+                    return false;
+                }
+                loadItem.Status = LoadItemStatus.Sequenced;
+                loadItem.Shortage = false;
+                load[loadItem.NodeIndex] = loadItem;
+
+               _loadManager.SetNextPickable(
+                    _systemSettings.GetItem(),
+                    load,
+                    loadItem.LoadLevel);
+                fault = string.Empty;
+                return true;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        public bool TrySetDone(
+            string palletID,
+            out string fault)
+        {
+            _LockAll();
+            try
+            {
+                if (!_loadManager.TryGetLoadByPalletID(
+                    palletID,
+                    out Load load,
+                    out LoadItem loadItem))
+                {
+                    fault = $"Pallet ID {palletID} not found on either load when attempting to set status to {LoadItemStatus.Done}.";
+                    XSystemEvent.Publish(
+                        load.CollectionConfiguration.Name,
+                        XSystemEventLevel.Error,
+                        fault);
+                    return false;
+                }
+                if (loadItem.Status != LoadItemStatus.Sequenced)
+                {
+                    fault = $"({loadItem.Coordinates}) Attempted to set a Load position to {LoadItemStatus.Done.ToText()} when it was not set to {LoadItemStatus.Sequenced.ToText()}.";
+                    XSystemEvent.Publish(
+                        load.CollectionConfiguration.Name,
+                        XSystemEventLevel.Warning,
+                        fault);
+                    return false;
+                }
+                int previousIndexInLane = Constant.PreviousInLaneLoadIndex[loadItem.NodeIndex];
+                if (previousIndexInLane != Constant.BeforeFirst
+                    && load[previousIndexInLane].Status != LoadItemStatus.Done)
+                {
+                    fault = $"({loadItem.Coordinates}) Attempted to set a Load position to {LoadItemStatus.Done.ToText()} when the previous in lane was not set to {LoadItemStatus.Done.ToText()}.";
+                    XSystemEvent.Publish(
+                        load.CollectionConfiguration.Name,
+                        XSystemEventLevel.Error,
+                        fault);
+                    return false;
+                }
+                loadItem.Status = LoadItemStatus.Done;
+                loadItem.Shortage = false;
+                load[loadItem.NodeIndex] = loadItem;
+
+               _loadManager.SetNextPickable(
+                    _systemSettings.GetItem(),
+                    load,
+                    loadItem.LoadLevel);
+                fault = string.Empty;
+                return true;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        // Must be called from within _LockAll()
+//         private bool _SetNextPickable(Load load, Levels level)
+//         {
+//             bool isPrimaryLoad = true;
+//             if (_loadManager.TryGetPrimaryLoad(
+//                 _systemSettings.GetItem(),
+//                 out Load primaryLoad))
+//             {
+//                 isPrimaryLoad = primaryLoad.LoadLetter == load.LoadLetter;
+//             }
+// 
+//             if (isPrimaryLoad)
+//             {
+// 
+//             }
+//             else
+//             {
+// 
+//             }
+// 
+// 
+//             int eligibleLaneCount;
+//             for (int index = 0; index < upperLevelIndexes.Length; index++)
+//             {
+//                 int loadIndex = upperLevelIndexes[index];
+//                 LoadItemStatus status = load[loadIndex].Status;
+//                 while (status >= LoadItemStatus.Pickable)
+//                 {
+//                     loadIndex = Constant.NextInLaneLoadIndex[loadIndex];
+// 
+//                 }
+//             }
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+//             LoadItemStatus allocatedStatuses = LoadItemStatus.Pickable
+//                 | LoadItemStatus.Picking
+//                 | LoadItemStatus.Picked
+//                 | LoadItemStatus.Presequenced;
+// 
+//             int loadCount = load
+//                 .Count(l => l.LoadLevel == level && allocatedStatuses.IsFlagSet(l.Status));
+// 
+//             Load otherLoad = _loadManager.GetOtherLoad(load);
+//             int otherLoadCount = otherLoad
+//                 .Count(l => l.LoadLevel == level && allocatedStatuses.IsFlagSet(l.Status));
+// 
+// 
+// 
+//             LoadItem loadItem = load
+//                 .GetLoadInPickSearchOrder()
+//                 .Where(l => l.LoadLevel == level)
+// 
+//         }
+
+
         #endregion
 
         #region Assignment
@@ -250,7 +681,7 @@ namespace Mss.Data
 
         #region Inbound Router
 
-        public bool ProcessPalletAtInboundRouter(
+        public bool ProcessPalletAtRouter(
                 CraneNumber craneNumber,
                 Levels level,
                 string palletID,
@@ -264,9 +695,12 @@ namespace Mss.Data
 
             if (!MesInterface.TryFetchPalletItem(
                 palletID,
-                out palletItem,
+                true,
+                out PalletDestination destination,
+                out PalletItem fetchedPalletItem,
                 out fault))
             {
+                palletItem = null;
                 return false;
             }
 
@@ -277,28 +711,31 @@ namespace Mss.Data
                 {
                     palletItem = pitItem.Pallet;
                     PitCode pitCode = pitItem.PitCode;
-                    CraneNumber assignedCrane = pitCode.AssignedCrane();
                     if (pitCode.IsAssigned())
                     {
+                        CraneNumber assignedCrane = pitCode.AssignedCrane();
                         if (palletItem.Status == PalletStatus.OK
-                            && _TryAssignHotJobAtInboundRouter(
+                            && palletItem.Sku != Constant.StackSku
+                            && _TryAssignHotJobAtRouter(
+                                craneNumber,
                                 level,
                                 palletItem,
-                                out moveCommand,
-                                out extendedState))
+                                out LoadItem loadItem))
                         {
+                            moveCommand = Constant.IRMoveCommandForward;
+                            extendedState = $"({Constant.PalletTypeHotJob})  Assigned Hot Job Pallet {palletID} to Load {loadItem.LoadLetter}";
                             RemovePitPallet(palletID);
                             return true;
                         }
                         if (assignedCrane == craneNumber
                             || craneNumber == CraneNumber.Crane4)
                         {
-                            if (assignedCrane != CraneNumber.Crane4)
+                            if (assignedCrane != craneNumber)
                             {
                                 SetPitPallet(level, palletItem, PitCode.Assigned4);
                             }
                             moveCommand = Constant.IRMoveCommandToCrane;
-                            extendedState = $"({Constant.PalletTypeStore})  Moving Pallet {palletItem.PalletID} to Crane {(int)craneNumber}";
+                            extendedState = $"({Constant.PalletTypeStore})  Diverting Pallet {palletItem.PalletID} to Crane {(int)craneNumber}";
                             return true;
                         }
                         moveCommand = Constant.IRMoveCommandForward;
@@ -326,30 +763,55 @@ namespace Mss.Data
                 }
                 else
                 {
+                    if (_loadManager.TryGetLoadByPalletID(
+                        palletID,
+                        out Load load,
+                        out LoadItem loadItem))
+                    {
+                        if (loadItem.LoadLevel == level)
+                        {
+                            if (loadItem.Status != LoadItemStatus.Picked)
+                            {
+                                palletItem = loadItem.Pallet;
+                                string error = $"Load Pallet {palletID} arrived at {level} Router {(int)craneNumber} with a Load Item Status of {loadItem.Status.ToText()}. It should be {LoadItemStatus.Picked.ToText()}. Operation faulted.";
+                                XSystemEvent.Publish(
+                                    $"{level} Router {(int)craneNumber}",
+                                    XSystemEventLevel.Error,
+                                    error);
+                                fault = $"Load Pallet {palletID} arrived with a Load Item Status of {loadItem.Status.ToText()}. It should be {LoadItemStatus.Picked.ToText()}.";
+                                return false;
+                            }
+                            palletItem = loadItem.Pallet;
+                            moveCommand = Constant.IRMoveCommandForward;
+                            extendedState = $"({Constant.PalletTypeLoad})  Moving Pallet {palletID} forward";
+                            return true;
+                        }
+                        load.RollbackPick(palletID);
+                    }
+                    palletItem = fetchedPalletItem;
                     if (palletItem.Status == PalletStatus.OK
                         || palletItem.Status == PalletStatus.Hold
                         || palletItem.Status == PalletStatus.Reserved)
                     {
                         if (palletItem.Status == PalletStatus.OK
-                            && _TryAssignHotJobAtInboundRouter(
-                                level,
-                                palletItem,
-                                out moveCommand,
-                                out extendedState))
-                        {
-//                             RemovePitPallet(palletID);
-                            return true;
-                        }
-                        else
-                        {
-                            return _AssignPalletToCraneAtInboundRouter(
+                            && palletItem.Sku != Constant.StackSku
+                            && _TryAssignHotJobAtRouter(
                                 craneNumber,
                                 level,
                                 palletItem,
-                                out moveCommand,
-                                out extendedState,
-                                out fault);
+                                out loadItem))
+                        {
+                            moveCommand = Constant.IRMoveCommandForward;
+                            extendedState = $"({Constant.PalletTypeHotJob})  Assigned Hot Job Pallet {palletID} to Load {loadItem.LoadLetter}";
+                            return true;
                         }
+                        return _AssignPalletToCraneAtRouter(
+                            craneNumber,
+                            level,
+                            palletItem,
+                            out moveCommand,
+                            out extendedState,
+                            out fault);
                     }
                     else
                     {
@@ -380,20 +842,25 @@ namespace Mss.Data
         }
 
         // Must be called from within _LockAll()
-        private bool _TryAssignHotJobAtInboundRouter(
+        private bool _TryAssignHotJobAtRouter(
+            CraneNumber craneNumber,
             Levels level,
             PalletItem palletItem,
-            out int moveCommand,
-            out string extendedState)
+            out LoadItem loadItem)
         {
-            moveCommand = Constant.NoMoveCommand;
-            extendedState = string.Empty;
-
             _LockAll();
             try
             {
-//                 RemovePitPallet(palletItem.PalletID); // call this when returning true
-                return false;
+                loadItem = null;
+                return !_storage.AnyPickable(
+                        CraneNumber.None,
+                        palletItem.Sku)
+                    && _TryAssignHotJob(
+                        false,
+                        level,
+                        craneNumber,
+                        palletItem,
+                        out loadItem);
             }
             finally
             {
@@ -402,7 +869,61 @@ namespace Mss.Data
         }
 
         // Must be called from within _LockAll()
-        private bool _AssignPalletToCraneAtInboundRouter(
+        private bool _TryAssignHotJob(
+            bool calledByCrane,
+            Levels levels,
+            CraneNumber craneNumber,
+            PalletItem palletItem,
+            out LoadItem loadItem)
+        {
+            if (!_loadManager.TryGetPrimaryLoad(
+                _systemSettings.GetItem(),
+                out Load primaryLoad,
+                out Load secondaryLoad))
+            {
+                loadItem = null;
+                return false;
+            }
+            loadItem = null;
+            Load currentLoad = null;
+            if (_CanPickToLoad(primaryLoad.LoadLetter))
+            {
+                currentLoad = primaryLoad;
+                loadItem = currentLoad
+                    .GetLoadInPickSearchOrder()
+                    .Where(l => levels.IsFlagSet(l.LoadLevel))
+                    .FirstOrDefault(l =>
+                        l.Status == LoadItemStatus.Pickable
+                        && l.Broadcast.Sku == palletItem.Sku);
+            }
+            if (loadItem == null
+                && _CanPickToLoad(secondaryLoad.LoadLetter))
+            {
+                currentLoad = secondaryLoad;
+                loadItem = currentLoad
+                    .GetLoadInPickSearchOrder()
+                    .Where(l => levels.IsFlagSet(l.LoadLevel))
+                    .FirstOrDefault(l =>
+                        l.Status == LoadItemStatus.Pickable
+                        && l.Broadcast.Sku == palletItem.Sku);
+            }
+            if (loadItem != null)
+            {
+                loadItem.Status = calledByCrane
+                    ? LoadItemStatus.Picking
+                    : LoadItemStatus.Picked;
+                loadItem.Pallet = palletItem;
+                loadItem.Crane = craneNumber;
+                currentLoad[loadItem.NodeIndex] = loadItem;
+                _ = _upperPit.Remove(palletItem.PalletID);
+                _ = _lowerPit.Remove(palletItem.PalletID);
+            }
+            return loadItem != null;
+        }
+
+
+        // Must be called from within _LockAll()
+        private bool _AssignPalletToCraneAtRouter(
             CraneNumber craneNumber,
             Levels level,
             PalletItem palletItem,
@@ -485,9 +1006,45 @@ namespace Mss.Data
 
         #region Crane
 
+        public void FlagAsDuplicate(string palletID)
+        {
+            if (!palletID.ValidPalletID())
+            {
+                return;
+            }
+            _LockAll();
+            try
+            {
+                IEnumerable<BinItem> duplicates = _storage
+                    .Where(b => b.Pallet.PalletID == palletID);
+                if (duplicates.Count() > 1)
+                {
+                    foreach (BinItem binItem in duplicates)
+                    {
+                        binItem.BinStatus = BinStatus.OfflineDuplicate;
+                        _storage[binItem.NodeIndex] = binItem;
+                    }
+                }
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
         public void CleanUpAllocatedBins(CraneNumber craneNumber)
         {
             _storage.CleanUpAllocatedBins(craneNumber);
+        }
+
+        public void ClearStorageBinByPalletID(string palletID)
+        {
+            ClearStorageBinByPalletID(palletID, false);
+        }
+
+        public void ClearStorageBinByPalletID(string palletID, bool audit)
+        {
+            _storage.ClearBinByPalletID(palletID, audit);
         }
 
         public void CompleteStorageGetByLocation(int location)
@@ -864,6 +1421,174 @@ namespace Mss.Data
             loadItem = null;
             getCommand = Constant.NoCraneCommand;
             return false;
+        }
+
+        public bool TryAssignHotJobAtCrane(
+            CraneNumber craneNumber,
+            bool lowerOutboundClear,
+            bool upperOutboundClear,
+            PalletItem palletItem,
+            out LoadItem loadItem)
+        {
+            Levels levels = Levels.None;
+            if (lowerOutboundClear)
+            {
+                levels |= Levels.Lower;
+            }
+            if (upperOutboundClear)
+            {
+                levels |= Levels.Upper;
+            }
+            if (levels == Levels.None)
+            {
+                loadItem = null;
+                return false;
+            }
+            return _TryAssignHotJobAtCrane(
+                craneNumber,
+                levels,
+                palletItem,
+                out loadItem);
+        }
+
+        // Must be called from within _LockAll()
+        private bool _TryAssignHotJobAtCrane(
+            CraneNumber craneNumber,
+            Levels level,
+            PalletItem palletItem,
+            out LoadItem loadItem)
+        {
+            _LockAll();
+            try
+            {
+                loadItem = null;
+                return _storage.AnyPickable(
+                        CraneNumber.None,
+                        palletItem.Sku)
+                    && _TryAssignHotJob(
+                        true,
+                        level,
+                        craneNumber,
+                        palletItem,
+                        out loadItem);
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        //         private int _GetCraneHotJobPutCommand(
+        //             CraneNumber craneNumber,
+        //             Levels level)
+        //         {
+        //             int putCommand = Constant.NoCraneCommand;
+        //             switch (craneNumber)
+        //             {
+        //                 case CraneNumber.Crane1:
+        //                     putCommand = level == Levels.Upper
+        //                         ? Constant.Crane1UpperOutboundLocation
+        //                         : Constant.Crane1LowerOutboundLocation;
+        //                     break;
+        //                 case CraneNumber.Crane2:
+        //                     putCommand = level == Levels.Upper
+        //                         ? Constant.Crane2UpperOutboundLocation
+        //                         : Constant.Crane2LowerOutboundLocation;
+        //                     break;
+        //                 case CraneNumber.Crane3:
+        //                     putCommand = level == Levels.Upper
+        //                         ? Constant.Crane3UpperOutboundLocation
+        //                         : Constant.Crane3LowerOutboundLocation;
+        //                     break;
+        //                 case CraneNumber.Crane4:
+        //                     putCommand = level == Levels.Upper
+        //                         ? Constant.Crane4UpperOutboundLocation
+        //                         : Constant.Crane4LowerOutboundLocation;
+        //                     break;
+        //             }
+        //             return putCommand;
+        //         }
+
+        public bool TryGetRecoveryLoadItem(
+            string palletID,
+            out LoadItem loadItem)
+        {
+            _LockAll();
+            try
+            {
+                loadItem = null;
+                return _loadManager.TryGetLoadByPalletID(
+                    palletID,
+                    out _,
+                    out loadItem);
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        public bool TryCleanUpPitPalletOnCrane(
+            string palletID,
+            out PalletItem palletItem,
+            out BinItem binItem,
+            out CraneFunction craneFunction)
+        {
+            _LockAll();
+            try
+            {
+                if (_storage.TryFindBinByPalletID(
+                    palletID,
+                    out binItem))
+                {
+                    palletItem = binItem.Pallet;
+                    if (binItem.BinStatus == BinStatus.PutAllocated)
+                    {
+                        craneFunction = CraneFunction.Store;
+                        return true;
+                    }
+                    switch (palletItem.Status)
+                    {
+                        case PalletStatus.Purge:
+                            craneFunction = CraneFunction.PurgePick;
+                            return true;
+                        case PalletStatus.Hold:
+                            craneFunction = CraneFunction.Audit;
+                            return true;
+                        case PalletStatus.Stack:
+                            craneFunction = CraneFunction.StackPick;
+                            return true;
+                        default:
+                            craneFunction = CraneFunction.Audit;
+                            return true;
+                    }
+                }
+
+                if (!_upperPit.TryGetItem(palletID, out PitItem pitItem)
+                    && !_lowerPit.TryGetItem(palletID, out pitItem))
+                {
+                    craneFunction = CraneFunction.None;
+                    palletItem = null;
+                    return false;
+                }
+                palletItem = pitItem.Pallet;
+                switch (pitItem.PitCode)
+                {
+                    case PitCode.Assigned1:
+                    case PitCode.Assigned2:
+                    case PitCode.Assigned3:
+                    case PitCode.Assigned4:
+                        craneFunction = CraneFunction.Store;
+                        return true;
+                    default:
+                        craneFunction = CraneFunction.Audit;
+                        return true;
+                }
+            }
+            finally
+            {
+                _UnlockAll();
+            }
         }
 
         private bool _IsLoadEnabled(LoadLetter loadLetter)

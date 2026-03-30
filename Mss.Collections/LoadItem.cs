@@ -14,27 +14,40 @@ namespace Mss.Collections
     public partial class LoadItem : XDataItem
     {
         //!!! THIS VALUE SHOULD BE EITHER 4 OR 5
-        public static int RowsTowardDoors = 5;
+        public static int RowsTowardDoors = 4;
 
         public int LoadCommandOffset => LoadLetter == LoadLetter.A ? 0 : 6;
 
-        public static int GridRowFromNodeIndex(int nodeIndex)
+        public string Coordinates
+        {
+            get
+            {
+                return $"{LoadLetter}/Level:{LoadLevel}/Lane:{LoadLane}/Row:{LoadRow}";
+            }
+        }
+
+        public static int GridRowIndexFromNodeIndex(int nodeIndex)
         {
             XArgumentChecker.ThrowIfLessThanZero(nodeIndex, nameof(nodeIndex));
             XArgumentChecker.ThrowIfGreaterThanOrEqualTo(Constant.LoadSize, nodeIndex, nameof(nodeIndex));
 
-            int row = (nodeIndex % (Constant.LoadSize / 2) / 3) + 1;
+            int rowIndex = (nodeIndex % (Constant.LoadSize / 2) / 3) + 1;
 
-            //!!! USE THIS IF ROWS SHOULD BE NUMBERED 9-1 FROM THE DOORS!
-//             row = 10 - row;
+            //!!! USE THIS IF THERE ARE 9 ROWS ON THE SLUG/LOAD!
+            int rowCount = 10;
+            //!!! USE THIS IF THERE ARE 10 ROWS ON THE SLUG/LOAD!
+//             int rowCount = 11;
+            //!!! USE THIS IF THERE ARE 11 ROWS ON THE SLUG/LOAD!
+//             int rowCount = 12;
 
-            return row;
+            rowIndex = rowCount - rowIndex;
+            return rowIndex;
         }
 
         public static Levels LevelFromNodeIndex(int nodeIndex)
             => nodeIndex < Constant.LoadSize / 2
-                ? Levels.Lower
-                : Levels.Upper;
+                ? Levels.Upper
+                : Levels.Lower;
 
         public static int LaneFromNodeIndex(int nodeIndex)
         {
@@ -49,15 +62,19 @@ namespace Mss.Collections
             return lane;
         }
 
-        public static int RowFromNodeIndex(int nodeIndex)
+        public static int RowNumberFromNodeIndex(int nodeIndex)
         {
             XArgumentChecker.ThrowIfLessThanZero(nodeIndex, nameof(nodeIndex));
             XArgumentChecker.ThrowIfGreaterThanOrEqualTo(Constant.LoadSize, nodeIndex, nameof(nodeIndex));
 
-            int row = (nodeIndex % (Constant.LoadSize / 2) / 3) + 1;
+            int row = GridRowIndexFromNodeIndex(nodeIndex);
 
             //!!! USE THIS IF ROWS SHOULD BE NUMBERED 9-1 FROM THE DOORS!
-//             row = 10 - row;
+            row = 10 - row;
+            //!!! USE THIS IF ROWS SHOULD BE NUMBERED 10-1 FROM THE DOORS!
+//             row = 11 - row;
+            //!!! USE THIS IF ROWS SHOULD BE NUMBERED 11-1 FROM THE DOORS!
+//             row = 12 - row;
 
             return row;
         }
@@ -76,7 +93,9 @@ namespace Mss.Collections
 
         public int LoadLane => LaneFromNodeIndex(NodeIndex);
 
-        public int LoadRow => RowFromNodeIndex(NodeIndex);
+        public int LoadRow => RowNumberFromNodeIndex(NodeIndex);
+
+        public int LoadGridRowIndex => GridRowIndexFromNodeIndex(NodeIndex);
 
         public int TransferMoveCommand
             => TransferMoveCommandFromNodeIndex(LoadCommandOffset, NodeIndex);
@@ -207,6 +226,33 @@ namespace Mss.Collections
         //        {
         //            NodeIndex = nodeIndex;
         //        }
+
+        public string PickedOnText => PickedOn > Constant.BeginningOfTime
+            ? PickedOn.ToString(Constant.DateTimeFormat)
+            : string.Empty;
+
+        public string GetStateDetails(int leadingSpaceCount)
+        {
+            string spaces = string.Concat(Enumerable.Repeat(' ', leadingSpaceCount));
+
+            StringBuilder details = new StringBuilder();
+            _ = details.Append($"\r\n{spaces}Status:   {Status.ToText()}");
+            _ = details.Append($"\r\n{spaces}Crane:   {Crane.ToText()}");
+            _ = details.Append($"\r\n{spaces}Picked On:   {PickedOnText}");
+            _ = details.Append($"\r\n{spaces}Load Letter:   {LoadLetter.ToText()}");
+            _ = details.Append($"\r\n{spaces}Pick Mode:   {PickMode.ToText()}");
+            _ = details.Append($"\r\n{spaces}Pick Mode Pallet ID:   {PickModePalletID}");
+            _ = details.Append($"\r\n{spaces}Pick Mode Job ID:   {PickModeJobID}");
+
+            _ = details.Append($"\r\n{spaces}Pallet:");
+            _ = details.Append(Pallet.GetStateDetails(leadingSpaceCount * 2));
+
+            _ = details.Append($"\r\n{spaces}Broadcast:");
+            _ = details.Append(Broadcast.GetStateDetails(leadingSpaceCount * 2));
+
+            return details.ToString();
+        }
+
     }
 
 }

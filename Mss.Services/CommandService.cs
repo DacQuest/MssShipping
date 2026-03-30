@@ -23,6 +23,9 @@ namespace Mss.Services
         private UpperPit _upperPit;
         private SystemSettings _systemSettings;
         private Broadcast _broadcast;
+        private HoldCodes _holdCodes;
+        private LowerRecirc _lowerRecirc;
+        private UpperRecirc _upperRecirc;
         private LoadA _loadA;
         private LoadB _loadB;
         private DataLayer _dataLayer;
@@ -37,6 +40,9 @@ namespace Mss.Services
                 out _upperPit,
                 out _systemSettings,
                 out _broadcast,
+                out _holdCodes,
+                out _lowerRecirc,
+                out _upperRecirc,
                 out _loadA,
                 out _loadB);
 

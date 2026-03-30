@@ -76,10 +76,6 @@ namespace Mss.Collections
             }
         }
 
-
-
-
-
         public void RollbackPick(string palletID)
         {
             _ = Lock();

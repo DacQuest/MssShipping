@@ -171,10 +171,10 @@ namespace Mss.Operations
             set => SetVariable(SemiAutoPutLocationName, value);
         }
 
-        protected string CurrentPalletName = "Current Pallet";
+        protected string CurrentPalletName = "Pallet";
         protected PalletItem CurrentPallet { get; set; }
 
-        protected string CurrentLoadItemName = "Current Load Item";
+        protected string CurrentLoadItemName = "Load Item";
         protected LoadItem CurrentLoadItem { get; set; }
 
         private Storage _storage;
@@ -182,6 +182,9 @@ namespace Mss.Operations
         private UpperPit _upperPit;
         private SystemSettings _systemSettings;
         private Broadcast _broadcast;
+        private HoldCodes _holdCodes;
+        private LowerRecirc _lowerRecirc;
+        private UpperRecirc _upperRecirc;
         private LoadA _loadA;
         private LoadB _loadB;
 
@@ -472,6 +475,9 @@ namespace Mss.Operations
                 out _upperPit,
                 out _systemSettings,
                 out _broadcast,
+                out _holdCodes,
+                out _lowerRecirc,
+                out _upperRecirc,
                 out _loadA,
                 out _loadB);
 
@@ -572,7 +578,7 @@ namespace Mss.Operations
             _lowerPit.DataItemChanged += _LowerPit_DataItemChanged;
             _upperPit.DataItemChanged += _UpperPit_DataItemChanged;
             _systemSettings.DataItemChanged += _SystemSettings_DataItemChanged;
-            _broadcast.DataItemChanged += _Broadcast_DataItemChanged;
+//             _broadcast.DataItemChanged += _Broadcast_DataItemChanged;
             _loadA.DataItemChanged += _LoadA_DataItemChanged;
             _loadB.DataItemChanged += _LoadB_DataItemChanged;
 
@@ -590,39 +596,24 @@ namespace Mss.Operations
         protected override void BuildStateDetails()
         {
             base.BuildStateDetails();
-            if (CurrentPallet != null)
-            {
-                SetStateDetail(
-                    CurrentPalletName,
-                    CurrentPallet.GetPalletStateDetails(Constant.OperationDetailsLeadingSpaceCount),
-                    false);
-            }
-            else
-            {
-                RemoveStateDetail(CurrentPalletName, false);
-            }
+
+            RemoveStateDetail(CurrentPalletName, false);
+            RemoveStateDetail(CurrentLoadItemName, false);
+
             if (CurrentLoadItem != null)
             {
                 SetStateDetail(
                     CurrentLoadItemName,
-                    CurrentLoadItem.GetLoadItemStateDetails(Constant.OperationDetailsLeadingSpaceCount),
+                    CurrentLoadItem.GetStateDetails(Constant.OperationDetailsLeadingSpaceCount),
                     false);
             }
-            else
+            else if (CurrentPallet != null)
             {
-                RemoveStateDetail(CurrentLoadItemName, false);
+                SetStateDetail(
+                    CurrentPalletName,
+                    CurrentPallet.GetStateDetails(Constant.OperationDetailsLeadingSpaceCount),
+                    false);
             }
-//             if (CurrentPendingRequirementsItem != null)
-//             {
-//                 SetStateDetail(
-//                     CurrentPendingRequirementsItemName,
-//                     CurrentPendingRequirementsItem.GetPendingRequirementsStateDetails(Constant.OperationDetailsLeadingSpaceCount),
-//                     false);
-//             }
-//             else
-//             {
-//                 RemoveStateDetail(CurrentPendingRequirementsItemName, false);
-//             }
         }
 
         protected override void DoRewind()
@@ -717,17 +708,18 @@ namespace Mss.Operations
         }
 
         protected bool FetchPitPallet(
+            Levels level,
             string palletID,
             out PalletItem palletItem,
             out string fault)
         {
-            if (!DataLayer.TryGetPitPallet(palletID, out palletItem))
+            if (DataLayer.TryGetPitItem(level, palletID, out PitItem pitItem))
             {
-                return MesInterface.TryFetchPalletItem(palletID, out palletItem, out fault);
+                palletItem = pitItem.Pallet;
+                fault = string.Empty;
+                return true;
             }
-//             DataLayer.RemovePitPallet(palletID);
-            fault = null;
-            return true;
+            return MesInterface.TryFetchPalletItem(palletID, out palletItem, out fault);
         }
 
         protected bool QueryMesPallet(
@@ -782,16 +774,16 @@ namespace Mss.Operations
         {
             _startup = false;
 
-            if (!QueryMesPallet(PalletID, out PalletItem palletItem, out string fault))
+            if (!QueryMesPallet(PalletID, out PalletItem mesPalletItem, out string fault))
             {
                 TelemetrySetCraneFaulted(fault);
             }
 
-            if (palletItem.IsStack)
+            if (mesPalletItem.IsStack)
             {
                 DataLayer.ClearStorageBinByPalletID(PalletID);
                 DataLayer.RemovePitPallet(PalletID);
-                CurrentPallet = palletItem;
+                CurrentPallet = mesPalletItem;
                 CurrentCraneFunction = CraneFunction.Store;
             }
             else if (DataLayer.TryGetRecoveryLoadItem(
@@ -806,7 +798,7 @@ namespace Mss.Operations
             }
             else if (DataLayer.TryCleanUpPitPalletOnCrane(
                 PalletID,
-                out palletItem,
+                out PalletItem palletItem,
                 out BinItem binItem,
                 out CraneFunction craneFunction))
             {
@@ -817,7 +809,7 @@ namespace Mss.Operations
                 else
                 {
                     GetCommand = binItem.BinStatus == BinStatus.PutAllocated
-                        ? InboundLocation
+                        ? UpperInboundLocation
                         : binItem.Location;
                     CurrentPallet = binItem.Pallet;
                 }
@@ -827,7 +819,7 @@ namespace Mss.Operations
             else
             {
                 ClearGetLocationError();
-                CurrentPallet = palletItem;
+                CurrentPallet = mesPalletItem;
                 CurrentCraneFunction = CraneFunction.Audit;
             }
 
@@ -945,7 +937,14 @@ namespace Mss.Operations
             if (SemiAutoGetLocation == LowerInboundLocation
                 || SemiAutoGetLocation == UpperInboundLocation)
             {
-                if (!FetchPitPallet(PalletID, out PalletItem palletItem, out string fault))
+                Levels level = SemiAutoGetLocation == UpperInboundLocation
+                    ? Levels.Upper
+                    : Levels.Lower;
+                if (!FetchPitPallet(
+                    level,
+                    PalletID,
+                    out PalletItem palletItem,
+                    out string fault))
                 {
                     TelemetrySetCraneFaulted(fault);
                     return;
@@ -1409,26 +1408,29 @@ namespace Mss.Operations
             string fault;
             switch (CurrentCraneFunction)
             {
-                case CraneFunction.QAStore:
-                    if (!QueryMesPallet(PalletID, out palletItem, out fault))
-                    {
-                        TelemetrySetCraneFaulted(fault);
-                        return false;
-                    }
-                    CurrentPallet = palletItem;
-                    DataLayer.MarkDuplicatesForAudit(CurrentPallet.PalletID);
-                    break;
+//                 case CraneFunction.QAStore:
+//                     if (!QueryMesPallet(PalletID, out palletItem, out fault))
+//                     {
+//                         TelemetrySetCraneFaulted(fault);
+//                         return false;
+//                     }
+//                     CurrentPallet = palletItem;
+//                     DataLayer.MarkDuplicatesForAudit(CurrentPallet.PalletID);
+//                     break;
                 case CraneFunction.Store:
-                    if (!FetchPitPallet(PalletID, out palletItem, out fault))
+                    Levels level = GetCommand % 2 == 0
+                        ? Levels.Upper
+                        : Levels.Lower;
+                    if (!FetchPitPallet(level, PalletID, out palletItem, out fault))
                     {
                         TelemetrySetCraneFaulted(fault);
                         return false;
                     }
                     CurrentPallet = palletItem;
-                    DataLayer.MarkDuplicatesForAudit(CurrentPallet.PalletID);
+                    DataLayer.FlagAsDuplicate(CurrentPallet.PalletID);
                     break;
                 case CraneFunction.Audit:
-                    if (_systemSettings.ForcePalletDataQueryOnAudit
+                    if (_systemSettings.ForcePalletDataMesQueryOnAudit
                         || CurrentPallet == null
                         || (CurrentPallet != null && CurrentPallet.PalletID != PalletID))
                     {
@@ -1440,9 +1442,12 @@ namespace Mss.Operations
                         if (CurrentPallet != null && CurrentPallet.PalletID == PalletID)
                         {
                             // Preserve important data points
-                            palletItem.Comment = CurrentPallet.Comment;
+                            if (palletItem.Comment.IsNullOrWhiteSpace())
+                            {
+                                palletItem.Comment = CurrentPallet.Comment;
+                            }
                             if (CurrentPallet.Status == PalletStatus.Hold
-                                || CurrentPallet.Status == PalletStatus.QAPick)
+                                || CurrentPallet.Status == PalletStatus.Purge)
                             {
                                 palletItem.Status = CurrentPallet.Status;
                             }
@@ -1450,14 +1455,13 @@ namespace Mss.Operations
                         CurrentPallet = palletItem;
                     }
                     DataLayer.CompleteStorageGetByLocation(GetCommand);
-                    DataLayer.MarkDuplicatesForAudit(CurrentPallet.PalletID);
+                    DataLayer.FlagAsDuplicate(CurrentPallet.PalletID);
                     break;
-                case CraneFunction.QAPick:
+                case CraneFunction.PurgePick:
                     if (PalletID != CurrentPallet.PalletID)
                     {
-                        ClearQAPickInProgress();
-                        DataLayer.MarkDuplicatesForAudit(CurrentPallet.PalletID);
-                        DataLayer.MarkDuplicatesForAudit(PalletID);
+                        DataLayer.FlagAsDuplicate(CurrentPallet.PalletID);
+                        DataLayer.FlagAsDuplicate(PalletID);
                         if (!QueryMesPallet(PalletID, out palletItem, out fault))
                         {
                             TelemetrySetCraneFaulted(fault);
@@ -1473,11 +1477,11 @@ namespace Mss.Operations
                     }
                     DataLayer.CompleteStorageGetByLocation(GetCommand);
                     break;
-                case CraneFunction.EmptyPick:
+                case CraneFunction.StackPick:
                     if (PalletID != CurrentPallet.PalletID)
                     {
-                        DataLayer.MarkDuplicatesForAudit(CurrentPallet.PalletID);
-                        DataLayer.MarkDuplicatesForAudit(PalletID);
+                        DataLayer.FlagAsDuplicate(CurrentPallet.PalletID);
+                        DataLayer.FlagAsDuplicate(PalletID);
                         if (!QueryMesPallet(PalletID, out palletItem, out fault))
                         {
                             TelemetrySetCraneFaulted(fault);
@@ -1501,8 +1505,8 @@ namespace Mss.Operations
                     }
                     if (PalletID != CurrentPallet.PalletID)
                     {
-                        DataLayer.MarkDuplicatesForAudit(CurrentPallet.PalletID);
-                        DataLayer.MarkDuplicatesForAudit(PalletID);
+                        DataLayer.FlagAsDuplicate(CurrentPallet.PalletID);
+                        DataLayer.FlagAsDuplicate(PalletID);
                         XSystemEvent.Publish(
                             CraneNumber.ToText(),
                             XSystemEventLevel.Error,
@@ -1531,7 +1535,6 @@ namespace Mss.Operations
                     return false;
             }
             DataLayer.RemovePitPallet(CurrentPallet.PalletID);
-            DataLayer.RemoveEmptyPalletBufferPallet(CurrentPallet.PalletID);
             TelemetrySetCurrentState(AssigningPutTaskState, string.Empty);
             return true;
         }
@@ -1597,14 +1600,16 @@ namespace Mss.Operations
                     DataLayer.CompleteStorageGetByLocation(GetCommand);
                     if (DataLayer.TryAssignHotJobAtCrane(
                         CraneNumber,
-                        CurrentPallet,
                         LowerOutboundClear,
                         UpperOutboundClear,
+                        CurrentPallet,
                         out LoadItem loadItem))
                     {
+                        DataLayer.RemovePitPallet(CurrentPallet.PalletID);
                         CurrentCraneFunction = CraneFunction.LoadPick;
                         CurrentLoadItem = loadItem;
-                        putCommand = OutboundLocation(loadItem.Level);
+                        CurrentPallet = CurrentLoadItem.Pallet;
+                        putCommand = OutboundLocation(CurrentLoadItem.LoadLevel);
                         extendedState = $"({Constant.PalletTypeHotJob})  Putting Hot Job Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
                         PublishStateDetails();
                     }
@@ -1651,7 +1656,7 @@ namespace Mss.Operations
                     extendedState = $"({Constant.PalletTypeStack})  Putting Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
                     break;
                 case CraneFunction.LoadPick:
-                    putCommand = OutboundLocation(CurrentLoadItem.Level);
+                    putCommand = OutboundLocation(CurrentLoadItem.LoadLevel);
                     extendedState = $"({Constant.PalletTypeLoad})  Putting Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
                     break;
                 case CraneFunction.None:
@@ -1779,7 +1784,7 @@ namespace Mss.Operations
                 case CraneFunction.Store:
                 case CraneFunction.Audit:
                     DataLayer.CompleteStoragePutByLocation(PutCommand);
-                    DataLayer.MarkDuplicatesForAudit(CurrentPallet.PalletID, BinItem.LocationToNodeIndex(PutCommand));
+                    DataLayer.FlagAsDuplicate(CurrentPallet.PalletID);
                     break;
                 case CraneFunction.LoadPick:
                     if (!DataLayer.TrySetPicked(
@@ -2074,13 +2079,13 @@ namespace Mss.Operations
             }
         }
 
-        private void _Broadcast_DataItemChanged(object sender, XDataItemChangedEventArgs e)
-        {
-            if (CurrentState.Name == AwaitingGetTaskState)
-            {
-                RunCurrentStateHandler();
-            }
-        }
+//         private void _Broadcast_DataItemChanged(object sender, XDataItemChangedEventArgs e)
+//         {
+//             if (CurrentState.Name == AwaitingGetTaskState)
+//             {
+//                 RunCurrentStateHandler();
+//             }
+//         }
 
         private void _LoadA_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
@@ -2116,10 +2121,10 @@ namespace Mss.Operations
             {
                 _systemSettings.DataItemChanged -= _SystemSettings_DataItemChanged;
             }
-            if (_broadcast != null)
-            {
-                _broadcast.DataItemChanged -= _Broadcast_DataItemChanged;
-            }
+//             if (_broadcast != null)
+//             {
+//                 _broadcast.DataItemChanged -= _Broadcast_DataItemChanged;
+//             }
             if (_loadA != null)
             {
                 _loadA.DataItemChanged -= _LoadA_DataItemChanged;

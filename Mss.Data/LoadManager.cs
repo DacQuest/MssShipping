@@ -192,6 +192,85 @@ namespace Mss.Data
             return primaryLoad != null;
         }
 
+        internal void SetNextPickable(
+            SystemSettingsItem systemSettingsItem,
+            Load thisLoad,
+            Levels level)
+        {
+//             Lock();
+//             try
+//             {
+//                 Load otherLoad;
+//                 bool isPrimaryLoad = true;
+//                 if (TryGetPrimaryLoad(
+//                     systemSettingsItem,
+//                     out Load primaryLoad,
+//                     out Load secondaryLoad))
+//                 {
+//                     isPrimaryLoad = primaryLoad.LoadLetter == thisLoad.LoadLetter;
+//                     otherLoad = isPrimaryLoad ? secondaryLoad : primaryLoad;
+//                 }
+//                 else
+//                 {
+//                     otherLoad = GetOtherLoad(thisLoad);
+//                 }
+//                 int activeLaneCount = thisLoad.GetActiveLanes(level);
+//                 int activePalletCount = thisLoad.GetActivePallets(level);
+//                 int otherActivePalletCount = otherLoad.GetActivePallets(level);
+//                 int totalActivePalletCount = activePalletCount + otherActivePalletCount;
+// 
+//                 if (totalActivePalletCount >= Constant.MaxActivePalletsPerLevel + Constant.MaxPalletsPerRecirc)
+//                 {
+//                     // Nothing can be done
+//                     return false;
+//                 }
+//                 else if (activePalletCount >= Constant.MaxActivePalletsPerLoadLevel + Constant.MaxPalletsPerRecirc)
+//                 {
+//                     // Nothing can be done
+//                     return false;
+//                 }
+// 
+// 
+// 
+// 
+//             }
+//             finally
+//             {
+//                 Unlock();
+//             }
+// 
+//             if (isPrimaryLoad)
+//             {
+// 
+//             }
+//             else
+//             {
+// 
+//             }
+// 
+// 
+//             int eligibleLaneCount;
+//             for (int index = 0; index < upperLevelIndexes.Length; index++)
+//             {
+//                 int loadIndex = upperLevelIndexes[index];
+//                 LoadItemStatus status = load[loadIndex].Status;
+//                 while (status >= LoadItemStatus.Pickable)
+//                 {
+//                     loadIndex = Constant.NextInLaneLoadIndex[loadIndex];
+// 
+//                 }
+//             }
+        }
+
+//         private int GetActiveCounts(
+//             Load load,
+//             Levels level,
+//             out)
+//         {
+// 
+//         }
+
+
         internal void GetPickableLoadItems(
             Load primaryLoad,
             Load secondaryLoad,

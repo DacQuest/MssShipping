@@ -98,11 +98,11 @@ namespace Mss.Views
         {
             if (_chkOfflineDuplicate.Checked)
             {
-                BinStatuses |= BinStatus.OfflineDuplicatePalletID;
+                BinStatuses |= BinStatus.OfflineDuplicate;
             }
             else
             {
-                BinStatuses &= ~BinStatus.OfflineDuplicatePalletID;
+                BinStatuses &= ~BinStatus.OfflineDuplicate;
             }
             _EnableOKButton();
         }

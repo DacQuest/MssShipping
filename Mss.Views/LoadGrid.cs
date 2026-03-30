@@ -319,7 +319,7 @@ namespace Mss.Views
 
         public static Position ConvertToGridPosition(int loadIndex)
         {
-            int row = 10 - LoadItem.RowFromNodeIndex(loadIndex) + 1;
+            int row = 10 - LoadItem.RowNumberFromNodeIndex(loadIndex) + 1;
             int col = LoadItem.LaneFromNodeIndex(loadIndex);
 
 
@@ -355,26 +355,26 @@ namespace Mss.Views
 
                 contextMenuReprint.Visible = _allowLabelReprint && labelReprintPossible;
                 contextMenuEditItem.Visible = _allowItemEdit;
-                contextMenuRollback.Visible = _allowRollback
-                    && ((loadItem.Status < LoadItemStatus.Sequenced && loadItem.Status > LoadItemStatus.Pickable)
-                    || (loadItem.Status3rd < LoadItemStatus.Sequenced && loadItem.Status3rd > LoadItemStatus.Pickable));
+//                 contextMenuRollback.Visible = _allowRollback
+//                     && ((loadItem.Status < LoadItemStatus.Sequenced && loadItem.Status > LoadItemStatus.Pickable)
+//                     || (loadItem.Status3rd < LoadItemStatus.Sequenced && loadItem.Status3rd > LoadItemStatus.Pickable));
 
                 // Insert Empty
-                bool allowInsertEmptyPallet = _allowInsertEmpty
-                    && (status == LoadItemStatus.Pending || status == LoadItemStatus.Pickable)
-                    && loadItem.Shortage;
-                contextMenuInsertEmptyPallet.Text = loadItem.InsertEmpty
-                    ? "DO NOT Insert Empty Pallet"
-                    : "Insert Empty Pallet";
-                contextMenuInsertEmptyPallet.Visible = allowInsertEmptyPallet;
+//                 bool allowInsertEmptyPallet = _allowInsertEmpty
+//                     && (status == LoadItemStatus.Pending || status == LoadItemStatus.Pickable)
+//                     && loadItem.Shortage;
+//                 contextMenuInsertEmptyPallet.Text = loadItem.InsertEmpty
+//                     ? "DO NOT Insert Empty Pallet"
+//                     : "Insert Empty Pallet";
+//                 contextMenuInsertEmptyPallet.Visible = allowInsertEmptyPallet;
 
                 // Show Context Menu
-                if (allowInsertEmptyPallet
-                    || (_allowLabelReprint && labelReprintPossible)
-                    || _allowItemEdit)
-                {
-                    contextMenu.Show(this, e.X, e.Y);
-                }
+//                 if (allowInsertEmptyPallet
+//                     || (_allowLabelReprint && labelReprintPossible)
+//                     || _allowItemEdit)
+//                 {
+//                     contextMenu.Show(this, e.X, e.Y);
+//                 }
             }
         }
 
@@ -388,7 +388,7 @@ namespace Mss.Views
             {
                 XMessaging.Publish(
                     ReprintLabelMessageData.ReprintLabelRequest,
-                    new ReprintLabelMessageData(loadItem.NodeIndex, _loadName),
+                    new ReprintLabelMessageData(loadItem.LoadLetter, loadItem.NodeIndex),
                     XMessageScopes.All,
                     this);
             }
@@ -405,7 +405,7 @@ namespace Mss.Views
             {
                 XMessaging.Publish(
                     RollbackLoadItemMessageData.RollbackRequest,
-                    new RollbackLoadItemMessageData(loadItem.NodeIndex, _loadName),
+                    new RollbackLoadItemMessageData(loadItem.LoadLetter, loadItem.NodeIndex),
                     XMessageScopes.All,
                     this);
             }
@@ -436,30 +436,30 @@ namespace Mss.Views
             editForm.Dispose();
         }
 
-        private void _InsertEmptyPallet(int loadIndex)
-        {
-            LoadItem loadItem = _loadProxy.Items[loadIndex];
-            SupervisorAuthorizationAction action = loadItem.InsertEmpty
-                ? SupervisorAuthorizationAction.CancelInsertEmpty
-                : SupervisorAuthorizationAction.InsertEmpty;
-            AuthorizationForm form = new AuthorizationForm(action);
-            if (form.ShowDialog(this) == DialogResult.OK)
-            {
-                LoadItem editedItem = XDataItem.Clone(loadItem);
-                editedItem.InsertEmpty = !editedItem.InsertEmpty;
-                if (!_loadProxy.SafeSetAt(
-                    loadIndex,
-                    loadItem,
-                    ref editedItem))
-                {
-                    XMessageBox.Show(
-                        this,
-                        "Edit failed because the original Load Item was stale.",
-                        "Edit Failed");
-                }
-            }
-            form.Dispose();
-        }
+//         private void _InsertEmptyPallet(int loadIndex)
+//         {
+//             LoadItem loadItem = _loadProxy.Items[loadIndex];
+//             SupervisorAuthorizationAction action = loadItem.InsertEmpty
+//                 ? SupervisorAuthorizationAction.CancelInsertEmpty
+//                 : SupervisorAuthorizationAction.InsertEmpty;
+//             AuthorizationForm form = new AuthorizationForm(action);
+//             if (form.ShowDialog(this) == DialogResult.OK)
+//             {
+//                 LoadItem editedItem = XDataItem.Clone(loadItem);
+//                 editedItem.InsertEmpty = !editedItem.InsertEmpty;
+//                 if (!_loadProxy.SafeSetAt(
+//                     loadIndex,
+//                     loadItem,
+//                     ref editedItem))
+//                 {
+//                     XMessageBox.Show(
+//                         this,
+//                         "Edit failed because the original Load Item was stale.",
+//                         "Edit Failed");
+//                 }
+//             }
+//             form.Dispose();
+//         }
 
         private void _ContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -476,20 +476,20 @@ namespace Mss.Views
             {
                 _Rollback(_clickLoadIndex);
             }
-            else if (ReferenceEquals(e.ClickedItem, contextMenuInsertEmptyPallet))
-            {
-                _InsertEmptyPallet(_clickLoadIndex);
-            }
+//             else if (ReferenceEquals(e.ClickedItem, contextMenuInsertEmptyPallet))
+//             {
+//                 _InsertEmptyPallet(_clickLoadIndex);
+//             }
         }
 
         private void _flashTimer_Tick(object sender, EventArgs e)
         {
-            IEnumerable<LoadItem> delayedItems = _loadProxy.Items.Where(l => l.Level == _level && l.Delayed(_flashDelayedPalletTimeoutSeconds));
-            _flashInverted = !_flashInverted;
-            foreach (LoadItem loadItem in delayedItems)
-            {
-                RefreshItem(loadItem, true);
-            }
+//             IEnumerable<LoadItem> delayedItems = _loadProxy.Items.Where(l => l.Level == _level && l.Delayed(_flashDelayedPalletTimeoutSeconds));
+//             _flashInverted = !_flashInverted;
+//             foreach (LoadItem loadItem in delayedItems)
+//             {
+//                 RefreshItem(loadItem, true);
+//             }
         }
     }
 }

@@ -131,6 +131,18 @@
     <Compile Include="QuickBinFillForm.designer.cs">
       <DependentUpon>QuickBinFillForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ReprintLabelConfirmationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReprintLabelConfirmationForm.designer.cs">
+      <DependentUpon>ReprintLabelConfirmationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RollbackConfirmationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RollbackConfirmationForm.designer.cs">
+      <DependentUpon>RollbackConfirmationForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SearchResultsGrid.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -1,5 +1,6 @@
 ﻿using DacQuest.DFX.Core;
 using DacQuest.DFX.Core.Configuration;
+using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Core.SystemEvents;
 using Mss.Collections;
 using Mss.Common;
@@ -10,7 +11,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Mss.Data
 {
@@ -18,6 +22,18 @@ namespace Mss.Data
     {
         public static string FetchPalletStoredProcedureName = "SHIPSP_Pallet_Info";
 
+        public static bool TryFetchPalletItem(
+            string palletID,
+            out PalletItem palletItem,
+            out string fault)
+        {
+            return TryFetchPalletItem(
+                palletID,
+                false,
+                out _,
+                out palletItem,
+                out fault);
+        }
         public static bool TryFetchPalletItem(
             string palletID,
             bool requestDestination,
@@ -78,10 +94,13 @@ namespace Mss.Data
                     {
                         connection.Open();
                         _ = command.ExecuteNonQuery();
+                        PalletStatus status = (int)statusParam.Value == -1
+                            ? PalletStatus.Invalid
+                            : (PalletStatus)statusParam.Value;
                         palletItem = new PalletItem
                         {
                             PalletID = palletID,
-                            Status = (PalletStatus)statusParam.Value,
+                            Status = status,
                             JobID = (int)jobIDParam.Value,
                             Sku = (string)skuParam.Value,
                             HoldCode = (int)holdCodeParam.Value,
@@ -106,32 +125,22 @@ namespace Mss.Data
         }
 
         // Destructive! Cannot be called from anywhere but MesDataService._ProcessBroadcast()
-        internal async static Task<bool> FetchBroadcast(
+        public static bool TryFetchBroadcast(
             int maxBroadcastNumbersToFetch,
-            int lastRotationReleased,
-            Ref<int> largestRotationReceived,
-            Out<List<BroadcastItem>> broadcastItems)
+            string lastCsnReleased,
+            int largestRotationReceived,
+            out List<BroadcastItem> broadcastItems)
         {
-            broadcastItems.Value = new List<BroadcastItem>();
-
-
+            broadcastItems = new List<BroadcastItem>();
 
             BroadcastRepository broadcastRepository = new BroadcastRepository(_Connection);
-            Out<IEnumerable<BroadcastQueue>> rawBroadcasts = new Out<IEnumerable<BroadcastQueue>>();
-            if (!await broadcastRepository.FetchRawBroadcastsAsync(rawBroadcasts))
+            if (!broadcastRepository.TryFetchRawBroadcasts(out IEnumerable<BroadcastQueue> rawBroadcasts))
             {
+                broadcastItems = null;
                 return false;
             }
 
-
-//             using (SqlConnection connection = _Connection)
-//             {
-//                 BroadcastRepository broadcastRepository = new BroadcastRepository(connection);
-//                 if (!broadcastRepository.FetchRawBroadcast(out List<Broadcast_Queue> broadcastQueue))
-//                 {
-//                     return false;
-//                 }
-            foreach (BroadcastQueue rawBroadcast in rawBroadcasts.Value)
+            foreach (BroadcastQueue rawBroadcast in rawBroadcasts.Take(maxBroadcastNumbersToFetch))
             {
                 BroadcastHeader broadcastHeader = rawBroadcast.BroadcastHeader;
                 if (broadcastHeader == null)
@@ -140,7 +149,7 @@ namespace Mss.Data
                         nameof(MesInterface),
                         XSystemEventLevel.Error,
                         $"MES Broadcast Header ID {rawBroadcast.HeaderID} has no header data.");
-                    _ = broadcastRepository.Delete(rawBroadcast);
+//                     _ = broadcastRepository.Delete(rawBroadcast);
                     continue;
                 }
                 List<BroadcastDetail> broadcastDetails = broadcastHeader.BroadcastDetails;
@@ -152,20 +161,21 @@ namespace Mss.Data
                         nameof(MesInterface),
                         XSystemEventLevel.Error,
                         $"MES BroadcastHeader {broadcastHeader.HeaderID} has an invalid detail count.");
-                    broadcastRepository.Delete(rawBroadcast);
+//                     _ = broadcastRepository.Delete(rawBroadcast);
                     continue;
                 }
 
                 bool outOfOrder = false;
+                int lastRotationReleased = int.Parse(lastCsnReleased.Left(lastCsnReleased.Length - 1));
                 int rotationNumber = broadcastHeader.Rotation;
-                if (rotationNumber != largestRotationReceived.Value + 1)
+                if (rotationNumber != largestRotationReceived + 1)
                 {
-                    if (rotationNumber < lastRotationReleased)
+                    if (rotationNumber <= lastRotationReleased)
                     {
                         XSystemEvent.Publish(
                             nameof(MesInterface),
                             XSystemEventLevel.Warning,
-                            $"Received Rotation Number {rotationNumber} which is smaller than LastRotationReleased {lastRotationReleased}. Discarding broadcast record.");
+                            $"Received a Rotation Number {rotationNumber} which is smaller than or equal to the rotation of the LastCsnReleased {lastCsnReleased}. Broadcast record discarded.");
                         continue;
                     }
                     outOfOrder = true;
@@ -185,154 +195,166 @@ namespace Mss.Data
 //                             $"Millionth Broadcast Number Boundary Crossed ({broadcastNumber}).");
 //                     }
 
-                    if (rotationNumber > largestRotationReceived.Value)
+                    if (rotationNumber > largestRotationReceived)
                     {
-                        if (Math.Abs(largestRotationReceived.Value - rotationNumber) > Constant.MaxBroadcastSkip)
+                        if (Math.Abs(largestRotationReceived - rotationNumber) > Constant.MaxBroadcastSkip)
                         {
-                            broadcastRepository.MarkAsProcessed(rawBroadcast);
+//                             broadcastRepository.MarkAsProcessed(rawBroadcast);
                             XSystemEvent.Publish(
                                 nameof(MesInterface),
                                 XSystemEventLevel.Error,
                                 $"Received Rotation Number {rotationNumber} which is more than {Constant.MaxBroadcastSkip} larger than Largest Rotation Received. Broadcast record not processed.");
-                            return broadcastItems.Value.Count > 0;
+                            return broadcastItems.Count > 0;
                         }
                     }
                 }
 
                 if (outOfOrder)
                 {
-                    int startRotation = largestRotationReceived.Value + 1;
+                    int startRotation = largestRotationReceived + 1;
                     int endRotation = rotationNumber;
                     for (int missingRotationNumber = startRotation;
                         missingRotationNumber < endRotation;
-                        missingRotationNumber += 1)
+                        missingRotationNumber++)
                     {
                         BroadcastStatus status = BroadcastStatus.Missing;
-                        int modRotationNumber = rotationNumber % 10000;
-                        if (modRotationNumber == 0 || modRotationNumber == 9999)
+                        int mod = missingRotationNumber % 10000;
+                        if (mod == 0 || mod > Constant.MaxRotation)
                         {
                             status = BroadcastStatus.Skip;
                         }
 
                         BroadcastItem missingBroadcastItem = new BroadcastItem
                         {
+                            RotationNumber = missingRotationNumber,
                             Status = status,
-                            Csn = $"{missingRotationNumber.ToString(Constant.BroadcastNumberTextFormat)}{Constant.CsnDelimiter}{(int)VehicleRow.Row1}",
-                            InternalSequenceNumber = Broadcast.GetRow1InternalSequenceNumber(missingRotationNumber),
+                            Csn = _FormatCsn(missingRotationNumber, VehicleRow.Row1),
+                            VehicleSku = string.Empty,
+                            Sku = string.Empty,
+                            Vin = string.Empty,
+                            PickMode = PickMode.BySku,
+                            PickModeValue = string.Empty,
                             ReceivedOn = DateTime.Now,
-                            ModelCode = string.Empty
+                            VehicleRowCount = 0
                         };
                         broadcastItems.Add(missingBroadcastItem);
-
-                        BroadcastItem missing2ndBroadcastItem = new BroadcastItem
-                        {
-                            Status = status,
-                            Csn = $"{missingRotationNumber.ToString(Constant.BroadcastNumberTextFormat)}{Constant.CsnDelimiter}{(int)VehicleRow.Row2}",
-                            InternalSequenceNumber = Broadcast.GetRow2InternalSequenceNumber(missingRotationNumber),
-                            ReceivedOn = DateTime.Now,
-                            ModelCode = string.Empty
-                        };
-                        broadcastItems.Add(missing2ndBroadcastItem);
                     }
                 }
 
-                string modelCode = string.Empty;
-                if (!string.IsNullOrWhiteSpace(broadcastHeader.Model_Code))
-                {
-                    modelCode = broadcastHeader.Model_Code;
-                }
+                BroadcastHeader header = rawBroadcast.BroadcastHeader;
+                BroadcastDetail detail = header.BroadcastDetails.Single(d => d.VehicleRow == VehicleRow.Row1);
+                
                 BroadcastItem row1BroadcastItem = new BroadcastItem
                 {
-                    Csn = $"{broadcastNumber.ToString(Constant.BroadcastNumberTextFormat)}{Constant.CsnDelimiter}{(int)VehicleRow.Row1}",
-                    InternalSequenceNumber = Broadcast.GetRow1InternalSequenceNumber(broadcastNumber),
+                    RotationNumber = header.Rotation,
                     Status = BroadcastStatus.OK,
-                    Sku = broadcastDetails
-                        .Where(bd => bd.Item_Type == Constant.Row1SkuCode)
-                        .Select(bd => bd.Item_Nbr)
-                        .FirstOrDefault(),
-                    Vin = broadcastHeader.VIN_Ref_Nbr,
+                    Csn = _FormatCsn(header.Rotation, VehicleRow.Row1),
+                    VehicleSku = header.VehicleSku,
+                    Sku = detail.Sku,
+                    Vin = header.Vin,
+                    PickMode = detail.PickMode,
+                    PickModeValue = detail.PickModeValue,
                     ReceivedOn = DateTime.Now,
-                    ModelCode = modelCode
+                    VehicleRowCount = header.RowCount
                 };
-
-                string row2SkuCode = Constant.Row2SkuCode;
-                if (string.IsNullOrWhiteSpace(row1BroadcastItem.Sku))
-                {
-                    row1BroadcastItem.Sku = string.Empty;
-                    row1BroadcastItem.Status = BroadcastStatus.Missing;
-                }
-                else
-                {
-                    string sku3rd = broadcastDetails
-                        .Where(bd => bd.Item_Type == Constant.Row3SkuCode)
-                        .Select(bd => bd.Item_Nbr)
-                        .FirstOrDefault();
-                    if (!string.IsNullOrWhiteSpace(sku3rd))
-                    {
-                        // If SKU3 is present and ModelCode ends in 74,
-                        // the 3rd row sku is actually the second row sku.
-                        // Here we tell the code below to use SKU3 to
-                        // acquire the second row sku.
-                        if (row1BroadcastItem.ModelCode.Right(2) == "74")
-                        {
-                            row2SkuCode = Constant.Row3SkuCode;
-                        }
-                        else
-                        {
-                            row1BroadcastItem.Sku3rd = sku3rd;
-                        }
-                    }
-                }
-
-                BroadcastItem row2BroadcastItem = new BroadcastItem
-                {
-                    Csn = $"{broadcastNumber.ToString(Constant.BroadcastNumberTextFormat)}{Constant.CsnDelimiter}{(int)VehicleRow.Row2}",
-                    InternalSequenceNumber = Broadcast.GetRow2InternalSequenceNumber(broadcastNumber),
-                    Status = BroadcastStatus.OK,
-                    Sku = broadcastDetails
-                        //                             .Where(bd => bd.Item_Type == Constant.Row2SkuCode)
-                        .Where(bd => bd.Item_Type == row2SkuCode)
-                        .Select(bd => bd.Item_Nbr)
-                        .FirstOrDefault(),
-                    Row2ConsolePart = broadcastDetails
-                        .Where(bd => bd.Item_Type == Constant.Row2ConsoleCode)
-                        .Select(bd => bd.Item_Nbr)
-                        .FirstOrDefault(),
-                    Vin = broadcastHeader.VIN_Ref_Nbr,
-                    ReceivedOn = DateTime.Now,
-                    ModelCode = modelCode
-                };
-                if (string.IsNullOrWhiteSpace(row2BroadcastItem.Sku))
-                {
-                    row2BroadcastItem.Sku = string.Empty;
-                    row2BroadcastItem.Status = BroadcastStatus.Missing;
-                }
-
                 broadcastItems.Add(row1BroadcastItem);
-                broadcastItems.Add(row2BroadcastItem);
-                if (row1BroadcastItem.BroadcastNumber > largestRotationReceived)
+
+                if (rawBroadcast.BroadcastHeader.RowCount == 2)
                 {
-                    largestRotationReceived = row1BroadcastItem.BroadcastNumber;
+                    detail = header.BroadcastDetails.Single(d => d.VehicleRow == VehicleRow.Row2);
+                    BroadcastItem row2BroadcastItem = new BroadcastItem
+                    {
+                        RotationNumber = header.Rotation,
+                        Status = BroadcastStatus.OK,
+                        Csn = _FormatCsn(header.Rotation, VehicleRow.Row2),
+                        VehicleSku = header.VehicleSku,
+                        Sku = detail.Sku,
+                        Vin = header.Vin,
+                        PickMode = detail.PickMode,
+                        PickModeValue = detail.PickModeValue,
+                        ReceivedOn = DateTime.Now,
+                        VehicleRowCount = header.RowCount
+                    };
+                    broadcastItems.Add(row2BroadcastItem);
+                }
+                if (row1BroadcastItem.RotationNumber > largestRotationReceived)
+                {
+                    largestRotationReceived = row1BroadcastItem.RotationNumber;
+                }
+                _ = broadcastRepository.TryMarkAsProcessed(rawBroadcast);
+            }
+            return broadcastItems.Count > 0;
+
+        }
+
+        private static string _FormatCsn(int rotationNumber, VehicleRow vehicleRow)
+        {
+            string code = vehicleRow == VehicleRow.Row1
+                ? Constant.VehicleRow1CsnCode
+                : Constant.VehicleRow2CsnCode;
+
+            return $"{rotationNumber.ToString(Constant.RotationNumberTextFormat)}{code}";
+        }
+
+        public static bool TryFetchHoldCodes(out List<HoldCodeItem> holdCodes)
+        {
+            try
+            {
+                HoldCodesRepository holdCodesRepository = new HoldCodesRepository(_Connection);
+                if (!holdCodesRepository.TryFetchRawHoldCodes(out IEnumerable<HoldCode> rawHoldCodes))
+                {
+                    holdCodes = null;
+                    return false;
                 }
 
-                broadcastRepository.Delete(rawBroadcast);
+                holdCodes = rawHoldCodes
+                    .Select(r =>
+                        new HoldCodeItem
+                        {
+                            HoldCode = r.Code,
+                            Description = r.Description
+                        })
+                    .ToList();
+                return true;
             }
-//             }
-            return true;
-
+            catch (Exception x)
+            {
+                x.PublishSystemEvent(nameof(TryFetchHoldCodes));
+                holdCodes = null;
+                return false;
+            }
         }
-//         private async static Task<IEnumerable<BroadcastQueue>> _FetchRawBroadcast()
+
+//         public bool TryFetchPalletStatusChangeRequests(
+//             out IEnumerable<PalletStatusChangeRequest> requests,
+//             out string fault)
 //         {
-//             BroadcastRepository broadcastRepository = new BroadcastRepository(_Connection);
-//             return await broadcastRepository.FetchRawBraodcastAsync();
+//             try
+//             {
+//                 HoldCodesRepository holdCodesRepository = new HoldCodesRepository(_Connection);
+//                 if (!holdCodesRepository.TryFetchRawHoldCodes(out IEnumerable<HoldCode> rawHoldCodes))
+//                 {
+//                     holdCodes = null;
+//                     return false;
+//                 }
+// 
+//                 holdCodes = rawHoldCodes
+//                     .Select(r =>
+//                         new HoldCodeItem
+//                         {
+//                             HoldCode = r.Code,
+//                             Description = r.Description
+//                         })
+//                     .ToList();
+//                 return true;
+//             }
+//             catch (Exception x)
+//             {
+//                 x.PublishSystemEvent(nameof(TryFetchHoldCodes));
+//                 holdCodes = null;
+//                 return false;
+//             }
 //         }
-
-        public bool TryFetchPalletStatusChangeRequests(
-            out IEnumerable<PalletStatusChangeRequest> requests,
-            out string fault)
-        {
-
-        }
 
         private static SqlConnection _Connection => new SqlConnection(
             XConfiguration.GetConnectionString(Constant.MesConnectionStringName));
