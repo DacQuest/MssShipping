@@ -198,10 +198,13 @@ insert into @ColumnSets values
     ,[PalletID] VARCHAR(4) DEFAULT '''' NOT NULL
     ,[Status] BIGINT DEFAULT 0 NOT NULL
     ,[Sku] VARCHAR(50) DEFAULT '''' NOT NULL
-    ,[JobID] VARCHAR(20) DEFAULT '''' NOT NULL
+    ,[JobID] INT DEFAULT 0 NOT NULL
     ,[Comment] VARCHAR(50) DEFAULT '''' NOT NULL
     ,[BuiltOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
-    ,[Damaged] BIT DEFAULT 0 NOT NULL
+    ,[IsStack] BIT DEFAULT 0 NOT NULL
+    ,[VehicleRow] BIGINT DEFAULT 0 NOT NULL
+    ,[HoldCode] INT DEFAULT 0 NOT NULL
+
   '),
     ('BinItem','
     ,[BinStatus] BIGINT DEFAULT 1 NOT NULL
@@ -216,45 +219,57 @@ insert into @ColumnSets values
     ,[PitCode] BIGINT DEFAULT 0 NOT NULL
     ,[SetOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
   '),
-    ('BroadcastItem','
-    ,[BroadcastID] INT DEFAULT 0 NOT NULL
+    ('HoldCodeItem','
+    ,[HoldCode] INT DEFAULT 0 NOT NULL
+    ,[Description] VARCHAR(250) DEFAULT '''' NOT NULL
+    ,[CreatedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
+  '),
+
+   ('BroadcastItem','
     ,[Status] BIGINT DEFAULT 0 NOT NULL
-    ,[Sequence] INT DEFAULT 0 NOT NULL
-    ,[Priority] INT DEFAULT 0 NOT NULL
-    ,[Sku] VARCHAR(50) DEFAULT '''' NOT NULL
-    ,[OrderNumber] VARCHAR(12) DEFAULT '''' NOT NULL
-    ,[JobID] VARCHAR(20) DEFAULT '''' NOT NULL
-    ,[Destination] INT DEFAULT 0 NOT NULL
-    ,[RequestedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
-    ,[UpdateTime] DATETIME DEFAULT ''12/31/1999'' NOT NULL
+    ,[PickMode] BIGINT DEFAULT 0 NOT NULL
+    ,[Csn] VARCHAR(20) DEFAULT '''' NOT NULL
+    ,[RotationNumber] INT DEFAULT 0 NOT NULL
+    ,[VehicleRow] BIGINT DEFAULT 0 NOT NULL
+    ,[Sku] VARCHAR(25) DEFAULT '''' NOT NULL
+    ,[Vin] VARCHAR(17) DEFAULT '''' NOT NULL
+    ,[ReceivedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
   '),
     ('SystemSettingsItem','
-    ,[BuildOnlyEmptyPalletBufferThreshold] INT DEFAULT 20 NOT NULL
-    ,[ShipOnlyEmptyPalletBufferThreshold] INT DEFAULT 20 NOT NULL
-    ,[BuildAndShipEmptyPalletBufferThreshold] INT DEFAULT 20 NOT NULL
-    ,[CurrentPalletGroupID] INT DEFAULT 0 NOT NULL
-    ,[PalletIDQueueTelemetryEnabled] BIT DEFAULT 0 NOT NULL
     ,[ForcePalletDataQueryOnAudit] BIT DEFAULT 1 NOT NULL
     ,[FifoMode] BIGINT DEFAULT 0 NOT NULL
-    ,[BuildShipMode] BIGINT DEFAULT 0 NOT NULL
+    ,[LoadPickPriority] BIGINT DEFAULT 0 NOT NULL
+    ,[CraneMode] BIGINT DEFAULT 0 NOT NULL
+    ,[LoadAID] INT DEFAULT 0 NOT NULL
+    ,[LoadBID] INT DEFAULT 0 NOT NULL
+    ,[LoadAEnabled] BIT DEFAULT 0 NOT NULL
+    ,[LoadBEnabled] BIT DEFAULT 0 NOT NULL
+    ,[LoadAStartedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
+    ,[LoadACompletedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
+    ,[LoadBStartedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
+    ,[LoadBCompletedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
+
   '),
    ('SystemSettingsItem_PrioritizeAuditPicks','
     ,[PrioritizeAuditPicks] BIT DEFAULT 0 NOT NULL
   '),
-     ('SystemSettingsItem_InboundsEnabled','
-    ,[InboundsEnabled] BIT DEFAULT 0 NOT NULL
+     ('SystemSettingsItem_UpperInboundsEnabled','
+    ,[UpperInboundsEnabled] BIT DEFAULT 0 NOT NULL
+  '),
+     ('SystemSettingsItem_LowerInboundsEnabled','
+    ,[LowerInboundsEnabled] BIT DEFAULT 0 NOT NULL
   '),
      ('SystemSettingsItem_StoresEnabled','
     ,[StoresEnabled] BIT DEFAULT 0 NOT NULL
   '),
-     ('SystemSettingsItem_OutboundsEnabled','
-    ,[OutboundsEnabled] BIT DEFAULT 0 NOT NULL
+     ('SystemSettingsItem_UpperOutboundsEnabled','
+    ,[UpperOutboundsEnabled] BIT DEFAULT 0 NOT NULL
   '),
-    ('SystemSettingsItem_QAPicksEnabled','
-    ,[QAPicksEnabled] BIT DEFAULT 0 NOT NULL
+     ('SystemSettingsItem_LowerOutboundsEnabled','
+    ,[LowerOutboundsEnabled] BIT DEFAULT 0 NOT NULL
   '),
-    ('SystemSettingsItem_QAStoresEnabled','
-    ,[QAStoresEnabled] BIT DEFAULT 0 NOT NULL
+    ('SystemSettingsItem_PurgePicksEnabled','
+    ,[PurgePicksEnabled] BIT DEFAULT 0 NOT NULL
   '),
     ('SystemSettingsItem_AuditPicksEnabled','
     ,[AuditPicksEnabled] BIT DEFAULT 0 NOT NULL
@@ -268,8 +283,8 @@ insert into @ColumnSets values
     ('SystemSettingsItem_LoadPicksEnabled','
     ,[LoadPicksEnabled] BIT DEFAULT 0 NOT NULL
   '),
-    ('SystemSettingsItem_EmptyPicksEnabled','
-    ,[EmptyPicksEnabled] BIT DEFAULT 0 NOT NULL
+    ('SystemSettingsItem_StackPicksEnabled','
+    ,[StackPicksEnabled] BIT DEFAULT 0 NOT NULL
   ')
 
 
@@ -300,33 +315,22 @@ insert into @TableDefs values
   (0,0,0,'[dbo].[Storage]','Array','BinItem','1696','1','1')
   ,(0,0,0,'[dbo].[Storage_Pallet]','Child','PalletItem','1696','1','1')
 
-  ,(0,0,0,'[dbo].[Broadcast1]','Dictionary','BroadcastItem','500','1','1')
-  ,(0,0,0,'[dbo].[Broadcast1_Pallet]','Child','PalletItem','500','1','1')
-
-  ,(0,0,0,'[dbo].[Broadcast2]','Dictionary','BroadcastItem','500','1','1')
-  ,(0,0,0,'[dbo].[Broadcast2_Pallet]','Child','PalletItem','500','1','1')
-
-  ,(0,0,0,'[dbo].[Broadcast3]','Dictionary','BroadcastItem','500','1','1')
-  ,(0,0,0,'[dbo].[Broadcast3_Pallet]','Child','PalletItem','500','1','1')
-
   ,(0,0,0,'[dbo].[Pit]','Dictionary','PitItem','100','1','1')
   ,(0,0,0,'[dbo].[Pit_Pallet]','Child','PalletItem','100','1','1')
 
-  ,(0,0,0,'[dbo].[EmptyPalletBuffer]','Dictionary','PitItem','100','1','1')
-  ,(0,0,0,'[dbo].[EmptyPalletBuffer_Pallet]','Child','PalletItem','100','1','1')
-
   ,(0,0,0,'[dbo].[SystemSettings]','Array','SystemSettingsItem','1','1','1')
-  ,(0,0,0,'[dbo].[SystemSettings_PrioritizeAuditPicks]','Child','SystemSettingsItem_PrioritizeAuditPicks','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_InboundsEnabled]','Child','SystemSettingsItem_InboundsEnabled','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_StoresEnabled]','Child','SystemSettingsItem_StoresEnabled','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_OutboundsEnabled]','Child','SystemSettingsItem_OutboundsEnabled','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_QAPicksEnabled]','Child','SystemSettingsItem_QAPicksEnabled','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_QAStoresEnabled]','Child','SystemSettingsItem_QAStoresEnabled','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_AutoCompactStorageEnabled]','Child','SystemSettingsItem_AutoCompactStorageEnabled','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_AuditPicksEnabled]','Child','SystemSettingsItem_AuditPicksEnabled','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_CraneTelemetryEnabled]','Child','SystemSettingsItem_CraneTelemetryEnabled','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_LoadPicksEnabled]','Child','SystemSettingsItem_LoadPicksEnabled','1','3','1')
-  ,(0,0,0,'[dbo].[SystemSettings_EmptyPicksEnabled]','Child','SystemSettingsItem_EmptyPicksEnabled','1','3','1')
+  ,(0,0,0,'[dbo].[SystemSettings_PrioritizeAuditPicks]','Child','SystemSettingsItem_PrioritizeAuditPicks','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_UpperInboundsEnabled]','Child','SystemSettingsItem_UpperInboundsEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_LowerInboundsEnabled]','Child','SystemSettingsItem_LowerInboundsEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_StoresEnabled]','Child','SystemSettingsItem_StoresEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_UpperOutboundsEnabled]','Child','SystemSettingsItem_UpperOutboundsEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_LowerOutboundsEnabled]','Child','SystemSettingsItem_LowerOutboundsEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_PurgePicksEnabled]','Child','SystemSettingsItem_PurgePicksEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_AutoCompactStorageEnabled]','Child','SystemSettingsItem_AutoCompactStorageEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_AuditPicksEnabled]','Child','SystemSettingsItem_AuditPicksEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_CraneTelemetryEnabled]','Child','SystemSettingsItem_CraneTelemetryEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_LoadPicksEnabled]','Child','SystemSettingsItem_LoadPicksEnabled','1','5','1')
+  ,(0,0,0,'[dbo].[SystemSettings_StackPicksEnabled]','Child','SystemSettingsItem_StackPicksEnabled','1','5','1')
 
 
 
