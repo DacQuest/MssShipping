@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configurat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArchiveSqlScripts", "ArchiveSqlScripts", "{13B24C53-FE68-490E-8BEE-EAFA16017C4C}"
 	ProjectSection(SolutionItems) = preProject
+		ArchiveSqlScripts\CreateLoadArchiveTables.sql = ArchiveSqlScripts\CreateLoadArchiveTables.sql
 		ArchiveSqlScripts\CreatePalletEventTrackerTable.sql = ArchiveSqlScripts\CreatePalletEventTrackerTable.sql
 		ArchiveSqlScripts\CreateSystemEventArchiveTables.sql = ArchiveSqlScripts\CreateSystemEventArchiveTables.sql
 	EndProjectSection
@@ -38,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MirrorSqlScripts", "MirrorS
 	ProjectSection(SolutionItems) = preProject
 		MirrorSqlScripts\CreateAndExpandAllMirrorTables.sql = MirrorSqlScripts\CreateAndExpandAllMirrorTables.sql
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mss.LoadDirectorClient", "Mss.LoadDirectorClient\Mss.LoadDirectorClient.csproj", "{C64D3FC3-B4D5-4C2B-B5CE-C4FD8ECC53F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +88,10 @@ Global
 		{E4F2C6B0-6E2A-400F-9FAD-A48696177DDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4F2C6B0-6E2A-400F-9FAD-A48696177DDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4F2C6B0-6E2A-400F-9FAD-A48696177DDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C64D3FC3-B4D5-4C2B-B5CE-C4FD8ECC53F5}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C64D3FC3-B4D5-4C2B-B5CE-C4FD8ECC53F5}.Debug|Any CPU.Build.0 = Debug|x86
+		{C64D3FC3-B4D5-4C2B-B5CE-C4FD8ECC53F5}.Release|Any CPU.ActiveCfg = Release|x86
+		{C64D3FC3-B4D5-4C2B-B5CE-C4FD8ECC53F5}.Release|Any CPU.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

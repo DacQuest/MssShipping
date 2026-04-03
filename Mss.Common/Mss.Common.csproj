@@ -46,6 +46,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbortLoadMessageData.cs" />
+    <Compile Include="AcceptLoadMessageData.cs" />
     <Compile Include="BinStatus.cs" />
     <Compile Include="BroadcastStatus.cs" />
     <Compile Include="CraneFunction.cs" />
@@ -58,9 +60,10 @@
     <Compile Include="CraneNumber.cs" />
     <Compile Include="FifoMode.cs" />
     <Compile Include="LoadLayoutConfigurationItem.cs" />
-    <Compile Include="LoadLetter.cs" />
-    <Compile Include="LoadPickPriority.cs" />
+    <Compile Include="SlugLetter.cs" />
+    <Compile Include="SlugPickPriority.cs" />
     <Compile Include="LoadTrailerMessageData.cs" />
+    <Compile Include="OperationCode.cs" />
     <Compile Include="Out.cs" />
     <Compile Include="PalletDestination.cs" />
     <Compile Include="PalletStatus.cs" />

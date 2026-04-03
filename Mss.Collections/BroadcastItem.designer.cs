@@ -25,13 +25,13 @@ namespace Mss.Collections
             set => SetEnum(nameof(Status), value);
         }
 
-        [XDataItemProperty(
-            Comment = "The Rotation Number of the Broadcast.")]
-        public int RotationNumber
-        {
-            get => GetInt32(nameof(RotationNumber));
-            set => SetInt32(nameof(RotationNumber), value);
-        }
+//         [XDataItemProperty(
+//             Comment = "The Rotation Number of the Broadcast.")]
+//         public int RotationNumber
+//         {
+//             get => GetInt32(nameof(RotationNumber));
+//             set => SetInt32(nameof(RotationNumber), value);
+//         }
 
         [XDataItemProperty(
             Comment = "The Sequence Number of this Broadcast.",
@@ -76,23 +76,6 @@ namespace Mss.Collections
             get => GetEnum<PickMode>(nameof(PickMode));
             set => SetEnum(nameof(PickMode), value);
         }
-
-//         [XDataItemProperty(
-//             Comment = "Job ID used to pick pallet if PickMode is JobID")]
-//         public int PickModeJobID
-//         {
-//             get => GetInt32(nameof(PickModeJobID));
-//             set => SetInt32(nameof(PickModeJobID), value);
-//         }
-// 
-//         [XDataItemProperty(
-//             Comment = "Pallet ID used to pick pallet if PickMode is Pallet",
-//             MaxLength = Constant.PalletIDLength)]
-//         public string PickModePalletID
-//         {
-//             get => GetString(nameof(PickModePalletID));
-//             set => SetString(nameof(PickModePalletID), value);
-//         }
 
         [XDataItemProperty(
             Comment = "Used to pick pallet based on Pick Mode other than BySku",

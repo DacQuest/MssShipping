@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandService.cs" />
+    <Compile Include="CraneTelemetryPublisher.cs" />
     <Compile Include="MesInterfaceService.cs" />
     <Compile Include="MesInterfaceServiceParameterSetWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,6 +68,9 @@
       <Project>{77ad0fd1-37b8-4ef6-bdcc-734d58ca2b9f}</Project>
       <Name>Mss.Data</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -32,6 +32,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutomatedSolutions.ASComm, Version=3.11.0.0, Culture=neutral, PublicKeyToken=67272fe3f372ded3, processorArchitecture=MSIL" />
+    <Reference Include="DacQuest.DFX.Devices, Version=1.0.0.18217, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\DacQuest\Frameworks\DFX20\Source\DacQuest.DFX.Devices\bin\Debug\DacQuest.DFX.Devices.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -66,7 +71,7 @@
     <Compile Include="LoadItem.designer.cs">
       <DependentUpon>LoadItem.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoadProxy.cs" />
+    <Compile Include="SlugProxy.cs" />
     <Compile Include="LowerRecirc.cs" />
     <Compile Include="PalletItem.cs" />
     <Compile Include="PalletItem.designer.cs">
@@ -79,10 +84,21 @@
       <DependentUpon>PitItem.cs</DependentUpon>
     </Compile>
     <Compile Include="PitProxy.cs" />
+    <Compile Include="PlcTagItem.cs" />
+    <Compile Include="PlcTagItem.designer.cs">
+      <DependentUpon>PlcTagItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PlcTags.cs" />
+    <Compile Include="PlcTagsProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Load.cs" />
-    <Compile Include="LoadA.cs" />
-    <Compile Include="LoadB.cs" />
+    <Compile Include="Slug.cs" />
+    <Compile Include="SlugA.cs" />
+    <Compile Include="SlugB.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="RecircLoop.cs" />
     <Compile Include="RecircLoopProxy.cs" />
     <Compile Include="Storage.cs" />
@@ -98,12 +114,22 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\DataItemReference.txt" />
+    <None Include="Resources\RoundYellowBangBorder16.png" />
+    <None Include="Resources\RoundRedBang16.png" />
+    <None Include="Resources\RoundGreenCheck16.png" />
+    <None Include="Resources\RoundBlackDash16.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mss.Common\Mss.Common.csproj">
       <Project>{47477CFF-7837-4363-9CD4-079654ED1857}</Project>
       <Name>Mss.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -185,8 +185,8 @@ namespace Mss.Operations
         private HoldCodes _holdCodes;
         private LowerRecirc _lowerRecirc;
         private UpperRecirc _upperRecirc;
-        private LoadA _loadA;
-        private LoadB _loadB;
+        private SlugA _slugA;
+        private SlugB _slugB;
 
         protected DataLayer DataLayer
         {
@@ -338,7 +338,7 @@ namespace Mss.Operations
             }
         }
 
-        protected void PublishTelemetryOut(string name, object newValue)
+        protected void PublishToCraneTelemetry(string name, object newValue)
         {
             if (TelemetryEnabled)
             {
@@ -349,7 +349,7 @@ namespace Mss.Operations
             }
         }
 
-        protected void PublishTelemetryIn(string name, object newValue)
+        protected void PublishFromCraneTelemetry(string name, object newValue)
         {
             if (TelemetryEnabled)
             {
@@ -478,8 +478,8 @@ namespace Mss.Operations
                 out _holdCodes,
                 out _lowerRecirc,
                 out _upperRecirc,
-                out _loadA,
-                out _loadB);
+                out _slugA,
+                out _slugB);
 
             _systemSettings.SetCraneMode(CraneNumber, CraneMode);
 
@@ -579,8 +579,8 @@ namespace Mss.Operations
             _upperPit.DataItemChanged += _UpperPit_DataItemChanged;
             _systemSettings.DataItemChanged += _SystemSettings_DataItemChanged;
 //             _broadcast.DataItemChanged += _Broadcast_DataItemChanged;
-            _loadA.DataItemChanged += _LoadA_DataItemChanged;
-            _loadB.DataItemChanged += _LoadB_DataItemChanged;
+            _slugA.DataItemChanged += _SlugA_DataItemChanged;
+            _slugB.DataItemChanged += _SlugB_DataItemChanged;
 
             // Always call this base class when overriding
             base.DoStart();
@@ -682,7 +682,7 @@ namespace Mss.Operations
         }
         protected void ClearCraneFault()
         {
-            PublishTelemetryOut($"Clear Fault Condition ({CraneCommand})", 0);
+            PublishToCraneTelemetry($"Clear Fault Condition ({CraneCommand})", 0);
             CraneCommand = Constant.NoCraneCommand;
             WritePlc(
                 Constant.CraneCommandRoleName,
@@ -696,7 +696,7 @@ namespace Mss.Operations
             WritePlc(
                 Constant.SoftwareFaultRoleName,
                 true);
-            PublishTelemetryOut($"Set Software Fault Condition", true.ToString());
+            PublishToCraneTelemetry($"Set Software Fault Condition", true.ToString());
         }
 
         protected void ClearCraneFaultInPlc()
@@ -704,7 +704,7 @@ namespace Mss.Operations
             WritePlc(
                 Constant.SoftwareFaultRoleName,
                 false);
-            PublishTelemetryOut($"Clear Software Fault Condition", false.ToString());
+            PublishToCraneTelemetry($"Clear Software Fault Condition", false.ToString());
         }
 
         protected bool FetchPitPallet(
@@ -719,7 +719,11 @@ namespace Mss.Operations
                 fault = string.Empty;
                 return true;
             }
-            return MesInterface.TryFetchPalletItem(palletID, out palletItem, out fault);
+            return MesInterface.TryFetchPalletItem(
+                OperationCode,
+                palletID,
+                out palletItem,
+                out fault);
         }
 
         protected bool QueryMesPallet(
@@ -727,7 +731,11 @@ namespace Mss.Operations
             out PalletItem palletItem,
             out string fault)
         {
-            return MesInterface.TryFetchPalletItem(palletID, out palletItem, out fault);
+            return MesInterface.TryFetchPalletItem(
+                OperationCode,
+                palletID,
+                out palletItem,
+                out fault);
         }
 
         //==================================================================================
@@ -967,7 +975,11 @@ namespace Mss.Operations
                     || palletItem.Sku.IsNullOrWhiteSpace()
                     || palletItem.PalletID != PalletID)
                 {
-                    if (!MesInterface.TryFetchPalletItem(PalletID, out palletItem, out _))
+                    if (!MesInterface.TryFetchPalletItem(
+                        OperationCode,
+                        PalletID,
+                        out palletItem,
+                        out _))
                     {
                         string fault = $"Unknown Pallet ID {PalletID} received from Crane in Semi-Auto Mode";
                         XSystemEvent.Publish(
@@ -1145,7 +1157,7 @@ namespace Mss.Operations
             WritePlc(
                 Constant.CraneCommandRoleName,
                 getCommand);
-            PublishTelemetryOut("GetLocation", getCommand);
+            PublishToCraneTelemetry("GetLocation", getCommand);
         }
 
         protected bool TryStore(
@@ -1586,7 +1598,7 @@ namespace Mss.Operations
             WritePlc(
                 Constant.CraneCommandRoleName,
                 putCommand);
-            PublishTelemetryOut("PutLocation", putCommand);
+            PublishToCraneTelemetry("PutLocation", putCommand);
         }
 
         protected virtual bool DoAssigningPutTask(out int putCommand, out string extendedState)
@@ -1609,7 +1621,7 @@ namespace Mss.Operations
                         CurrentCraneFunction = CraneFunction.LoadPick;
                         CurrentLoadItem = loadItem;
                         CurrentPallet = CurrentLoadItem.Pallet;
-                        putCommand = OutboundLocation(CurrentLoadItem.LoadLevel);
+                        putCommand = OutboundLocation(CurrentLoadItem.SlugLevel);
                         extendedState = $"({Constant.PalletTypeHotJob})  Putting Hot Job Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
                         PublishStateDetails();
                     }
@@ -1656,7 +1668,7 @@ namespace Mss.Operations
                     extendedState = $"({Constant.PalletTypeStack})  Putting Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
                     break;
                 case CraneFunction.LoadPick:
-                    putCommand = OutboundLocation(CurrentLoadItem.LoadLevel);
+                    putCommand = OutboundLocation(CurrentLoadItem.SlugLevel);
                     extendedState = $"({Constant.PalletTypeLoad})  Putting Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
                     break;
                 case CraneFunction.None:
@@ -1841,7 +1853,7 @@ namespace Mss.Operations
                 CraneMode = (CraneMode)mode;
                 _systemSettings.SetCraneMode(CraneNumber, CraneMode);
 
-                PublishTelemetryIn("CraneMode", $"{previousCraneMode.ToText()}=>{CraneMode.ToText()}");
+                PublishFromCraneTelemetry("CraneMode", $"{previousCraneMode.ToText()}=>{CraneMode.ToText()}");
 
                 string currentStateName = CurrentState.Name;
                 if (previousCraneMode == CraneMode.Manual
@@ -1868,7 +1880,7 @@ namespace Mss.Operations
             {
                 if (CraneCommand != craneCommand)
                 {
-                    PublishTelemetryIn("CraneCommand", craneCommand);
+                    PublishFromCraneTelemetry("CraneCommand", craneCommand);
                 }
                 CraneCommand = craneCommand;
                 string currentStateName = CurrentState.Name;
@@ -1892,7 +1904,7 @@ namespace Mss.Operations
             {
                 if (PalletID != palletID.ToUpper())
                 {
-                    PublishTelemetryIn("PalletID", palletID);
+                    PublishFromCraneTelemetry("PalletID", palletID);
                 }
                 PalletID = palletID.ToUpper();
                 string currentStateName = CurrentState.Name;
@@ -1918,7 +1930,7 @@ namespace Mss.Operations
             {
                 if (PalletOnCrane != palletOnCrane)
                 {
-                    PublishTelemetryIn("PalletOnCrane", palletOnCrane.ToString());
+                    PublishFromCraneTelemetry("PalletOnCrane", palletOnCrane.ToString());
                 }
                 PalletOnCrane = palletOnCrane;
                 string currentStateName = CurrentState.Name;
@@ -1944,7 +1956,7 @@ namespace Mss.Operations
             {
                 if (PalletAtLowerInbound != palletAtInbound)
                 {
-                    PublishTelemetryIn("PalletAtLowerInbound", palletAtInbound.ToString());
+                    PublishFromCraneTelemetry("PalletAtLowerInbound", palletAtInbound.ToString());
                 }
                 PalletAtLowerInbound = palletAtInbound;
                 string currentStateName = CurrentState.Name;
@@ -1961,7 +1973,7 @@ namespace Mss.Operations
             {
                 if (PalletAtUpperInbound != palletAtInbound)
                 {
-                    PublishTelemetryIn("PalletAtUpperInbound", palletAtInbound.ToString());
+                    PublishFromCraneTelemetry("PalletAtUpperInbound", palletAtInbound.ToString());
                 }
                 PalletAtUpperInbound = palletAtInbound;
                 string currentStateName = CurrentState.Name;
@@ -1978,7 +1990,7 @@ namespace Mss.Operations
             {
                 if (LowerOutboundClear != outboundClear)
                 {
-                    PublishTelemetryIn("LowerOutboundClear", outboundClear.ToString());
+                    PublishFromCraneTelemetry("LowerOutboundClear", outboundClear.ToString());
                 }
                 LowerOutboundClear = outboundClear;
                 if (CurrentState.Name == AwaitingGetTaskState)
@@ -1994,7 +2006,7 @@ namespace Mss.Operations
             {
                 if (UpperOutboundClear != outboundClear)
                 {
-                    PublishTelemetryIn("UpperOutboundClear", outboundClear.ToString());
+                    PublishFromCraneTelemetry("UpperOutboundClear", outboundClear.ToString());
                 }
                 UpperOutboundClear = outboundClear;
                 if (CurrentState.Name == AwaitingGetTaskState)
@@ -2010,7 +2022,7 @@ namespace Mss.Operations
             {
                 if (SemiAutoGetLocation != getLocation)
                 {
-                    PublishTelemetryIn("SemiAutoGetLocation", getLocation);
+                    PublishFromCraneTelemetry("SemiAutoGetLocation", getLocation);
                 }
                 SemiAutoGetLocation = getLocation;
                 if (CurrentState.Name == MonitoringSemiAutoState)
@@ -2026,7 +2038,7 @@ namespace Mss.Operations
             {
                 if (SemiAutoPutLocation != putLocation)
                 {
-                    PublishTelemetryIn("SemiAutoPutLocation", putLocation);
+                    PublishFromCraneTelemetry("SemiAutoPutLocation", putLocation);
                 }
                 if (putLocation > Constant.NoSemiAutoLocation)
                 {
@@ -2087,7 +2099,7 @@ namespace Mss.Operations
 //             }
 //         }
 
-        private void _LoadA_DataItemChanged(object sender, XDataItemChangedEventArgs e)
+        private void _SlugA_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
             if (CurrentState.Name == AwaitingGetTaskState)
             {
@@ -2095,7 +2107,7 @@ namespace Mss.Operations
             }
         }
 
-        private void _LoadB_DataItemChanged(object sender, XDataItemChangedEventArgs e)
+        private void _SlugB_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
             if (CurrentState.Name == AwaitingGetTaskState)
             {
@@ -2125,13 +2137,13 @@ namespace Mss.Operations
 //             {
 //                 _broadcast.DataItemChanged -= _Broadcast_DataItemChanged;
 //             }
-            if (_loadA != null)
+            if (_slugA != null)
             {
-                _loadA.DataItemChanged -= _LoadA_DataItemChanged;
+                _slugA.DataItemChanged -= _SlugA_DataItemChanged;
             }
-            if (_loadB != null)
+            if (_slugB != null)
             {
-                _loadB.DataItemChanged -= _LoadB_DataItemChanged;
+                _slugB.DataItemChanged -= _SlugB_DataItemChanged;
             }
 
             DataLayer.Dispose();

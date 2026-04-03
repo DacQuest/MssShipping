@@ -33,8 +33,8 @@ namespace Mss.Data
         private HoldCodes _holdCodes;
         private LowerRecirc _lowerRecirc;
         private UpperRecirc _upperRecirc;
-        private LoadA _loadA;
-        private LoadB _loadB;
+        private SlugA _slugA;
+        private SlugB _slugB;
 
         protected DataLayer DataLayer
         {
@@ -57,8 +57,8 @@ namespace Mss.Data
                 out _holdCodes,
                 out _lowerRecirc,
                 out _upperRecirc,
-                out _loadA,
-                out _loadB);
+                out _slugA,
+                out _slugB);
 
             // There is no need to call SetServiceStatus() when overriding
             RegisterCustomCommand(_commandFetchBroadcast, "Fetch Broadcast Now");

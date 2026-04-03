@@ -91,7 +91,7 @@ namespace Mss.Operations
             string palletID,
             PalletStatus palletStatus,
             string sku,
-            int jobID,
+            string jobID,
             string comment,
             OperationCode operationCode,
             PalletEvent palletEvent,
@@ -110,8 +110,8 @@ namespace Mss.Operations
 
                     string sql = string.Format(
                         @"INSERT INTO [PalletEventTracker] ([OccurredOn],[PalletID],[Sku],[JobID],[PalletStatus],[PalletStatusText],[OperationCode],[OperationCodeText],[PalletEvent],[PalletEventText],[MoveCommand],[Comment])" + 
-                                                 @" VALUES ('{0}',       '{1}',     '{2}',{3},    {5},           '{4}',             {7},            '{6}',              {9},          '{8}',            {10},         '{11}');",
-                        DateTime.Now.ToString("G"),
+                                                 @" VALUES ('{0}',       '{1}',     '{2}','{3}'   {4},           '{5}',             {6},            '{7}',              {8},          '{9}',            {10},         '{11}');",
+                        DateTime.Now.ToString(Constant.DateTimeFormat),
                         palletID,
                         sku,
                         jobID,

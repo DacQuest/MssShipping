@@ -40,10 +40,8 @@
             this._lblAge = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this._chkDisabled = new System.Windows.Forms.CheckBox();
-            this._lblBinSize = new System.Windows.Forms.Label();
             this._lblBinNumber = new System.Windows.Forms.Label();
             this._lblStoredOn = new System.Windows.Forms.Label();
             this._chkPickOnly = new System.Windows.Forms.CheckBox();
@@ -117,6 +115,9 @@
             this._lblSide = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this._searchResultsGrid = new Mss.Views.SearchResultsGrid();
+            this._lblHoldCode = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this._cmbHoldCode = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this._spnVertical)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._spnHorizontal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._spnCrane)).BeginInit();
@@ -273,10 +274,8 @@
             this._grpBinData.Controls.Add(this._lblAge);
             this._grpBinData.Controls.Add(this.label16);
             this._grpBinData.Controls.Add(this.label2);
-            this._grpBinData.Controls.Add(this.label22);
             this._grpBinData.Controls.Add(this.label1);
             this._grpBinData.Controls.Add(this._chkDisabled);
-            this._grpBinData.Controls.Add(this._lblBinSize);
             this._grpBinData.Controls.Add(this._lblBinNumber);
             this._grpBinData.Controls.Add(this._lblStoredOn);
             this._grpBinData.Controls.Add(this._chkPickOnly);
@@ -322,15 +321,6 @@
             this.label2.TabIndex = 8;
             this.label2.Text = "Bin Status";
             // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(177, 24);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(45, 13);
-            this.label22.TabIndex = 0;
-            this.label22.Text = "Bin Size";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -351,18 +341,6 @@
             this._chkDisabled.Text = "Disabled";
             this._chkDisabled.UseVisualStyleBackColor = true;
             this._chkDisabled.Click += new System.EventHandler(this._ChkDisabled_Click);
-            // 
-            // _lblBinSize
-            // 
-            this._lblBinSize.BackColor = System.Drawing.SystemColors.Window;
-            this._lblBinSize.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblBinSize.Location = new System.Drawing.Point(228, 20);
-            this._lblBinSize.Name = "_lblBinSize";
-            this._lblBinSize.Size = new System.Drawing.Size(88, 21);
-            this._lblBinSize.TabIndex = 1;
-            this._lblBinSize.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this._lblBinSize.Click += new System.EventHandler(this._LblBinNumber_Click);
-            this._lblBinSize.DoubleClick += new System.EventHandler(this._LblBinNumber_DoubleClick);
             // 
             // _lblBinNumber
             // 
@@ -477,6 +455,7 @@
             // 
             // _grpPalletData
             // 
+            this._grpPalletData.Controls.Add(this._cmbHoldCode);
             this._grpPalletData.Controls.Add(this._lblCommentLength);
             this._grpPalletData.Controls.Add(this._lblComment);
             this._grpPalletData.Controls.Add(this._lblBuiltOn);
@@ -487,9 +466,11 @@
             this._grpPalletData.Controls.Add(this.label20);
             this._grpPalletData.Controls.Add(this._cmbPalletStatus);
             this._grpPalletData.Controls.Add(this._lblPalletStatus);
+            this._grpPalletData.Controls.Add(this.label7);
             this._grpPalletData.Controls.Add(this.label8);
             this._grpPalletData.Controls.Add(this._lblVehicleRow);
             this._grpPalletData.Controls.Add(this.label6);
+            this._grpPalletData.Controls.Add(this._lblHoldCode);
             this._grpPalletData.Controls.Add(this._lblSku);
             this._grpPalletData.Controls.Add(this._txtComment);
             this._grpPalletData.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1141,6 +1122,35 @@
             this._searchResultsGrid.TabStop = true;
             this._searchResultsGrid.ToolTipText = "";
             // 
+            // _lblHoldCode
+            // 
+            this._lblHoldCode.BackColor = System.Drawing.SystemColors.Window;
+            this._lblHoldCode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblHoldCode.Location = new System.Drawing.Point(406, 47);
+            this._lblHoldCode.Name = "_lblHoldCode";
+            this._lblHoldCode.Size = new System.Drawing.Size(210, 21);
+            this._lblHoldCode.TabIndex = 42;
+            this._lblHoldCode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(334, 51);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(57, 13);
+            this.label7.TabIndex = 5;
+            this.label7.Text = "Hold Code";
+            // 
+            // _cmbHoldCode
+            // 
+            this._cmbHoldCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cmbHoldCode.FormattingEnabled = true;
+            this._cmbHoldCode.Location = new System.Drawing.Point(406, 47);
+            this._cmbHoldCode.MaxDropDownItems = 16;
+            this._cmbHoldCode.Name = "_cmbHoldCode";
+            this._cmbHoldCode.Size = new System.Drawing.Size(210, 21);
+            this._cmbHoldCode.TabIndex = 45;
+            // 
             // StorageView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1281,7 +1291,8 @@
         private System.Windows.Forms.Label _lblVehicleRow;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label _lblCommentLength;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.Label _lblBinSize;
+        private System.Windows.Forms.ComboBox _cmbHoldCode;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label _lblHoldCode;
     }
 }

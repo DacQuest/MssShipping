@@ -101,7 +101,7 @@ namespace Mss.Collections
                     .FirstOrDefault(b =>
                         b.CraneNumber == craneNumber
                         && b.Pallet.IsStack
-                        && b.Pallet.Status == PalletStatus.Stack
+//                         && b.Pallet.Status == PalletStatus.Stack
                         && !b.Audit
                         && !b.Disabled
                         && !b.NotUsable);
@@ -369,7 +369,7 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public string GetSkuFromJobID(int jobID)
+        public string GetSkuFromJobID(string jobID)
         {
             _ = Lock();
             try
@@ -442,7 +442,7 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public bool TryFindPickableBinByJobID(CraneNumber craneNumber, int jobID, out BinItem binItem)
+        public bool TryFindPickableBinByJobID(CraneNumber craneNumber, string jobID, out BinItem binItem)
         {
             _ = Lock();
             try
@@ -643,9 +643,9 @@ namespace Mss.Collections
                         case PalletStatus.Reserved:
                             counts[pallet.Sku].ReserveCount += 1;
                             break;
-                        case PalletStatus.Stack:
-                            counts[pallet.Sku].StackCount += 1;
-                            break;
+//                         case PalletStatus.Stack:
+//                             counts[pallet.Sku].StackCount += 1;
+//                             break;
                         case PalletStatus.Unknown:
                             counts[pallet.Sku].UnknownCount += 1;
                             break;

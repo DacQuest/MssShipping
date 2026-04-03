@@ -12,6 +12,8 @@ namespace Mss.Common
         public static readonly DateTime BeforeBeginningOfTime = DateTime.Parse("12/31/1999 11:59:59");
         public static readonly string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
 
+        public const string PalletTrackerTableName = "PalletTracker";
+
         // Connection String Names
         public const string ArchiveConnectionStringName = "ArchiveConnectionString";
         public const string MesConnectionStringName = "MesConnectionString";
@@ -25,10 +27,13 @@ namespace Mss.Common
         public const string BroadcastName = "Broadcast";
         public const string LowerRecircName = "LowerRecirc";
         public const string UpperRecircName = "UpperRecirc";
-        public const string LoadAName = "LoadA";
-        public const string LoadBName = "LoadB";
+        public const string SlugAName = "SlugA";
+        public const string SlugBName = "SlugB";
+        public const string PlcTagsName = "PlcTags";
 
         public const int OperationDetailsLeadingSpaceCount = 6;
+
+        public const string TransferTelemetryEnabledName = "TransferTelemetryEnabled";
 
 
         public const int PalletIDLength = 4;
@@ -37,13 +42,16 @@ namespace Mss.Common
         public const int MaxRotation = 9998;
         public const int PickModeValueLength = 50;
 
-        public const string VehicleRow1CsnCode = "F";
-        public const string VehicleRow2CsnCode = "B";
+        public const string VehicleRow1CsnSuffix = "F";
+        public const string VehicleRow2CsnSuffix = "B";
         public const string RotationNumberTextFormat = "0000000";
+
+        //Broadcast
+        public const string CurrentBroadcastQuery = "CurrentBroadcastQuery";
 
         //Storage
         //public const string StackPalletIDValidator = "StackPalletIDValidator";
-        public const string StackSku = "STACK";
+        //         public const string StackSku = "STACK";
         public const string FrontStackSku = "FSTACK";
         public const string RearStackSku = "RSTACK";
         public const int MaxCranes = 4;
@@ -66,8 +74,8 @@ namespace Mss.Common
         public const string PalletTypeStack = "STACK";
         public const string PalletTypeHotJob = "HOTJOB";
 
-        // Slug/Load
-        public const int NoLoadID = 0;
+        // Load
+        public const int NoLoadNumber = 0;
         public const int SlugLanes = 3;
 //         public const int LoadPickableCount = 12;
 //         public const int LoadPickableCountByLevel = 6;
@@ -75,6 +83,9 @@ namespace Mss.Common
         public const int LoadCellCharacterWidth = 25;
         public const string CalculateShortagesMessageTopicName = "CalculateShortages";
         public const int LoadAllocatablePositions = 6;
+        public const string NoTrailerID = "";
+        public const string Row1EmptyPalletSku = "ROW1EMPTY";
+        public const string Row2EmptyPalletSku = "ROW2EMPTY";
 
         // Device Role Names
         public const string PlcRoleName = "CC1";
@@ -94,6 +105,17 @@ namespace Mss.Common
         public const string UpperOutboundClearRoleName = "UpperOutboundClear";
         public const string CraneSemiAutoGetLocationRoleName = "CraneSemiAutoGetLocation";
         public const string CraneSemiAutoPutLocationRoleName = "CraneSemiAutoPutLocation";
+
+        public const string LoadAUpperLevelCompletedRoleName = "LoadAUpperLevelCompleted";
+        public const string LoadALowerLevelCompletedRoleName = "LoadALowerLevelCompleted";
+        public const string LoadBUpperLevelCompletedRoleName = "LoadBUpperLevelCompleted";
+        public const string LoadBLowerLevelCompletedRoleName = "LoadBLowerLevelCompleted";
+
+        public const string LowerLevelCompletedRoleName = "LowerLevelCompleted";
+        public const string UpperLevelCompletedRoleName = "UpperLevelCompleted";
+        public const string TrailerIDRoleName = "TrailerID";
+        public const string TrailerTypeRoleName = "TrailerType";
+        public const string TrailerLoadedRoleName = "TrailerLoaded";
 
 
         // Crane Errors and Faults
@@ -133,13 +155,17 @@ namespace Mss.Common
         public const int IRMoveCommandToCrane = 2;
 
 
-//         public const int TFMoveCommandToSlugLaneA1 = 1;
-//         public const int TFMoveCommandToSlugLaneA2 = 2;
-//         public const int TFMoveCommandToSlugLaneA3 = 3;
-//         public const int TFMoveCommandToSlugLaneB1 = 4;
-//         public const int TFMoveCommandToSlugLaneB2 = 5;
-//         public const int TFMoveCommandToSlugLaneB3 = 6;
+        public const int TFFinalPurgeMoveCommand = 13;
+        public const int TFStackMoveCommand      = 14; //Upper Level only
 
+
+        public const int DeviceNameLength = 100;
+        public const int DisplayNameLength = 100;
+        public const int RoleNameLength = 100;
+        public const int TagNameLength = 100;
+        public const int PlcTagNameLength = 100;
+        public const int StringValueLength = 100;
+        public const int LoadTypeLength = 10;
 
 
 
@@ -151,7 +177,7 @@ namespace Mss.Common
         public const string Row1PalletIDValidatorName = "Row1PalletIDValidator";
         public const string Row2PalletIDValidatorName = "Row2PalletIDValidator";
         public static readonly string NoPalletID = string.Empty;
-        public const int NoJobID = 0;
+        public static readonly string NoJobID = string.Empty;
 
         public const int CsnLength = 15;
         public const int MaxSkuLength = 20;

@@ -1,6 +1,7 @@
 ﻿using DacQuest.DFX.Core;
 using DacQuest.DFX.Core.DataItems;
 using DacQuest.DFX.Core.DataItems.Collections;
+using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Core.SystemEvents;
 using Mss.Common;
 using System;
@@ -14,6 +15,221 @@ namespace Mss.Collections
 {
     public class Broadcast : XSharedDictionary<string, BroadcastItem>
     {
+        protected override void RegisterCustomQueries()
+        {
+            RegisterCustomQuery(Constant.CurrentBroadcastQuery, _CurrentBroadcastsQuery);
+        }
+
+        private bool _CurrentBroadcastsQuery(ref List<XDataItem> list)
+        {
+            if (!Open(
+                Constant.SystemSettingsName,
+                out SystemSettings systemSettings))
+            {
+                XSystemEvent.Publish(
+                    nameof (_CurrentBroadcastsQuery),
+                    XSystemEventLevel.Error,
+                    $"Failed to open the {Constant.SystemSettingsName} collection");
+                return false;
+            }
+            _ = systemSettings.Lock();
+            string lastCsnReleased = systemSettings.LastCsnReleased;
+            int largestRotationReceived = systemSettings.LargestRotationReceived;
+            systemSettings.Unlock();
+            systemSettings.Close();
+
+            list = null;
+            _ = Lock();
+            try
+            {
+                list = GetCurrentBroadcastItems(
+                    lastCsnReleased,
+                    largestRotationReceived).ToList<XDataItem>();
+            }
+            finally
+            {
+                Unlock();
+            }
+            return true;
+        }
+
+        public List<BroadcastItem> GetCurrentBroadcastItems(
+            string lastCsnReleased,
+            int largestRotationReceived)
+        {
+            _ = Lock();
+            try
+            {
+                _InsertMissingBroadcasts(
+                    lastCsnReleased,
+                    largestRotationReceived);
+                return _GetCurrentBroadcastItems(
+                    lastCsnReleased,
+                    largestRotationReceived);
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
+        private void _InsertMissingBroadcasts(
+            string lastCsnReleased,
+            int largestRotationReceived)
+        {
+            IEnumerable<BroadcastItem> broadcastItems = _GetCurrentBroadcastItems(
+                lastCsnReleased,
+                largestRotationReceived).OrderBy(b => b.Csn);
+
+            if (!broadcastItems.Any())
+            {
+                return;
+            }
+
+            int currentRotation = BroadcastItem.RotationFromCsn(lastCsnReleased);
+            if (lastCsnReleased.Right(1) == Constant.VehicleRow2CsnSuffix)
+            {
+                string matchingRow1Csn = BroadcastItem.MakeCsn(currentRotation, Constant.VehicleRow1CsnSuffix);
+                BroadcastItem matchingRow1BroadcastItem = broadcastItems.SingleOrDefault(b => b.Csn == matchingRow1Csn);
+                if (matchingRow1BroadcastItem == null)
+                {
+                    BroadcastItem missingBroadcastItem = BroadcastItem.CreateMissingBroadcastItem(currentRotation);
+                    this[missingBroadcastItem.Csn] = missingBroadcastItem;
+                }
+            }
+
+            BroadcastItem broadcastItem;
+            currentRotation++;
+            while (currentRotation <= largestRotationReceived)
+            {
+                IEnumerable<BroadcastItem> currentItems = broadcastItems
+                    .Where(b => b.Rotation == currentRotation)
+                    .OrderBy(b => b.Csn);
+
+                int count = currentItems.Count();
+                if (count == 2)
+                {
+                    if (!broadcastItems.First().Csn.EndsWith(Constant.VehicleRow2CsnSuffix)
+                        || !broadcastItems.Last().Csn.EndsWith(Constant.VehicleRow1CsnSuffix))
+                    {
+                        foreach (BroadcastItem currentItem in currentItems)
+                        {
+                            _ = Remove(currentItem.Csn);
+                        }
+                        BroadcastItem missingBroadcastItem = BroadcastItem.CreateMissingBroadcastItem(currentRotation);
+                        this[missingBroadcastItem.Csn] = missingBroadcastItem;
+                    }
+                }
+                else if (count == 1)
+                {
+                    broadcastItem = currentItems.First();
+                    int vehicleRowCount = broadcastItem.VehicleRowCount;
+                    if (vehicleRowCount != 1
+                        || !broadcastItem.Csn.EndsWith(Constant.VehicleRow1CsnSuffix))
+                    {
+                        _ = Remove(broadcastItem.Csn);
+                        BroadcastItem missingBroadcastItem = BroadcastItem.CreateMissingBroadcastItem(currentRotation);
+                        this[missingBroadcastItem.Csn] = missingBroadcastItem;
+                    }
+                }
+                else if (count == 0)
+                {
+                    BroadcastItem missingBroadcastItem = BroadcastItem.CreateMissingBroadcastItem(currentRotation);
+                    this[missingBroadcastItem.Csn] = missingBroadcastItem;
+                }
+                else //too many
+                {
+                    foreach (BroadcastItem currentItem in currentItems)
+                    {
+                        _ = Remove(currentItem.Csn);
+                    }
+                    BroadcastItem missingBroadcastItem = BroadcastItem.CreateMissingBroadcastItem(currentRotation);
+                    this[missingBroadcastItem.Csn] = missingBroadcastItem;
+                }
+                currentRotation++;
+            }
+        }
+
+        private void _HandleMissingMatchingRow1Csn(string csn, string matchingRow1Csn)
+        {
+            _ = Remove(csn);
+
+            int rotation = BroadcastItem.RotationFromCsn(csn);
+            BroadcastItem missingBroadcastItem = BroadcastItem.CreateMissingBroadcastItem(rotation);
+            this[missingBroadcastItem.Csn] = missingBroadcastItem;
+        }
+
+        private List<BroadcastItem> _GetCurrentBroadcastItems(
+            string lastCsnReleased,
+            int largestRotationReceived)
+        {
+            _ = Lock();
+            try
+            {
+                IEnumerable<BroadcastItem> broadcastItems = Values
+                    .Where(b =>
+                    {
+                        return b.Csn.IsGreaterThan(lastCsnReleased, true)
+                            && b.Rotation <= largestRotationReceived;
+                    })
+                    .OrderBy(b => b.Csn);
+                return broadcastItems.ToList();
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
+        public List<BroadcastItem> GetReleasableItems(
+            string lastCsnReleased,
+            int largestBroadcastReceived)
+        {
+            return _GetReleasableItems(
+                lastCsnReleased,
+                largestBroadcastReceived);
+        }
+
+        private List<BroadcastItem> _GetReleasableItems(
+            string lastCsnReleased,
+            int largestBroadcastReceived)
+        {
+            _ = Lock();
+            try
+            {
+                List<BroadcastItem> currentItems = GetCurrentBroadcastItems(
+                    lastCsnReleased,
+                    largestBroadcastReceived);
+                List<BroadcastItem> releasableItems = new List<BroadcastItem>();
+                foreach (BroadcastItem item in currentItems)
+                {
+                    BroadcastStatus status = item.Status;
+                    if (status == BroadcastStatus.OK)
+                    {
+                        releasableItems.Add(item);
+                    }
+                    else if (status != BroadcastStatus.Skip)
+                    {
+                        break;
+                    }
+                }
+                return releasableItems;
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
+        public int ReleasableBroadcastItemCount(
+            string lastCsnReleased,
+            int largestBroadcastReceived)
+        {
+            return _GetReleasableItems(
+                lastCsnReleased,
+                largestBroadcastReceived).Count;
+        }
+
         public void PurgeOldBroadcast()
         {
             _ = Lock();
@@ -26,7 +242,6 @@ namespace Mss.Collections
                 if (activeCount >= (int)(ItemCount * 0.95F))
                 {
                     int countToPurge = activeCount - (int)(ItemCount * 0.8F);
-//                     countToPurge -= countToPurge % 2 == 1 ? 1 : 0;
                     IEnumerable<BroadcastItem> listToPurge = Values
                         .Where(b =>
                         {
@@ -44,7 +259,7 @@ namespace Mss.Collections
             }
             catch (Exception x)
             {
-                x.PublishSystemEvent("Broadcast.PurgeOldBroadcasts()");
+                x.PublishSystemEvent(nameof (PurgeOldBroadcast));
             }
             finally
             {
@@ -56,5 +271,6 @@ namespace Mss.Collections
                 Unlock();
             }
         }
+
     }
 }

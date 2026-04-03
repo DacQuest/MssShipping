@@ -32,6 +32,7 @@ namespace Mss.Views
         private StorageProxy _storageProxy;
         private PitProxy _upperPitProxy;
         private PitProxy _lowerPitProxy;
+        private HoldCodesProxy _holdCodesProxy;
         private BinItem _workingBinItem = new BinItem();
         private BinItem _originalBinItem = new BinItem();
         private bool _allowBinEditing = false;
@@ -62,6 +63,10 @@ namespace Mss.Views
             XProxyCache.Acquire(Constant.UpperPitName, out _upperPitProxy);
             XProxyCache.Acquire(Constant.LowerPitName, out _lowerPitProxy);
 
+            XProxyCache.Acquire(Constant.HoldCodesName, out _holdCodesProxy);
+            _storageProxy.DataItemChanged += _HoldCodesProxy_DataItemChanged;
+            _storageProxy.CollectionRefreshed += _HoldCodesProxy_CollectionRefreshed;
+
             XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
             _storageProxy.DataItemChanged += _StorageProxy_DataItemChanged;
             _storageProxy.CollectionRefreshed += _StorageProxy_CollectionRefreshed;
@@ -87,8 +92,10 @@ namespace Mss.Views
             _cmbPalletStatus.AddEnumItem(PalletStatus.Hold);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Reserved);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Purge);
-            _cmbPalletStatus.AddEnumItem(PalletStatus.Stack);
+//             _cmbPalletStatus.AddEnumItem(PalletStatus.Stack);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Unknown);
+
+            _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
 
             _initializingControl = false;
 
@@ -118,7 +125,7 @@ namespace Mss.Views
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Hold);
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Reserved);
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Purge);
-            _ = _cmbNewStatus.AddEnumItem(PalletStatus.Stack);
+//             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Stack);
 
             _lblNewStatus.Visible = _allowBulkEditing;
             //lblNewHoldCode.Visible = _allowBulkEditing;
@@ -215,6 +222,11 @@ namespace Mss.Views
             {
                 XProxyCache.Release(_lowerPitProxy);
                 _lowerPitProxy = null;
+            }
+            if (_holdCodesProxy != null)
+            {
+                XProxyCache.Release(_holdCodesProxy);
+                _holdCodesProxy = null;
             }
             if (_advancedSearchForm != null)
             {
@@ -396,6 +408,20 @@ namespace Mss.Views
             }
         }
 
+        private void _HoldCodesProxy_DataItemChanged(object sender, XDataItemChangedEventArgs e)
+        {
+            _cmbHoldCode.Items.Clear();
+            _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+            _PopulateControls(_workingBinItem);
+        }
+
+        private void _HoldCodesProxy_CollectionRefreshed(Object sender, EventArgs e)
+        {
+            _cmbHoldCode.Items.Clear();
+            _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+            _PopulateControls(_workingBinItem);
+        }
+
         private void _ShowSearchResults(List<BinItem> searchResults)
         {
             _ShowSearchResults(searchResults, false, true);
@@ -502,6 +528,7 @@ namespace Mss.Views
 //         }
         private void _NavigatorBtnRefreshItem_Click(object sender, EventArgs e)
         {
+            _holdCodesProxy.Refresh();
             _upperPitProxy.Refresh();
             _lowerPitProxy.Refresh();
             _storageProxy.Refresh();
@@ -660,7 +687,7 @@ namespace Mss.Views
             _cmbBinStatus.SelectEnumItem(_workingBinItem.BinStatus);
             if (_workingBinItem.StoredOn > Constant.BeginningOfTime)
             {
-                _lblStoredOn.Text = _workingBinItem.StoredOn.ToString("G");
+                _lblStoredOn.Text = _workingBinItem.StoredOn.ToString(Constant.DateTimeFormat);
                 TimeSpan age = DateTime.Now - _workingBinItem.StoredOn;
                 _lblAge.Text = age.TotalHours < 1
                     ? "<1 Hour"
@@ -708,15 +735,24 @@ namespace Mss.Views
                 {
                     _cmbPalletStatus.SelectEnumItem(palletItem.Status);
                     _lblPalletStatus.Text = palletItem.Status.ToText();
+                    if (palletItem.Status == PalletStatus.Hold)
+                    {
+                        if (_holdCodesProxy.TryGetItem(
+                            palletItem.HoldCode,
+                            out HoldCodeItem holdCodeItem))
+                        {
+                            _cmbHoldCode.SelectedValue = holdCodeItem.HoldCode;
+                            _lblHoldCode.Text = holdCodeItem.Description;
+                        }
+                        else
+                        {
+                            _cmbHoldCode.SelectedIndex = -1;
+                            _lblHoldCode.Text = string.Empty;
+                        }
+
+                    }
                 }
                 _lblSku.Text = palletItem.Sku;
-//                 string[] seatIDs = palletItem.SeatIDs;
-//                 _lblSeatID1.Text = seatIDs[0];
-//                 _lblSeatID2.Text = seatIDs[1];
-//                 _lblSeatID3.Text = seatIDs[2];
-//                 _lblSeatID4.Text = seatIDs[3];
-//                 _lblSeatID5.Text = seatIDs[4];
-//                 _lblSeatID6.Text = seatIDs[5];
                 _lblBuiltOn.Text = palletItem.BuiltOn.ToText();
                 _txtComment.Text = palletItem.Comment;
                 _lblComment.Text = palletItem.Comment;
@@ -729,6 +765,8 @@ namespace Mss.Views
                 _lblVehicleRow.Text = string.Empty;
                 _cmbPalletStatus.SelectedIndex = -1;
                 _lblPalletStatus.Text = string.Empty;
+                _cmbHoldCode.SelectedIndex = -1;
+                _lblHoldCode.Text = string.Empty;
                 _lblBuiltOn.Text = string.Empty;
                 _lblSku.Text = string.Empty;
                 _txtComment.Text = string.Empty;
@@ -809,8 +847,8 @@ namespace Mss.Views
             _txtComment.Enabled = palletStatus == PalletStatus.Hold
                 || palletStatus == PalletStatus.Unknown
                 || palletStatus == PalletStatus.Reserved
-                || palletStatus == PalletStatus.Purge
-                || palletStatus == PalletStatus.Stack;
+                || palletStatus == PalletStatus.Purge;
+//                 || palletStatus == PalletStatus.Stack;
             _workingBinItem.Pallet = palletItem;
         }
 
@@ -1745,7 +1783,7 @@ namespace Mss.Views
                     case PalletStatus.Hold:
                     case PalletStatus.Purge:
                     case PalletStatus.Reserved:
-                    case PalletStatus.Stack:
+//                     case PalletStatus.Stack:
                         _lblNewComment.Visible = true;
                         _lblRemainingCharacters.Visible = true;
                         _markAudits = false;

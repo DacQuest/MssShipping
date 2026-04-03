@@ -14,10 +14,38 @@ namespace Mss.Collections
 {
     public class SystemSettings : XSharedSingleItem<SystemSettingsItem>
     {
+        public int NextLoadNumber
+        {
+            get
+            {
+                _ = Lock();
+                try
+                {
+                    return Math.Max(SlugALoadNumber, SlugBLoadNumber) + 1;
+                }
+                finally
+                {
+                    Unlock();
+                }
+            }
+        }
+
+        public bool AutoReleaseBroadcastEnabled
+        {
+            get => GetItemProperty<bool>(nameof(SystemSettingsItem.AutoReleaseBroadcastEnabled));
+            set => SetItemProperty(nameof(SystemSettingsItem.AutoReleaseBroadcastEnabled), value);
+        }
+
+        public bool AutoAcceptLoadsEnabled
+        {
+            get => GetItemProperty<bool>(nameof(SystemSettingsItem.AutoAcceptLoadsEnabled));
+            set => SetItemProperty(nameof(SystemSettingsItem.AutoAcceptLoadsEnabled), value);
+        }
+
         public bool ForcePalletDataMesQueryOnAudit
         {
-            get => GetItemProperty<bool>(nameof(SystemSettingsItem.ForcePalletDataMesQueryOnAudit));
-            set => SetItemProperty(nameof(SystemSettingsItem.ForcePalletDataMesQueryOnAudit), value);
+            get => GetItemProperty<bool>(nameof(SystemSettingsItem.ForceMesPalletDataQueryOnAudit));
+            set => SetItemProperty(nameof(SystemSettingsItem.ForceMesPalletDataQueryOnAudit), value);
         }
 
         public FifoMode FifoMode
@@ -38,60 +66,60 @@ namespace Mss.Collections
             set => SetItemProperty(nameof(SystemSettingsItem.LastCsnReleased), value);
         }
 
-        public LoadPickPriority LoadPickPriority
+        public SlugPickPriority SlugPickPriority
         {
-            get => GetItemProperty<LoadPickPriority>(nameof(SystemSettingsItem.LoadPickPriority));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadPickPriority), value);
+            get => GetItemProperty<SlugPickPriority>(nameof(SystemSettingsItem.SlugPickPriority));
+            set => SetItemProperty(nameof(SystemSettingsItem.SlugPickPriority), value);
         }
 
-        // Load A
-        public bool LoadAEnabled
+        // Slug A
+        public bool SlugAEnabled
         {
-            get => GetItemProperty<bool>(nameof(SystemSettingsItem.LoadAEnabled));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadAEnabled), value);
+            get => GetItemProperty<bool>(nameof(SystemSettingsItem.SlugAEnabled));
+            set => SetItemProperty(nameof(SystemSettingsItem.SlugAEnabled), value);
         }
 
-        public int LoadALoadID
+        public int SlugALoadNumber
         {
-            get => GetItemProperty<int>(nameof(SystemSettingsItem.LoadALoadID));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadALoadID), value);
+            get => GetItemProperty<int>(nameof(SystemSettingsItem.SlugALoadNumber));
+            set => SetItemProperty(nameof(SystemSettingsItem.SlugALoadNumber), value);
         }
 
-        public DateTime LoadALoadStartedOn
+        public DateTime SlugALoadStartedOn
         {
-            get => GetItemProperty<DateTime>(nameof(SystemSettingsItem.LoadALoadStartedOn));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadALoadStartedOn), value);
+            get => GetItemProperty<DateTime>(nameof(SystemSettingsItem.SlugALoadStartedOn));
+            set => SetItemProperty(nameof(SystemSettingsItem.SlugALoadStartedOn), value);
         }
 
-        public DateTime LoadALoadCompletedOn
+        public DateTime SlugALoadCompletedOn
         {
-            get => GetItemProperty<DateTime>(nameof(SystemSettingsItem.LoadALoadCompletedOn));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadALoadCompletedOn), value);
+            get => GetItemProperty<DateTime>(nameof(SystemSettingsItem.SlugALoadCompletedOn));
+            set => SetItemProperty(nameof(SystemSettingsItem.SlugALoadCompletedOn), value);
         }
 
-        // Load B
-        public bool LoadBEnabled
+        // Slug B
+        public bool SlugBEnabled
         {
-            get => GetItemProperty<bool>(nameof(SystemSettingsItem.LoadBEnabled));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadBEnabled), value);
+            get => GetItemProperty<bool>(nameof(SystemSettingsItem.SlugBEnabled));
+            set => SetItemProperty(nameof(SystemSettingsItem.SlugBEnabled), value);
         }
 
-        public int LoadBLoadID
+        public int SlugBLoadNumber
         {
-            get => GetItemProperty<int>(nameof(SystemSettingsItem.LoadBLoadID));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadBLoadID), value);
+            get => GetItemProperty<int>(nameof(SystemSettingsItem.SlugBLoadNumber));
+            set => SetItemProperty(nameof(SystemSettingsItem.SlugBLoadNumber), value);
         }
 
-        public DateTime LoadBLoadStartedOn
+        public DateTime SlugBLoadStartedOn
         {
-            get => GetItemProperty<DateTime>(nameof(SystemSettingsItem.LoadBLoadStartedOn));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadBLoadStartedOn), value);
+            get => GetItemProperty<DateTime>(nameof(SystemSettingsItem.SlugBLoadStartedOn));
+            set => SetItemProperty(nameof(SystemSettingsItem.SlugBLoadStartedOn), value);
         }
 
-        public DateTime LoadBLoadCompletedOn
+        public DateTime SlugBLoadCompletedOn
         {
-            get => GetItemProperty<DateTime>(nameof(SystemSettingsItem.LoadBLoadCompletedOn));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadBLoadCompletedOn), value);
+            get => GetItemProperty<DateTime>(nameof(SystemSettingsItem.SlugBLoadCompletedOn));
+            set => SetItemProperty(nameof(SystemSettingsItem.SlugBLoadCompletedOn), value);
         }
 
         // Lower Inbounds
@@ -747,5 +775,9 @@ namespace Mss.Collections
             }
         }
 
+        public int GetLoadNumber(SlugLetter slugLetter)
+            => slugLetter == SlugLetter.A
+                ? SlugALoadNumber
+                : SlugBLoadNumber;
     }
 }

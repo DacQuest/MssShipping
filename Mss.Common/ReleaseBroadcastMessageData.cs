@@ -14,9 +14,13 @@ namespace Mss.Common
         public static readonly string ReleaseBroadcastMessageTopicName = "ReleaseBroadcastMessageTopic";
         public static readonly int BroadcastReleaseTimeoutMilliseconds = 20000;
 
-        public ReleaseBroadcastMessageData(string errorMessage)
+        public ReleaseBroadcastMessageData()
         {
-            ErrorMessage = errorMessage;
+        }
+
+        public ReleaseBroadcastMessageData(string error)
+        {
+            Error = error;
         }
 
         public ReleaseBroadcastMessageData(
@@ -27,22 +31,22 @@ namespace Mss.Common
 
 
         public ReleaseBroadcastMessageData(
-            LoadLetter loadLetter,
+            SlugLetter slugLetter,
             int countToRelease,
             XSystemEvent systemEvent)
         {
-            LoadLetter = loadLetter;
+            SlugLetter = slugLetter;
             CountToRelease = countToRelease;
             SystemEvent = systemEvent;
         }
 
-        public LoadLetter LoadLetter { get; } = LoadLetter.None;
+        public SlugLetter SlugLetter { get; } = SlugLetter.None;
 
         public int CountToRelease { get; } = 0;
 
         public XSystemEvent SystemEvent { get; } = null;
 
-        public string ErrorMessage { get; set; } = string.Empty;
+        public string Error { get; } = string.Empty;
 
     }
 }

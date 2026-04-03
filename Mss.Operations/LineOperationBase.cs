@@ -65,11 +65,11 @@ namespace Mss.Operations
         private UpperRecirc _upperRecirc;
         protected UpperRecirc UpperRecirc => _upperRecirc;
 
-        private LoadA _loadA;
-        protected LoadA LoadA => _loadA;
+        private SlugA _slugA;
+        protected SlugA SlugA => _slugA;
 
-        private LoadB _loadB;
-        protected LoadB LoadB => _loadB;
+        private SlugB _slugB;
+        protected SlugB SlugB => _slugB;
 
         protected DataLayer DataLayer { get; private set; }
 
@@ -144,8 +144,8 @@ namespace Mss.Operations
                 out _holdCodes,
                 out _lowerRecirc,
                 out _upperRecirc,
-                out _loadA,
-                out _loadB);
+                out _slugA,
+                out _slugB);
 
             ClearSoftwareFaultInPlc();
 

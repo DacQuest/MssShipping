@@ -11,5 +11,11 @@ namespace Mss.Collections
 {
     public class PitProxy : XSharedDictionaryProxy<string, PitItem>
     {
+        public List<string> GetAllSkusInPit()
+        {
+            return Values.Select(p => p.Pallet.Sku)
+                .Distinct()
+                .ToList();
+        }
     }
 }

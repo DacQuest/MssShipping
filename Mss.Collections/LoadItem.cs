@@ -16,15 +16,20 @@ namespace Mss.Collections
         //!!! THIS VALUE SHOULD BE EITHER 4 OR 5
         public static int RowsTowardDoors = 4;
 
-        public int LoadCommandOffset => LoadLetter == LoadLetter.A ? 0 : 6;
+        public int LoadCommandOffset => SlugLetter == SlugLetter.A ? 0 : 6;
 
         public string Coordinates
         {
             get
             {
-                return $"{LoadLetter}/Level:{LoadLevel}/Lane:{LoadLane}/Row:{LoadRow}";
+                return $"{SlugLetter}/Level:{SlugLevel}/Lane:{SlugLane}/Row:{SlugRow}";
             }
         }
+
+        public bool IsInvalid => Status == LoadItemStatus.Invalid;
+
+        public bool IsDoneOrInvalid => Status == LoadItemStatus.Done
+                    || IsInvalid;
 
         public static int GridRowIndexFromNodeIndex(int nodeIndex)
         {
@@ -89,11 +94,11 @@ namespace Mss.Collections
                         : lane + 3 + loadCommandOffset;
         }
 
-        public Levels LoadLevel => LevelFromNodeIndex(NodeIndex);
+        public Levels SlugLevel => LevelFromNodeIndex(NodeIndex);
 
-        public int LoadLane => LaneFromNodeIndex(NodeIndex);
+        public int SlugLane => LaneFromNodeIndex(NodeIndex);
 
-        public int LoadRow => RowNumberFromNodeIndex(NodeIndex);
+        public int SlugRow => RowNumberFromNodeIndex(NodeIndex);
 
         public int LoadGridRowIndex => GridRowIndexFromNodeIndex(NodeIndex);
 
@@ -239,7 +244,7 @@ namespace Mss.Collections
             _ = details.Append($"\r\n{spaces}Status:   {Status.ToText()}");
             _ = details.Append($"\r\n{spaces}Crane:   {Crane.ToText()}");
             _ = details.Append($"\r\n{spaces}Picked On:   {PickedOnText}");
-            _ = details.Append($"\r\n{spaces}Load Letter:   {LoadLetter.ToText()}");
+            _ = details.Append($"\r\n{spaces}Slug Letter:   {SlugLetter.ToText()}");
             _ = details.Append($"\r\n{spaces}Pick Mode:   {PickMode.ToText()}");
             _ = details.Append($"\r\n{spaces}Pick Mode Pallet ID:   {PickModePalletID}");
             _ = details.Append($"\r\n{spaces}Pick Mode Job ID:   {PickModeJobID}");

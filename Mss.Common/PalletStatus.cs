@@ -14,7 +14,6 @@ namespace Mss.Common
         Hold     = 0x02,
         Reserved = 0x04,
         Purge    = 0x08,
-        Stack    = 0x10,
-        Unknown  = 0x20
+        Unknown  = 0x10
     }
 }

@@ -59,17 +59,17 @@ namespace Mss.Collections
         [XDataItemProperty(
             Comment = "The letter of the Load (A=1 or B=2).",
             ReadOnlyInDataItemGrid = true)]
-        public LoadLetter LoadLetter
+        public SlugLetter SlugLetter
         {
-            get => GetEnum<LoadLetter>(nameof(LoadLetter));
-            // DO NOT SET LoadLetter IN CODE!
+            get => GetEnum<SlugLetter>(nameof(SlugLetter));
+            // DO NOT SET SlugLetter IN CODE!
             set
             {
-                if (LoadLetter > LoadLetter.None)
+                if (SlugLetter > SlugLetter.None)
                 {
-                    throw new InvalidOperationException("Cannot set LoadItem.LoadLetter in code!");
+                    throw new InvalidOperationException("Cannot set LoadItem.SlugLetter in code!");
                 }
-                SetEnum(nameof(LoadLetter), value);
+                SetEnum(nameof(SlugLetter), value);
             }
         }
 

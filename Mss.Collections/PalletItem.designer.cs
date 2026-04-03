@@ -44,15 +44,15 @@ namespace Mss.Collections
 
         [XDataItemProperty(
             Comment = "The MES-generated Job ID for the finished goods represented by this Pallet Item.")]
-        public int JobID
+        public string JobID
         {
-            get => GetInt32("JobID");
-            set => SetInt32("JobID", value);
+            get => GetString("JobID");
+            set => SetString("JobID", value);
         }
 
         [XDataItemProperty(
-    Comment = "The length of the longest SKU.",
-    MaxLength = Constant.MaxSkuLength)]
+            Comment = "The length of the longest SKU.",
+            MaxLength = Constant.MaxSkuLength)]
         public string Sku
         {
             get => GetString(nameof(Sku));
@@ -60,20 +60,20 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-    Comment = "A comment regarding this Pallet.",
-    MaxLength = Constant.CommentLength)]
-        public string Comment
-        {
-            get => GetString(nameof(Comment));
-            set => SetString(nameof(Comment), value);
-        }
-
-        [XDataItemProperty(
-    Comment = "The timestamp when the seats on this Pallet were built.")]
+            Comment = "The timestamp when the seats on this Pallet were built.")]
         public DateTime BuiltOn
         {
             get => GetDateTime(nameof(BuiltOn));
             set => SetDateTime(nameof(BuiltOn), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "A comment regarding this Pallet.",
+            MaxLength = Constant.CommentLength)]
+        public string Comment
+        {
+            get => GetString(nameof(Comment));
+            set => SetString(nameof(Comment), value);
         }
 
 

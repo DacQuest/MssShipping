@@ -26,8 +26,8 @@ namespace Mss.Services
         private HoldCodes _holdCodes;
         private LowerRecirc _lowerRecirc;
         private UpperRecirc _upperRecirc;
-        private LoadA _loadA;
-        private LoadB _loadB;
+        private SlugA _slugA;
+        private SlugB _slugB;
         private DataLayer _dataLayer;
 
         protected override bool OnStart()
@@ -43,8 +43,8 @@ namespace Mss.Services
                 out _holdCodes,
                 out _lowerRecirc,
                 out _upperRecirc,
-                out _loadA,
-                out _loadB);
+                out _slugA,
+                out _slugB);
 
             return true;
         }
@@ -63,6 +63,103 @@ namespace Mss.Services
             return true;
         }
 
+        protected override void AutoSubscribe()
+        {
+            // base class MUST be called if this override is used
+            base.AutoSubscribe();
+
+            Subscribe(
+                ReleaseBroadcastMessageData.ReleaseBroadcastMessageTopicName,
+                _ReleaseBroadcast_OnMessage,
+                XMessageScopes.All);
+
+            Subscribe(
+                AcceptLoadMessageData.AcceptLoadMessageTopic,
+                _AcceptLoad_OnMessage,
+                XMessageScopes.All);
+
+            Subscribe(
+                AbortLoadMessageData.AbortLoadMessageTopic,
+                _AbortLoad_OnMessage,
+                XMessageScopes.All);
+
+            Subscribe(
+                RecoverShippedBroadcastMessageData.RecoverShippedBroadcastMessageTopicName,
+                _RecoverShippedBroadcast_OnMessage,
+                XMessageScopes.All);
+
+            Subscribe(
+                BulkPalletStatusConversionMessageData.BulkPalletStatusConversionMessageTopic,
+                _BulkPalletStatusConversion_OnMessage,
+                XMessageScopes.All);
+
+        }
+
+        private void _RecoverShippedBroadcast_OnMessage(
+            object sender,
+            XMessageEventArgs e)
+        {
+            RecoverShippedBroadcastMessageData md = (RecoverShippedBroadcastMessageData)e.MessageData;
+            SetExtendedServiceStatus("Recovering Shipped Broadcast");
+            _dataLayer.RecoverShippedBroadcast(md, out string error);
+            md.PublishResponse(new RecoverShippedBroadcastMessageData(error));
+            SetExtendedServiceStatus("Waiting...");
+        }
+
+        private void _ReleaseBroadcast_OnMessage(
+            object sender,
+            XMessageEventArgs e)
+        {
+            ReleaseBroadcastMessageData md = (ReleaseBroadcastMessageData)e.MessageData;
+            SetExtendedServiceStatus($"Releasing Broadcast to {md.SlugLetter.SlugDisplayName()}");
+            if (_dataLayer.TryReleaseBroadcast(
+                md.SlugLetter,
+                md.CountToRelease,
+                out string error))
+            {
+                md.PublishResponse(new ReleaseBroadcastMessageData());
+            }
+            else
+            {
+                md.PublishResponse(new ReleaseBroadcastMessageData(error));
+            }
+            SetExtendedServiceStatus("Waiting...");
+        }
+
+        private void _AcceptLoad_OnMessage(
+            object sender,
+            XMessageEventArgs e)
+        {
+            AcceptLoadMessageData md = (AcceptLoadMessageData)e.MessageData;
+            SetExtendedServiceStatus($"Accepting {md.SlugLetter.SlugDisplayName()}");
+            if (_dataLayer.TryAcceptLoad(md.SlugLetter, out string error))
+            {
+                md.PublishResponse(new AcceptLoadMessageData(md.SlugLetter));
+            }
+            else
+            {
+                md.PublishResponse(new AcceptLoadMessageData(md.SlugLetter, error));
+            }
+            SetExtendedServiceStatus("Waiting...");
+        }
+
+        private void _AbortLoad_OnMessage(
+            object sender,
+            XMessageEventArgs e)
+        {
+            AbortLoadMessageData md = (AbortLoadMessageData)e.MessageData;
+            SetExtendedServiceStatus($"Aborting {md.SlugLetter.SlugDisplayName()}");
+            if (_dataLayer.TryAbortLoad(md.SlugLetter, md.AutoRecoverBroadcast, out string error))
+            {
+                md.PublishResponse(new AbortLoadMessageData(md.SlugLetter));
+            }
+            else
+            {
+                md.PublishResponse(new AbortLoadMessageData(md.SlugLetter, error));
+            }
+            SetExtendedServiceStatus("Waiting...");
+        }
+
         private void _BulkPalletStatusConversion_OnMessage(
              object sender,
              XMessageEventArgs e)
@@ -72,18 +169,6 @@ namespace Mss.Services
             _dataLayer.BulkConvertPalletStatus(md, out List<BinItem> failedConversionItems);
             md.PublishResponse(new BulkPalletStatusConversionMessageData(failedConversionItems));
             SetExtendedServiceStatus("Waiting...");
-        }
-
-        protected override void AutoSubscribe()
-        {
-            // base class MUST be called if this override is used
-            base.AutoSubscribe();
-
-            Subscribe(
-                BulkPalletStatusConversionMessageData.BulkPalletStatusConversionMessageTopic,
-                _BulkPalletStatusConversion_OnMessage,
-                XMessageScopes.All);
-
         }
 
         //public override bool CanStop => true;

@@ -23,11 +23,13 @@ namespace Mss.Data
         public static string FetchPalletStoredProcedureName = "SHIPSP_Pallet_Info";
 
         public static bool TryFetchPalletItem(
+            OperationCode operationCode,
             string palletID,
             out PalletItem palletItem,
             out string fault)
         {
             return TryFetchPalletItem(
+                operationCode,
                 palletID,
                 false,
                 out _,
@@ -35,6 +37,7 @@ namespace Mss.Data
                 out fault);
         }
         public static bool TryFetchPalletItem(
+            OperationCode operationCode,
             string palletID,
             bool requestDestination,
             out PalletDestination destination,
@@ -61,6 +64,10 @@ namespace Mss.Data
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
+                    SqlParameter opCodeParam = command.Parameters.Add("@Operation", SqlDbType.Int);
+                    opCodeParam.Direction = ParameterDirection.Input;
+                    opCodeParam.Value = (int)operationCode;
+
                     SqlParameter palletIDParam = command.Parameters.Add("@PalletID", SqlDbType.VarChar, 10);
                     palletIDParam.Direction = ParameterDirection.Input;
                     palletIDParam.Value = palletID;
@@ -69,7 +76,7 @@ namespace Mss.Data
                     destinationRequestParam.Direction = ParameterDirection.Input;
                     destinationRequestParam.Value = requestDestination;
 
-                    SqlParameter jobIDParam = command.Parameters.Add("@JobID", SqlDbType.Int);
+                    SqlParameter jobIDParam = command.Parameters.Add("@JobID", SqlDbType.VarChar, 50);
                     jobIDParam.Direction = ParameterDirection.Output;
 
                     SqlParameter skuParam = command.Parameters.Add("@SKU", SqlDbType.VarChar, 50);
@@ -101,7 +108,7 @@ namespace Mss.Data
                         {
                             PalletID = palletID,
                             Status = status,
-                            JobID = (int)jobIDParam.Value,
+                            JobID = (string)jobIDParam.Value,
                             Sku = (string)skuParam.Value,
                             HoldCode = (int)holdCodeParam.Value,
                             BuiltOn = (DateTime)builtOnParam.Value,
@@ -166,7 +173,7 @@ namespace Mss.Data
                 }
 
                 bool outOfOrder = false;
-                int lastRotationReleased = int.Parse(lastCsnReleased.Left(lastCsnReleased.Length - 1));
+                int lastRotationReleased = BroadcastItem.RotationFromCsn(lastCsnReleased); ;
                 int rotationNumber = broadcastHeader.Rotation;
                 if (rotationNumber != largestRotationReceived + 1)
                 {
@@ -179,8 +186,9 @@ namespace Mss.Data
                         continue;
                     }
                     outOfOrder = true;
-                    int modRotationNumber = rotationNumber % 10000;
-                    if (modRotationNumber != 0 && modRotationNumber != 9999)
+//                     int modRotationNumber = rotationNumber % 10000;
+//                     if (modRotationNumber != 0 && modRotationNumber <= Constant.MaxRotation)
+                    if (!BroadcastItem.AutoSkipFromRotation(rotationNumber))
                     {
                         XSystemEvent.Publish(
                             nameof(MesInterface),
@@ -218,15 +226,15 @@ namespace Mss.Data
                         missingRotationNumber++)
                     {
                         BroadcastStatus status = BroadcastStatus.Missing;
-                        int mod = missingRotationNumber % 10000;
-                        if (mod == 0 || mod > Constant.MaxRotation)
+//                         int mod = missingRotationNumber % 10000;
+//                         if (mod == 0 || mod > Constant.MaxRotation)
+                        if (BroadcastItem.AutoSkipFromRotation(missingRotationNumber))
                         {
                             status = BroadcastStatus.Skip;
                         }
 
                         BroadcastItem missingBroadcastItem = new BroadcastItem
                         {
-                            RotationNumber = missingRotationNumber,
                             Status = status,
                             Csn = _FormatCsn(missingRotationNumber, VehicleRow.Row1),
                             VehicleSku = string.Empty,
@@ -246,7 +254,6 @@ namespace Mss.Data
                 
                 BroadcastItem row1BroadcastItem = new BroadcastItem
                 {
-                    RotationNumber = header.Rotation,
                     Status = BroadcastStatus.OK,
                     Csn = _FormatCsn(header.Rotation, VehicleRow.Row1),
                     VehicleSku = header.VehicleSku,
@@ -264,7 +271,6 @@ namespace Mss.Data
                     detail = header.BroadcastDetails.Single(d => d.VehicleRow == VehicleRow.Row2);
                     BroadcastItem row2BroadcastItem = new BroadcastItem
                     {
-                        RotationNumber = header.Rotation,
                         Status = BroadcastStatus.OK,
                         Csn = _FormatCsn(header.Rotation, VehicleRow.Row2),
                         VehicleSku = header.VehicleSku,
@@ -277,9 +283,9 @@ namespace Mss.Data
                     };
                     broadcastItems.Add(row2BroadcastItem);
                 }
-                if (row1BroadcastItem.RotationNumber > largestRotationReceived)
+                if (row1BroadcastItem.Rotation > largestRotationReceived)
                 {
-                    largestRotationReceived = row1BroadcastItem.RotationNumber;
+                    largestRotationReceived = row1BroadcastItem.Rotation;
                 }
                 _ = broadcastRepository.TryMarkAsProcessed(rawBroadcast);
             }
@@ -289,11 +295,11 @@ namespace Mss.Data
 
         private static string _FormatCsn(int rotationNumber, VehicleRow vehicleRow)
         {
-            string code = vehicleRow == VehicleRow.Row1
-                ? Constant.VehicleRow1CsnCode
-                : Constant.VehicleRow2CsnCode;
+            string suffix = vehicleRow == VehicleRow.Row1
+                ? Constant.VehicleRow1CsnSuffix
+                : Constant.VehicleRow2CsnSuffix;
 
-            return $"{rotationNumber.ToString(Constant.RotationNumberTextFormat)}{code}";
+            return BroadcastItem.MakeCsn(rotationNumber, suffix);
         }
 
         public static bool TryFetchHoldCodes(out List<HoldCodeItem> holdCodes)

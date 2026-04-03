@@ -73,6 +73,8 @@ namespace Mss.Collections
         {
             return Items
                 .Count(b => b.CraneNumber == craneNumber
+                    && b.Pallet.Sku != Constant.FrontStackSku
+                    && b.Pallet.Sku != Constant.RearStackSku
                     && b.Pallet.Status != PalletStatus.Invalid);
         }
 
@@ -86,6 +88,38 @@ namespace Mss.Collections
             crane2Count = GetPalletCount(CraneNumber.Crane2);
             crane3Count = GetPalletCount(CraneNumber.Crane3);
             crane4Count = GetPalletCount(CraneNumber.Crane4);
+        }
+
+        public int GetStackCount(
+            string stackSku,
+            CraneNumber craneNumber)
+        {
+            XArgumentChecker.ThrowIfNotContainedIn(
+                stackSku,
+                nameof(stackSku),
+                new string[] { Constant.FrontStackSku, Constant.RearStackSku });
+
+            return Items
+                .Count(b =>
+                {
+                    PalletItem pallet = b.Pallet;
+                    return b.CraneNumber == craneNumber
+                        && pallet.Status != PalletStatus.Invalid
+                        && pallet.Sku == stackSku;
+                });
+        }
+
+        public void GetStackCountPerCrane(
+            string stackSku,
+            out int crane1Count,
+            out int crane2Count,
+            out int crane3Count,
+            out int crane4Count)
+        {
+            crane1Count = GetStackCount(stackSku, CraneNumber.Crane1);
+            crane2Count = GetStackCount(stackSku, CraneNumber.Crane2);
+            crane3Count = GetStackCount(stackSku, CraneNumber.Crane3);
+            crane4Count = GetStackCount(stackSku, CraneNumber.Crane4);
         }
 
         public List<string> GetAllSkusInStorage()

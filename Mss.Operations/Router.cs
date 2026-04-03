@@ -93,6 +93,7 @@ namespace Mss.Operations
         protected override bool DoProcessPallet(out int moveCommand, out string extendedState)
         {
             if (!DataLayer.ProcessPalletAtRouter(
+                OperationCode,
                 CraneNumber,
                 Level,
                 PalletID,

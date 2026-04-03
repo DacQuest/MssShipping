@@ -44,6 +44,33 @@ namespace Mss.Common
             dropDown.Items.AddRange(integers.Cast<object>().ToArray());
         }
 
-
+        public static bool IsGreaterThan(this string strA, string strB, bool ignoreCase)
+        {
+            StringComparison comparison = ignoreCase
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal;
+            return string.Compare(strA, strB, comparison) > 0;
+        }
+        public static bool IsGreaterThanOrEqualTo(this string strA, string strB, bool ignoreCase)
+        {
+            StringComparison comparison = ignoreCase
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal;
+            return string.Compare(strA, strB, comparison) >= 0;
+        }
+        public static bool IsLessThan(this string strA, string strB, bool ignoreCase)
+        {
+            StringComparison comparison = ignoreCase
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal;
+            return string.Compare(strA, strB, comparison) < 0;
+        }
+        public static bool IsLessThanOrEqualTo(this string strA, string strB, bool ignoreCase)
+        {
+            StringComparison comparison = ignoreCase
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal;
+            return string.Compare(strA, strB, comparison) <= 0;
+        }
     }
 }

@@ -16,12 +16,44 @@ namespace Mss.Collections
             SetByteConverter<SystemSettingsItem>();
         }
 
+//         [XDataItemProperty(
+//            Comment = "A load will be release to the Preferred Slug if it is clear and the Load definition specifies No Preference.")]
+//         public LoadLetter PreferredLoad
+//         {
+//             get => GetEnum<LoadLetter>(nameof(PreferredLoad));
+//             set => SetEnum(nameof(PreferredLoad), value);
+//         }
+
         [XDataItemProperty(
            Comment = ".")]
-        public bool ForcePalletDataMesQueryOnAudit
+        public SlugLetter PreferredSlug
         {
-            get => GetBoolean(nameof(ForcePalletDataMesQueryOnAudit));
-            set => SetBoolean(nameof(ForcePalletDataMesQueryOnAudit), value);
+            get => GetEnum<SlugLetter>(nameof(PreferredSlug));
+            set => SetEnum(nameof(PreferredSlug), value);
+        }
+
+        [XDataItemProperty(
+           Comment = ".")]
+        public bool AutoReleaseBroadcastEnabled
+        {
+            get => GetBoolean(nameof(AutoReleaseBroadcastEnabled));
+            set => SetBoolean(nameof(AutoReleaseBroadcastEnabled), value);
+        }
+
+        [XDataItemProperty(
+           Comment = ".")]
+        public bool AutoAcceptLoadsEnabled
+        {
+            get => GetBoolean(nameof(AutoAcceptLoadsEnabled));
+            set => SetBoolean(nameof(AutoAcceptLoadsEnabled), value);
+        }
+
+        [XDataItemProperty(
+           Comment = ".")]
+        public bool ForceMesPalletDataQueryOnAudit
+        {
+            get => GetBoolean(nameof(ForceMesPalletDataQueryOnAudit));
+            set => SetBoolean(nameof(ForceMesPalletDataQueryOnAudit), value);
         }
 
         [XDataItemProperty(
@@ -60,74 +92,74 @@ namespace Mss.Collections
 
         [XDataItemProperty(
            Comment = ".")]
-        public LoadPickPriority LoadPickPriority
+        public SlugPickPriority SlugPickPriority
         {
-            get => GetEnum<LoadPickPriority>(nameof(LoadPickPriority));
-            set => SetEnum(nameof(LoadPickPriority), value);
+            get => GetEnum<SlugPickPriority>(nameof(SlugPickPriority));
+            set => SetEnum(nameof(SlugPickPriority), value);
         }
 
         [XDataItemProperty(
             Comment = "Determines whether Loads can be released to Load A. Also used to pause picking to Load A.")]
-        public bool LoadAEnabled
+        public bool SlugAEnabled
         {
-            get => GetBoolean(nameof(LoadAEnabled));
-            set => SetBoolean(nameof(LoadAEnabled), value);
+            get => GetBoolean(nameof(SlugAEnabled));
+            set => SetBoolean(nameof(SlugAEnabled), value);
         }
 
         [XDataItemProperty(
-            Comment = "The Load ID of the current Load A.")]
-        public int LoadALoadID
+            Comment = "The number of the current Load A.")]
+        public int SlugALoadNumber
         {
-            get => GetInt32(nameof(LoadALoadID));
-            set => SetInt32(nameof(LoadALoadID), value);
+            get => GetInt32(nameof(SlugALoadNumber));
+            set => SetInt32(nameof(SlugALoadNumber), value);
         }
 
         [XDataItemProperty(
             Comment = "The timestamp when the current Load A was released for picking.")]
-        public DateTime LoadALoadStartedOn
+        public DateTime SlugALoadStartedOn
         {
-            get => GetDateTime(nameof(LoadALoadStartedOn));
-            set => SetDateTime(nameof(LoadALoadStartedOn), value);
+            get => GetDateTime(nameof(SlugALoadStartedOn));
+            set => SetDateTime(nameof(SlugALoadStartedOn), value);
         }
 
         [XDataItemProperty(
             Comment = "The timestamp when the current Load A was completed.")]
-        public DateTime LoadALoadCompletedOn
+        public DateTime SlugALoadCompletedOn
         {
-            get => GetDateTime(nameof(LoadALoadCompletedOn));
-            set => SetDateTime(nameof(LoadALoadCompletedOn), value);
+            get => GetDateTime(nameof(SlugALoadCompletedOn));
+            set => SetDateTime(nameof(SlugALoadCompletedOn), value);
         }
 
         [XDataItemProperty(
             Comment = "Determines whether Loads can be released to Load B. Also used to pause picking to Load B.")]
-        public bool LoadBEnabled
+        public bool SlugBEnabled
         {
-            get => GetBoolean(nameof(LoadBEnabled));
-            set => SetBoolean(nameof(LoadBEnabled), value);
+            get => GetBoolean(nameof(SlugBEnabled));
+            set => SetBoolean(nameof(SlugBEnabled), value);
         }
 
         [XDataItemProperty(
-            Comment = "The Load ID of the current Load B.")]
-        public int LoadBLoadID
+            Comment = "The number of the current Load B.")]
+        public int SlugBLoadNumber
         {
-            get => GetInt32(nameof(LoadBLoadID));
-            set => SetInt32(nameof(LoadBLoadID), value);
+            get => GetInt32(nameof(SlugBLoadNumber));
+            set => SetInt32(nameof(SlugBLoadNumber), value);
         }
 
         [XDataItemProperty(
             Comment = "The timestamp when the current Load B was released for picking.")]
-        public DateTime LoadBLoadStartedOn
+        public DateTime SlugBLoadStartedOn
         {
-            get => GetDateTime(nameof(LoadBLoadStartedOn));
-            set => SetDateTime(nameof(LoadBLoadStartedOn), value);
+            get => GetDateTime(nameof(SlugBLoadStartedOn));
+            set => SetDateTime(nameof(SlugBLoadStartedOn), value);
         }
 
         [XDataItemProperty(
             Comment = "The timestamp when the current Load B was completed.")]
-        public DateTime LoadBLoadCompletedOn
+        public DateTime SlugBLoadCompletedOn
         {
-            get => GetDateTime(nameof(LoadBLoadCompletedOn));
-            set => SetDateTime(nameof(LoadBLoadCompletedOn), value);
+            get => GetDateTime(nameof(SlugBLoadCompletedOn));
+            set => SetDateTime(nameof(SlugBLoadCompletedOn), value);
         }
 
 

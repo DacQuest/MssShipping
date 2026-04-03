@@ -19,16 +19,16 @@ namespace Mss.Common
         }
 
         public LoadTrailerMessageData(
-            LoadLetter loadLetter,
+            SlugLetter slugLetter,
 //             string trailerID,
             XSystemEvent systemEvent)
         {
-            LoadLetter = loadLetter;
+            SlugLetter = slugLetter;
 //             TrailerID = trailerID;
             SystemEvent = systemEvent;
         }
 
-        public LoadLetter LoadLetter { get; } = LoadLetter.None;
+        public SlugLetter SlugLetter { get; } = SlugLetter.None;
 
         public XSystemEvent SystemEvent { get; } = null;
 
