@@ -86,7 +86,6 @@
             this._byPalletIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._bySkuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._byPalletStatusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._byKitCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._byDateTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._duplicatePalletsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -780,7 +779,6 @@
             this._byPalletIDToolStripMenuItem,
             this._bySkuToolStripMenuItem,
             this._byPalletStatusToolStripMenuItem,
-            this._byKitCodeToolStripMenuItem,
             this._byDateTimeToolStripMenuItem,
             this._duplicatePalletsToolStripMenuItem,
             this.toolStripSeparator3,
@@ -817,12 +815,6 @@
             this._byPalletStatusToolStripMenuItem.Text = "By Pallet Status...";
             this._byPalletStatusToolStripMenuItem.Click += new System.EventHandler(this._ByPalletStatusToolStripMenuItem_Click);
             // 
-            // _byKitCodeToolStripMenuItem
-            // 
-            this._byKitCodeToolStripMenuItem.Name = "_byKitCodeToolStripMenuItem";
-            this._byKitCodeToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this._byKitCodeToolStripMenuItem.Text = "By Kit Code...";
-            this._byKitCodeToolStripMenuItem.Visible = false;
             // 
             // _byDateTimeToolStripMenuItem
             // 
@@ -1200,7 +1192,6 @@
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
         private System.Windows.Forms.ToolStripMenuItem _byPalletIDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem _byPalletStatusToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem _byKitCodeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem _bySkuToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem _byDateTimeToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton _reportsDropDownButton;
