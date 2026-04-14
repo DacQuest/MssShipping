@@ -8,7 +8,7 @@ namespace Mss.Common
 {
     public enum SlugPickPriority
     {
-        SmallerLoadID = 0,
+        SmallerLoadNumber = 0,
         Balanced = 1,
         SlugA = 2,
         SlugB = 3,

@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Magna.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DacQuest.DFX.ASComm">
       <HintPath>..\..\..\..\..\DacQuest\Frameworks\DFX20\Source\DacQuest.DFX.ASComm\bin\Debug\DacQuest.DFX.ASComm.dll</HintPath>
@@ -54,8 +57,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assignment.cs" />
+    <Compile Include="AssignmentParameterSetWrapper.cs" />
     <Compile Include="Crane.cs" />
     <Compile Include="CraneParameterSetWrapper.cs" />
+    <Compile Include="IplPrinterDriver.cs" />
+    <Compile Include="IplPrinterDriverParameterSetWrapper.cs" />
+    <Compile Include="LoadDirector.cs" />
+    <Compile Include="LoadDirectorParameterSetWrapper.cs" />
+    <Compile Include="RecircBuffer.cs" />
+    <Compile Include="RecircBufferParameterSetWrapper.cs" />
+    <Compile Include="RecircRouterParameterSetWrapper.cs" />
+    <Compile Include="RecircRouter.cs" />
+    <Compile Include="PurgePalletWriter.cs" />
+    <Compile Include="Purge.cs" />
     <Compile Include="Router.cs" />
     <Compile Include="RouterParameterSetWrapper.cs" />
     <Compile Include="LineOperationBase.cs" />
@@ -65,6 +80,7 @@
     <Compile Include="TrailerLoad.cs" />
     <Compile Include="TrailerLoadParameterSetWrapper.cs" />
     <Compile Include="Transfer.cs" />
+    <Compile Include="PurgeParameterSetWrapper.cs" />
     <Compile Include="TransferParameterSetWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Magna.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

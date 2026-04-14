@@ -59,11 +59,11 @@ namespace Mss.Operations
         private HoldCodes _holdCodes;
         protected HoldCodes HoldCodes => _holdCodes;
 
-        private LowerRecirc _lowerRecirc;
-        protected LowerRecirc LowerRecirc => _lowerRecirc;
+        private LowerRecircBuffer _lowerRecirc;
+        protected LowerRecircBuffer LowerRecirc => _lowerRecirc;
 
-        private UpperRecirc _upperRecirc;
-        protected UpperRecirc UpperRecirc => _upperRecirc;
+        private UpperRecircBuffer _upperRecirc;
+        protected UpperRecircBuffer UpperRecirc => _upperRecirc;
 
         private SlugA _slugA;
         protected SlugA SlugA => _slugA;
@@ -84,6 +84,34 @@ namespace Mss.Operations
             XTagDataEventHandler handler,
             XTagDataCaptureUpdateMode updateMode)
                 => StartTagDataCapture(Constant.PlcRoleName, tagRoleName, handler, updateMode);
+
+        protected bool QueryMesPallet(
+            string palletID,
+            out PalletItem palletItem,
+            out string fault)
+        {
+            return MesInterface.TryFetchPalletItem(
+                OperationCode,
+                palletID,
+                out palletItem,
+                out fault);
+        }
+
+        protected bool QueryMesPallet(
+            string palletID,
+            bool requestDestination,
+            out PalletDestination destination,
+            out PalletItem palletItem,
+            out string fault)
+        {
+            return MesInterface.TryFetchPalletItem(
+                OperationCode,
+                palletID,
+                requestDestination,
+                out destination,
+                out palletItem,
+                out fault);
+        }
 
         //==================================================================================
 
@@ -135,7 +163,7 @@ namespace Mss.Operations
             CachedMoveCommand = Constant.NoMoveCommand;
             CurrentPallet = null;
 
-            DataLayer = DataLayer.Factory(
+            DataLayer = DataLayer.Create(
                 out _storage,
                 out _lowerPit,
                 out _upperPit,
@@ -228,9 +256,7 @@ namespace Mss.Operations
         protected virtual void ProcessPalletStateHandler()
         {
             SetExtendedState(
-                string.Format(
-                    "Processing Pallet {0}",
-                    PalletID),
+                $"Processing Pallet {PalletID}",
                 true);
             if (DoProcessPallet(out int moveCommand, out string extendedState))
             {
@@ -250,22 +276,13 @@ namespace Mss.Operations
 
         protected void SendMoveCommand(int moveCommand)
         {
-            if (CurrentPallet != null)
-            {
-                PalletEventTracker.Capture(
-                    CurrentPallet,
-                    OperationCode,
-                    PalletEvent.MoveCommandSent,
-                    moveCommand);
-            }
-            else
-            {
-                PalletEventTracker.Capture(
-                    PalletID,
-                    OperationCode,
-                    PalletEvent.MoveCommandSent,
-                    moveCommand);
-            }
+            PalletEventTracker.Capture(
+                PalletID,
+                CurrentPallet,
+                OperationCode,
+                PalletEvent.MoveCommandSent,
+                moveCommand);
+
             MoveCommand = moveCommand;
             CachedMoveCommand = moveCommand;
             WritePlc(
@@ -441,22 +458,13 @@ namespace Mss.Operations
             {
                 if (DoMoveCompleted())
                 {
-                    if (CurrentPallet != null)
-                    {
-                        PalletEventTracker.Capture(
-                            CurrentPallet,
-                            OperationCode,
-                            PalletEvent.DepartureCompleted,
-                            CachedMoveCommand);
-                    }
-                    else
-                    {
-                        PalletEventTracker.Capture(
-                            PalletID,
-                            OperationCode,
-                            PalletEvent.DepartureCompleted,
-                            CachedMoveCommand);
-                    }
+                    PalletEventTracker.Capture(
+                        PalletID,
+                        CurrentPallet,
+                        OperationCode,
+                        PalletEvent.DepartureCompleted,
+                        CachedMoveCommand);
+
                     ClearExtendedState(true);
                     SetRewind();
                 }

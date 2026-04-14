@@ -15,7 +15,6 @@ namespace Mss.Views
         private bool _allowPalletStatusEditing = false;
         private bool _allowAuditPicks = false;
         private bool _goToFirstSearchResult = true;
-        private int _maxBank1Horizontal = 41;
 
         [XConfigurationProperty(
             @"",
@@ -66,10 +65,5 @@ namespace Mss.Views
             PickListValues = "true,false")]
         public bool GoToFirstSearchResult => _goToFirstSearchResult;
 
-        [XConfigurationProperty(
-            @"",
-            false,
-            DefaultValue = "41")]
-        public int MaxBank1Horizontal => _maxBank1Horizontal;
     }
 }

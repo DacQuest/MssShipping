@@ -90,7 +90,7 @@ namespace Mss.Collections
 
         public string AccessText => AccessMode.ToText();
 
-        public string LastUpdateOnText
+        public string LastUpdatedOnText
         {
             get
             {

@@ -43,7 +43,8 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "The MES-generated Job ID for the finished goods represented by this Pallet Item.")]
+            Comment = "The MES-generated Job ID for the finished goods represented by this Pallet Item.",
+            MaxLength = Constant.JobIDLength)]
         public string JobID
         {
             get => GetString("JobID");

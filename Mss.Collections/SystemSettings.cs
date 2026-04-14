@@ -158,11 +158,6 @@ namespace Mss.Collections
             }
         }
 
-//         public bool LowerInboundAcceptsPallets(CraneNumber craneNumber)
-//             => IsLowerInboundEnabled(craneNumber)
-//                 && MasterLowerInboundsEnabled
-//                 && CanDoStore(craneNumber);
-
         // Upper Inbounds
         public bool MasterUpperInboundsEnabled
         {
@@ -198,11 +193,6 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-
-//         public bool UpperInboundAcceptsPallets(CraneNumber craneNumber)
-//             => IsUpperInboundEnabled(craneNumber)
-//                 && MasterUpperInboundsEnabled
-//                 && CanDoStore(craneNumber);
 
         // Lower Outbounds
         public bool MasterLowerOutboundsEnabled
@@ -469,22 +459,16 @@ namespace Mss.Collections
             set => SetItemProperty(nameof(SystemSettingsItem.StackPicksEnabled), value);
         }
 
-        public bool CanDoStackPicks(CraneNumber craneNumber, Levels level)
+        public bool CanDoStackPicks(CraneNumber craneNumber)
         {
-            XArgumentChecker.ThrowIfNotContainedIn(
-                level,
-                nameof(level),
-                new Levels[] { Levels.Lower, Levels.Upper });
-
             _ = Lock();
             try
             {
                 return IsCraneInAutoMode(craneNumber)
                     && MasterStackPicksEnabled
                     && GetStackPicksEnabled(craneNumber)
-                    && level == Levels.Lower
-                        ? LowerOutboundEnabled(craneNumber)
-                        : UpperOutboundEnabled(craneNumber);
+                    && MasterUpperOutboundsEnabled
+                    && UpperOutboundEnabled(craneNumber);
             }
             finally
             {

@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Magna.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutomatedSolutions.ASComm, Version=3.11.0.0, Culture=neutral, PublicKeyToken=67272fe3f372ded3, processorArchitecture=MSIL" />
     <Reference Include="DacQuest.DFX.Devices, Version=1.0.0.18217, Culture=neutral, processorArchitecture=MSIL">
@@ -51,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssignmentPit.cs" />
     <Compile Include="BinItem.cs" />
     <Compile Include="BinItem.designer.cs">
       <DependentUpon>BinItem.cs</DependentUpon>
@@ -72,7 +76,7 @@
       <DependentUpon>LoadItem.cs</DependentUpon>
     </Compile>
     <Compile Include="SlugProxy.cs" />
-    <Compile Include="LowerRecirc.cs" />
+    <Compile Include="LowerRecircBuffer.cs" />
     <Compile Include="PalletItem.cs" />
     <Compile Include="PalletItem.designer.cs">
       <DependentUpon>PalletItem.cs</DependentUpon>
@@ -99,8 +103,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RecircLoop.cs" />
-    <Compile Include="RecircLoopProxy.cs" />
+    <Compile Include="RecircBuffer.cs" />
+    <Compile Include="RecircBufferProxy.cs" />
     <Compile Include="Storage.cs" />
     <Compile Include="StorageProxy.cs" />
     <Compile Include="SystemSettings.cs" />
@@ -110,9 +114,10 @@
     </Compile>
     <Compile Include="SystemSettingsProxy.cs" />
     <Compile Include="UpperPit.cs" />
-    <Compile Include="UpperRecirc.cs" />
+    <Compile Include="UpperRecircBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Magna.ico" />
     <Content Include="Properties\DataItemReference.txt" />
     <None Include="Resources\RoundYellowBangBorder16.png" />
     <None Include="Resources\RoundRedBang16.png" />

@@ -13,8 +13,11 @@ namespace Mss.Common
         Assigned2 = 2,
         Assigned3 = 3,
         Assigned4 = 4,
-        Purge     = 5,
-        Stack     = 6
+        Upper     = 5,
+        Lower     = 6,
+        Console   = 7,
+        Purge     = 8,
+        Stack     = 9
     }
 
     public static class PitCodeExtensions

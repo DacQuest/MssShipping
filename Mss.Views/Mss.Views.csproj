@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Magna.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DacQuest.DFX.DataItemEditors">
       <HintPath>..\..\..\..\..\DacQuest\Frameworks\DFX20\Source\DacQuest.DFX.DataItemEditors\bin\Debug\DacQuest.DFX.DataItemEditors.dll</HintPath>
@@ -41,6 +44,10 @@
     </Reference>
     <Reference Include="DacQuest.DFX.Forms">
       <HintPath>..\..\..\..\..\DacQuest\Frameworks\DFX20\Source\DacQuest.DFX.Forms\bin\Debug\DacQuest.DFX.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="DacQuest.DFX.Operations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\DacQuest\Frameworks\DFX20\Source\DacQuest.DFX.Operations\bin\Debug\DacQuest.DFX.Operations.dll</HintPath>
     </Reference>
     <Reference Include="DacQuest.DFX.SnapInViews">
       <HintPath>..\..\..\..\..\DacQuest\Frameworks\DFX20\Source\DacQuest.DFX.SnapInViews\bin\Debug\DacQuest.DFX.SnapInViews.dll</HintPath>
@@ -257,17 +264,47 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbortLoadConfirmationDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AbortLoadConfirmationDlg.designer.cs">
+      <DependentUpon>AbortLoadConfirmationDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AcceptLoadConfirmationDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AcceptLoadConfirmationDlg.designer.cs">
+      <DependentUpon>AcceptLoadConfirmationDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AdminHoldCodesView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AdminHoldCodesView.designer.cs">
+      <DependentUpon>AdminHoldCodesView.cs</DependentUpon>
+    </Compile>
     <Compile Include="AdminBroadcastView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="AdminBroadcastView.designer.cs">
       <DependentUpon>AdminBroadcastView.cs</DependentUpon>
     </Compile>
+    <Compile Include="AdminRecircBufferView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AdminRecircBufferView.designer.cs">
+      <DependentUpon>AdminRecircBufferView.cs</DependentUpon>
+    </Compile>
     <Compile Include="AdminPitView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="AdminPitView.designer.cs">
       <DependentUpon>AdminPitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AdminSlugView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AdminSlugView.designer.cs">
+      <DependentUpon>AdminSlugView.cs</DependentUpon>
     </Compile>
     <Compile Include="AdminStorageView.cs">
       <SubType>UserControl</SubType>
@@ -293,6 +330,13 @@
     <Compile Include="BroadcastAdminEditorView.Designer.cs">
       <DependentUpon>BroadcastAdminEditorView.cs</DependentUpon>
     </Compile>
+    <Compile Include="BroadcastView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BroadcastView.Designer.cs">
+      <DependentUpon>BroadcastView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BroadcastViewParameterSetWrapper.cs" />
     <Compile Include="BulkSystemSettingsEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -332,6 +376,18 @@
     <Compile Include="HomeView.designer.cs">
       <DependentUpon>HomeView.cs</DependentUpon>
     </Compile>
+    <Compile Include="LabelPrinterTesterView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LabelPrinterTesterView.designer.cs">
+      <DependentUpon>LabelPrinterTesterView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PitDeleteForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PitDeleteForm.designer.cs">
+      <DependentUpon>PitDeleteForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="InventorySummaryData.cs" />
     <Compile Include="InventorySummaryReport.cs">
       <SubType>Component</SubType>
@@ -346,6 +402,26 @@
       <DependentUpon>InventorySummaryView.cs</DependentUpon>
     </Compile>
     <Compile Include="ISearchResultsGridParent.cs" />
+    <Compile Include="LoadDirectorView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LoadDirectorView.Designer.cs">
+      <DependentUpon>LoadDirectorView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoadDirectorViewParameterSetWrapper.cs" />
+    <Compile Include="PitGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PitGrid.designer.cs">
+      <DependentUpon>PitGrid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PitView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PitView.designer.cs">
+      <DependentUpon>PitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PitViewParameterSetWrapper.cs" />
     <Compile Include="SlugGrid.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -437,6 +513,13 @@
     <Compile Include="ShipperArchiveView.designer.cs">
       <DependentUpon>ShipperArchiveView.cs</DependentUpon>
     </Compile>
+    <Compile Include="SlugsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SlugsView.designer.cs">
+      <DependentUpon>SlugsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SlugsViewParameterSetWrapper.cs" />
     <Compile Include="StorageEmptyBinForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -465,8 +548,17 @@
     <Compile Include="SystemSettingsViewParameterSetWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AbortLoadConfirmationDlg.resx">
+      <DependentUpon>AbortLoadConfirmationDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AcceptLoadConfirmationDlg.resx">
+      <DependentUpon>AcceptLoadConfirmationDlg.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AdvancedSearchForm.resx">
       <DependentUpon>AdvancedSearchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BroadcastView.resx">
+      <DependentUpon>BroadcastView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BulkSystemSettingsEditForm.resx">
       <DependentUpon>BulkSystemSettingsEditForm.cs</DependentUpon>
@@ -480,14 +572,26 @@
     <EmbeddedResource Include="HomeView.resx">
       <DependentUpon>HomeView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LabelPrinterTesterView.resx">
+      <DependentUpon>LabelPrinterTesterView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PitDeleteForm.resx">
+      <DependentUpon>PitDeleteForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="InventorySummaryReport.resx">
       <DependentUpon>InventorySummaryReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InventorySummaryView.resx">
       <DependentUpon>InventorySummaryView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LoadDirectorView.resx">
+      <DependentUpon>LoadDirectorView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PalletTrackerView.resx">
       <DependentUpon>PalletTrackerView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PitView.resx">
+      <DependentUpon>PitView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -508,6 +612,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SelectPalletStatusesForm.resx">
       <DependentUpon>SelectPalletStatusesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SlugsView.resx">
+      <DependentUpon>SlugsView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="StorageView.resx">
       <DependentUpon>StorageView.cs</DependentUpon>
@@ -585,6 +692,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\WarningSystemEvent_48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GreenRecycle24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Magna.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

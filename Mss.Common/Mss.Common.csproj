@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Magna.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AbortLoadMessageData.cs" />
     <Compile Include="AcceptLoadMessageData.cs" />
+    <Compile Include="BinSize.cs" />
     <Compile Include="BinStatus.cs" />
     <Compile Include="BroadcastStatus.cs" />
     <Compile Include="CraneFunction.cs" />
@@ -60,6 +64,7 @@
     <Compile Include="CraneNumber.cs" />
     <Compile Include="FifoMode.cs" />
     <Compile Include="LoadLayoutConfigurationItem.cs" />
+    <Compile Include="SizingTestResult.cs" />
     <Compile Include="SlugLetter.cs" />
     <Compile Include="SlugPickPriority.cs" />
     <Compile Include="LoadTrailerMessageData.cs" />
@@ -80,6 +85,7 @@
     <Compile Include="VehicleRow.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Magna.ico" />
     <Content Include="Properties\ConfigurationReference.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

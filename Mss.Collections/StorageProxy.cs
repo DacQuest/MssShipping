@@ -43,38 +43,58 @@ namespace Mss.Collections
             }
         }
 
-        public int GetEmptyBinCount(CraneNumber craneNumber)
-        {
-            return Items
+        public int GetEmptyLargeBinCount(CraneNumber craneNumber)
+            => Items
                 .Count(b =>
-                {
-                    return b.CraneNumber == craneNumber
-                        && b.BinStatus == BinStatus.Empty
-                        && !b.Audit
-                        && !b.PickOnly
-                        && !b.Disabled
-                        && !b.NotUsable;
-                });
-        }
+                    (b.CraneNumber == craneNumber || craneNumber == CraneNumber.None)
+                    && b.BinStatus == BinStatus.Empty
+                    && b.BinSize == BinSize.Large
+                    && !b.Audit
+                    && !b.PickOnly
+                    && !b.Disabled
+                    && !b.NotUsable);
 
-        public void GetEmptyBinCountPerCrane(
+        public void GetEmptyLargeBinCountPerCrane(
             out int crane1Count,
             out int crane2Count,
             out int crane3Count,
             out int crane4Count)
         {
-            crane1Count = GetEmptyBinCount(CraneNumber.Crane1);
-            crane2Count = GetEmptyBinCount(CraneNumber.Crane2);
-            crane3Count = GetEmptyBinCount(CraneNumber.Crane3);
-            crane4Count = GetEmptyBinCount(CraneNumber.Crane4);
+            crane1Count = GetEmptyLargeBinCount(CraneNumber.Crane1);
+            crane2Count = GetEmptyLargeBinCount(CraneNumber.Crane2);
+            crane3Count = GetEmptyLargeBinCount(CraneNumber.Crane3);
+            crane4Count = GetEmptyLargeBinCount(CraneNumber.Crane4);
+        }
+
+        public int GetEmptySmallBinCount(CraneNumber craneNumber)
+            => Items
+                .Count(b =>
+                    (b.CraneNumber == craneNumber || craneNumber == CraneNumber.None)
+                    && b.BinStatus == BinStatus.Empty
+                    && b.BinSize == BinSize.Small
+                    && !b.Audit
+                    && !b.PickOnly
+                    && !b.Disabled
+                    && !b.NotUsable);
+
+        public void GetEmptySmallBinCountPerCrane(
+            out int crane1Count,
+            out int crane2Count,
+            out int crane3Count,
+            out int crane4Count)
+        {
+            crane1Count = GetEmptySmallBinCount(CraneNumber.Crane1);
+            crane2Count = GetEmptySmallBinCount(CraneNumber.Crane2);
+            crane3Count = GetEmptySmallBinCount(CraneNumber.Crane3);
+            crane4Count = GetEmptySmallBinCount(CraneNumber.Crane4);
         }
 
         public int GetPalletCount(CraneNumber craneNumber)
         {
             return Items
                 .Count(b => b.CraneNumber == craneNumber
-                    && b.Pallet.Sku != Constant.FrontStackSku
-                    && b.Pallet.Sku != Constant.RearStackSku
+                    && b.Pallet.Sku != Constant.StackSku1
+                    && b.Pallet.Sku != Constant.StackSku2
                     && b.Pallet.Status != PalletStatus.Invalid);
         }
 
@@ -97,7 +117,7 @@ namespace Mss.Collections
             XArgumentChecker.ThrowIfNotContainedIn(
                 stackSku,
                 nameof(stackSku),
-                new string[] { Constant.FrontStackSku, Constant.RearStackSku });
+                new string[] { Constant.StackSku1, Constant.StackSku2 });
 
             return Items
                 .Count(b =>

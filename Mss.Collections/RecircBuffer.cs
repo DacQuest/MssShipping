@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Mss.Collections
 {
-    public abstract class RecircLoop : XSharedDictionary<string, PalletItem>
+    public abstract class RecircBuffer : XSharedDictionary<string, PalletItem>
     {
         public abstract Levels Level { get; }
 

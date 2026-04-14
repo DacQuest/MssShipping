@@ -168,13 +168,13 @@ namespace Mss.Views
             _chkCrane1.Checked = true;
             _chkCrane2.Checked = true;
             _chkCrane3.Checked = true;
-//             chkCrane4.Checked = true;
+            _chkCrane4.Checked = true;
 
             _chkApplyVehicleRow.Checked = false;
 //             _searchRows = _searchRow1 + _searchRow2 + _searchRow3;
             _searchRows = SearchFront + SearchMid;
             _chkFront.Checked = true;
-//             chkRow3.Checked = true;
+            _chkRear.Checked = true;
 
             _chkApplyBinAttributes.Checked = false;
             _audit = false;

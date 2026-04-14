@@ -33,22 +33,23 @@ namespace Mss.Views
         public const int ColumnCount = 5;
 
         public const int PalletCountRowIndex = 1;
-        public const int EmptyBinCountRowIndex = 2;
-        public const int FrontStackCountRowIndex = 3;
-        public const int RearStackCountRowIndex = 4;
-        public const int CraneModeRowIndex = 5;
-        public const int UpperInboundsRowIndex = 6;
-        public const int LowerInboundsRowIndex = 7;
-        public const int UpperOutboundsRowIndex = 8;
-        public const int LowerOutboundsRowIndex = 9;
-        public const int PrioritizeAuditPicksRowIndex = 10;
-        public const int AuditPicksRowIndex = 11;
-        public const int AutoCompactRowIndex = 12;
-        public const int StoresRowIndex = 13;
-        public const int LoadPicksRowIndex = 14;
-        public const int PurgePicksRowIndex = 15;
-        public const int StackPicksRowIndex = 16;
-        public const int RowCount = 17;
+        public const int EmptyLargeBinCountRowIndex = 2;
+        public const int EmptySmallBinCountRowIndex = 3;
+        public const int FrontStackCountRowIndex = 4;
+        public const int RearStackCountRowIndex = 5;
+        public const int CraneModeRowIndex = 6;
+        public const int UpperInboundsRowIndex = 7;
+        public const int LowerInboundsRowIndex = 8;
+        public const int UpperOutboundsRowIndex = 9;
+        public const int LowerOutboundsRowIndex = 10;
+        public const int PrioritizeAuditPicksRowIndex = 11;
+        public const int AuditPicksRowIndex = 12;
+        public const int AutoCompactRowIndex = 13;
+        public const int StoresRowIndex = 14;
+        public const int LoadPicksRowIndex = 15;
+        public const int PurgePicksRowIndex = 16;
+        public const int StackPicksRowIndex = 17;
+        public const int RowCount = 18;
 
         private SystemSettingsProxy _systemSettingsProxy = null;
         private StorageProxy _storageProxy = null;
@@ -141,8 +142,11 @@ namespace Mss.Views
                         case PalletCountRowIndex:
                             rowName = "Pallet Count";
                             break;
-                        case EmptyBinCountRowIndex:
-                            rowName = "Empty Bins";
+                        case EmptyLargeBinCountRowIndex:
+                            rowName = "Large Empty Bins";
+                            break;
+                        case EmptySmallBinCountRowIndex:
+                            rowName = "Small Empty Bins";
                             break;
                         case FrontStackCountRowIndex:
                             rowName = "Front Stacks";
@@ -449,30 +453,52 @@ namespace Mss.Views
             cell.Value = crane4Count;
             this[PalletCountRowIndex, Crane4ColumnIndex] = cell;
 
-            _storageProxy.GetEmptyBinCountPerCrane(
+            _storageProxy.GetEmptyLargeBinCountPerCrane(
                 out crane1Count,
                 out crane2Count,
                 out crane3Count,
                 out crane4Count);
 
-            cell = this[EmptyBinCountRowIndex, Crane1ColumnIndex];
+            cell = this[EmptyLargeBinCountRowIndex, Crane1ColumnIndex];
             cell.Value = crane1Count;
-            this[EmptyBinCountRowIndex, Crane1ColumnIndex] = cell;
+            this[EmptyLargeBinCountRowIndex, Crane1ColumnIndex] = cell;
 
-            cell = this[EmptyBinCountRowIndex, Crane2ColumnIndex];
+            cell = this[EmptyLargeBinCountRowIndex, Crane2ColumnIndex];
             cell.Value = crane2Count;
-            this[EmptyBinCountRowIndex, Crane2ColumnIndex] = cell;
+            this[EmptyLargeBinCountRowIndex, Crane2ColumnIndex] = cell;
 
-            cell = this[EmptyBinCountRowIndex, Crane3ColumnIndex];
+            cell = this[EmptyLargeBinCountRowIndex, Crane3ColumnIndex];
             cell.Value = crane3Count;
-            this[EmptyBinCountRowIndex, Crane3ColumnIndex] = cell;
+            this[EmptyLargeBinCountRowIndex, Crane3ColumnIndex] = cell;
 
-            cell = this[EmptyBinCountRowIndex, Crane4ColumnIndex];
+            cell = this[EmptyLargeBinCountRowIndex, Crane4ColumnIndex];
             cell.Value = crane4Count;
-            this[EmptyBinCountRowIndex, Crane4ColumnIndex] = cell;
+            this[EmptyLargeBinCountRowIndex, Crane4ColumnIndex] = cell;
+
+            _storageProxy.GetEmptySmallBinCountPerCrane(
+                out crane1Count,
+                out crane2Count,
+                out crane3Count,
+                out crane4Count);
+
+            cell = this[EmptySmallBinCountRowIndex, Crane1ColumnIndex];
+            cell.Value = crane1Count;
+            this[EmptySmallBinCountRowIndex, Crane1ColumnIndex] = cell;
+
+            cell = this[EmptySmallBinCountRowIndex, Crane2ColumnIndex];
+            cell.Value = crane2Count;
+            this[EmptySmallBinCountRowIndex, Crane2ColumnIndex] = cell;
+
+            cell = this[EmptySmallBinCountRowIndex, Crane3ColumnIndex];
+            cell.Value = crane3Count;
+            this[EmptySmallBinCountRowIndex, Crane3ColumnIndex] = cell;
+
+            cell = this[EmptySmallBinCountRowIndex, Crane4ColumnIndex];
+            cell.Value = crane4Count;
+            this[EmptySmallBinCountRowIndex, Crane4ColumnIndex] = cell;
 
             _storageProxy.GetStackCountPerCrane(
-                Constant.FrontStackSku,
+                Constant.StackSku1,
                 out crane1Count,
                 out crane2Count,
                 out crane3Count,
@@ -495,7 +521,7 @@ namespace Mss.Views
             this[FrontStackCountRowIndex, Crane4ColumnIndex] = cell;
 
             _storageProxy.GetStackCountPerCrane(
-                Constant.RearStackSku,
+                Constant.StackSku2,
                 out crane1Count,
                 out crane2Count,
                 out crane3Count,

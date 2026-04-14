@@ -73,7 +73,8 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "The last CSN released to a load for picking.")]
+            Comment = "The last CSN released to a load for picking.",
+            MaxLength = Constant.CsnLength)]
         public string LastCsnReleased
         {
             get => GetString(nameof(LastCsnReleased));
@@ -161,9 +162,6 @@ namespace Mss.Collections
             get => GetDateTime(nameof(SlugBLoadCompletedOn));
             set => SetDateTime(nameof(SlugBLoadCompletedOn), value);
         }
-
-
-
 
         [XDataItemProperty(
             Comment = "Determines whether Crane Lower Inbounds will accept pallets.",

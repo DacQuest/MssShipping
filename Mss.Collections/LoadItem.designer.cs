@@ -14,6 +14,7 @@ namespace Mss.Collections
         public LoadItem()
         {
             SetByteConverter<LoadItem>();
+            PickedOn = Constant.BeforeBeginningOfTime;
         }
 
         [XDataItemProperty(
@@ -73,30 +74,39 @@ namespace Mss.Collections
             }
         }
 
-        [XDataItemProperty(
-            Comment = ".")]
-        public PickMode PickMode
-        {
-            get => GetEnum<PickMode>(nameof(PickMode));
-            set => SetEnum(nameof(PickMode), value);
-        }
-
-        [XDataItemProperty(
-            Comment = ".",
-            MaxLength = Constant.PalletIDLength)]
-        public string PickModePalletID
-        {
-            get => GetString(nameof(PickModePalletID));
-            set => SetString(nameof(PickModePalletID), value);
-        }
-
-        [XDataItemProperty(
-            Comment = ".")]
-        public int PickModeJobID
-        {
-            get => GetInt32(nameof(PickModeJobID));
-            set => SetInt32(nameof(PickModeJobID), value);
-        }
+//         [XDataItemProperty(
+//             Comment = ".")]
+//         public PickMode PickMode
+//         {
+//             get => GetEnum<PickMode>(nameof(PickMode));
+//             set => SetEnum(nameof(PickMode), value);
+//         }
+// 
+//         [XDataItemProperty(
+//             Comment = ".",
+//             MaxLength = Constant.PickModeValueLength)]
+//         public string PickModeValue
+//         {
+//             get => GetString(nameof(PickModeValue));
+//             set => SetString(nameof(PickModeValue), value);
+//         }
+// 
+//         [XDataItemProperty(
+//             Comment = ".",
+//             MaxLength = Constant.PalletIDLength)]
+//         public string PickModePalletID
+//         {
+//             get => GetString(nameof(PickModePalletID));
+//             set => SetString(nameof(PickModePalletID), value);
+//         }
+// 
+//         [XDataItemProperty(
+//             Comment = ".")]
+//         public int PickModeJobID
+//         {
+//             get => GetInt32(nameof(PickModeJobID));
+//             set => SetInt32(nameof(PickModeJobID), value);
+//         }
 
         [XDataItemProperty(
             Comment = "The Broadcast Item providing the requirements for this Load Item.",

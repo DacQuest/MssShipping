@@ -7,14 +7,14 @@ using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Core.SystemEvents;
 using Mss.Collections;
 using Mss.Common;
-using Mss.Data.Pocos;
+using Mss.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mss.Data
+namespace Mss.Services
 {
     public class MesInterfaceService : XService
     {
@@ -31,8 +31,8 @@ namespace Mss.Data
         private SystemSettings _systemSettings;
         private Broadcast _broadcast;
         private HoldCodes _holdCodes;
-        private LowerRecirc _lowerRecirc;
-        private UpperRecirc _upperRecirc;
+        private LowerRecircBuffer _lowerRecircBuffer;
+        private UpperRecircBuffer _upperRecircBuffer;
         private SlugA _slugA;
         private SlugB _slugB;
 
@@ -48,15 +48,15 @@ namespace Mss.Data
         protected override bool OnStart()
         {
 
-            DataLayer = DataLayer.Factory(
+            DataLayer = DataLayer.Create(
                 out _storage,
                 out _lowerPit,
                 out _upperPit,
                 out _systemSettings,
                 out _broadcast,
                 out _holdCodes,
-                out _lowerRecirc,
-                out _upperRecirc,
+                out _lowerRecircBuffer,
+                out _upperRecircBuffer,
                 out _slugA,
                 out _slugB);
 

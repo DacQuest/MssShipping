@@ -13,9 +13,9 @@ namespace Mss.Collections
     [Serializable]
     public partial class BroadcastItem : XDataItem
     {
-        public int PickModeJobID => int.Parse(PickModeValue);
-
-        public string PickModePalletID => PickModeValue;
+//         public int PickModeJobID => int.Parse(PickModeValue);
+// 
+//         public string PickModePalletID => PickModeValue;
 
         public bool IsFrontBackBroadcast => Csn.EndsWith(Constant.VehicleRow1CsnSuffix);
 
@@ -69,7 +69,7 @@ namespace Mss.Collections
                 VehicleSku = string.Empty,
                 Vin = string.Empty,
                 PickMode = PickMode.BySku,
-                PickModeValue = string.Empty,
+                PickModeKey = string.Empty,
                 VehicleRowCount = 0,
                 ReceivedOn = DateTime.Now
             };
@@ -85,7 +85,7 @@ namespace Mss.Collections
                 VehicleSku = string.Empty,
                 Vin = string.Empty,
                 PickMode = PickMode.BySku,
-                PickModeValue = string.Empty,
+                PickModeKey = string.Empty,
                 VehicleRowCount = 0,
                 ReceivedOn = DateTime.Now
             };
@@ -109,6 +109,8 @@ namespace Mss.Collections
             _ = details.Append($"\r\n{spaces}Vehicle SKU:   {VehicleSku}");
             _ = details.Append($"\r\n{spaces}ReceivedOn:   {ReceivedOnText}");
             _ = details.Append($"\r\n{spaces}Vehicle Row Count:   {VehicleRowCount}");
+            _ = details.Append($"\r\n{spaces}Pick Mode:   {PickMode.ToText()}");
+            _ = details.Append($"\r\n{spaces}Pick Mode Key:   {PickModeKey}");
 
             return details.ToString();
         }

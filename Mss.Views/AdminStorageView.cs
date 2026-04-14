@@ -51,10 +51,11 @@ namespace Mss.Views
         //    return Constant.StorageName;
         //}
 
-        //protected override string GetIndexInfo(int index)
-        //{
-        //    return base.GetIndexInfo(index);
-        //}
+        protected override string GetIndexInfo(int index)
+        {
+            BinItem binItem = GetDataItemCopy(index);
+            return $"Bin Location: {binItem.LocationText}";
+        }
 
         //protected override void OpenView()
         //{

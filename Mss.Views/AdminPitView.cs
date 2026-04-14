@@ -31,16 +31,11 @@ namespace Mss.Views
         //    return Constant.;
         //}
 
-        protected override string GetKeyInfo(Object key)
+        protected override string GetKeyInfo(object key)
         {
-            if (key == null)
-            {
-                return string.Empty;
-            }
-            else
-            {
-                return string.Format("Key {0}", key.ToString());
-            }
+            return key == null
+                ? string.Empty 
+                : string.Format("Pallet ID {0}", key.ToString());
         }
 
         //protected override void OpenView()

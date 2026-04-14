@@ -27,6 +27,22 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
+            Comment = "",
+            ReadOnlyInDataItemGrid = true)]
+        public BinSize BinSize
+        {
+            get => GetEnum<BinSize>(nameof(BinSize));
+            set
+            {
+                if (BinSize > BinSize.None)
+                {
+                    throw new InvalidOperationException("Cannot set BinItem.BinSize in code!");
+                }
+                SetEnum<BinSize>(nameof(BinSize), value);
+            }
+        }
+
+        [XDataItemProperty(
             Comment = "")]
         public bool Audit
         {
@@ -66,6 +82,23 @@ namespace Mss.Collections
             get => GetDateTime(nameof(StoredOn));
             set => SetDateTime(nameof(StoredOn), value);
         }
+
+//         [XDataItemProperty(
+//             Comment = ".",
+//             ReadOnlyInDataItemGrid = true)]
+//         public int Location
+//         {
+//             get => GetInt32(nameof(Location));
+//             // DO NOT SET SlugLetter IN CODE!
+//             set
+//             {
+//                 if (Location > 0)
+//                 {
+//                     throw new InvalidOperationException("Cannot set LoadItem.Location in code!");
+//                 }
+//                 SetInt32(nameof(Location), value);
+//             }
+//         }
 
 //         [XDataItemProperty(
 //             Comment = "")]

@@ -49,7 +49,6 @@ namespace Mss.Operations
         private bool _startup = true;
         private Levels _previousStoreLevel = Levels.None;
         private Levels _purgeLevel = Levels.None;
-        private Levels _stackPickLevel = Levels.None;
 
         public OperationCode OperationCode
         {
@@ -94,18 +93,18 @@ namespace Mss.Operations
             set => SetVariable(PalletOnCraneName, value);
         }
 
-        protected string PalletAtLowerInboundName = "Pallet At Lower Inbound";
-        protected bool PalletAtLowerInbound
+        protected string LowerInboundPalletIDName = "Lower Inbound Pallet ID";
+        protected string LowerInboundPalletID
         {
-            get => GetVariable<bool>(PalletAtLowerInboundName);
-            set => SetVariable(PalletAtLowerInboundName, value);
+            get => GetVariable<string>(LowerInboundPalletIDName);
+            set => SetVariable(LowerInboundPalletIDName, value);
         }
 
-        protected string PalletAtUpperInboundName = "Pallet At Upper Inbound";
-        protected bool PalletAtUpperInbound
+        protected string UpperInboundPalletIDName = "Upper Inbound Pallet ID";
+        protected string UpperInboundPalletID
         {
-            get => GetVariable<bool>(PalletAtUpperInboundName);
-            set => SetVariable(PalletAtUpperInboundName, value);
+            get => GetVariable<string>(UpperInboundPalletIDName);
+            set => SetVariable(UpperInboundPalletIDName, value);
         }
 
         protected string LowerOutboundClearName = "Lower Outbound Clear";
@@ -183,8 +182,8 @@ namespace Mss.Operations
         private SystemSettings _systemSettings;
         private Broadcast _broadcast;
         private HoldCodes _holdCodes;
-        private LowerRecirc _lowerRecirc;
-        private UpperRecirc _upperRecirc;
+        private LowerRecircBuffer _lowerRecirc;
+        private UpperRecircBuffer _upperRecirc;
         private SlugA _slugA;
         private SlugB _slugB;
 
@@ -387,8 +386,11 @@ namespace Mss.Operations
                     case CraneFunction.PurgePick:
                         PickFunctionPriority.Add(new PickFunction(craneFunction, TryPurgePick));
                         break;
-                    case CraneFunction.StackPick:
-                            PickFunctionPriority.Add(new PickFunction(craneFunction, TryStackPick));
+                    case CraneFunction.Stack1Pick:
+                        PickFunctionPriority.Add(new PickFunction(craneFunction, TryFrontStackPick));
+                        break;
+                    case CraneFunction.Stack2Pick:
+                        PickFunctionPriority.Add(new PickFunction(craneFunction, TryRearStackPick));
                         break;
                     default:
                         break;
@@ -426,7 +428,6 @@ namespace Mss.Operations
             base.ResetOperationVariables();
 
             _purgeLevel = Levels.None;
-            _stackPickLevel = Levels.None;
 
             GetCommand = Constant.NoCraneCommand;
             PutCommand = Constant.NoCraneCommand;
@@ -448,13 +449,12 @@ namespace Mss.Operations
         {
             _startup = true;
             _purgeLevel = Levels.None;
-            _stackPickLevel = Levels.None;
 
             CraneMode = CraneMode.Manual;
             PalletID = Constant.NoPalletID;
             PalletOnCrane = false;
-            PalletAtLowerInbound = false;
-            PalletAtUpperInbound = false;
+            LowerInboundPalletID = string.Empty;
+            UpperInboundPalletID = string.Empty;
             LowerOutboundClear = false;
             UpperOutboundClear = false;
             CurrentCraneFunction = CraneFunction.None;
@@ -469,7 +469,7 @@ namespace Mss.Operations
             SemiAutoGetLocation = Constant.NoSemiAutoLocation;
             SemiAutoPutLocation = Constant.NoSemiAutoLocation;
 
-            DataLayer = DataLayer.Factory(
+            DataLayer = DataLayer.Create(
                 out _storage,
                 out _lowerPit,
                 out _upperPit,
@@ -508,24 +508,24 @@ namespace Mss.Operations
                _PalletOnCrane_TagValueChanged,
                XTagDataCaptureUpdateMode.OnChange);
 
-            tagData = ReadPlc(Constant.PalletAtLowerInboundRoleName);
-            if (tagData.TryGetTagValue(out bool palletAtInbound))
+            tagData = ReadPlc(Constant.LowerInboundPalletIDRoleName);
+            if (tagData.TryGetTagValue(out string inboundPalletID))
             {
-                PalletAtLowerInbound = palletAtInbound;
+                LowerInboundPalletID = inboundPalletID;
             }
             StartPlcTagCapture(
-               Constant.PalletAtLowerInboundRoleName,
-               _PalletAtLowerInbound_TagValueChanged,
+               Constant.LowerInboundPalletIDRoleName,
+               _LowerInboundPalletID_TagValueChanged,
                XTagDataCaptureUpdateMode.OnRefresh);
 
-            tagData = ReadPlc(Constant.PalletAtUpperInboundRoleName);
-            if (tagData.TryGetTagValue(out palletAtInbound))
+            tagData = ReadPlc(Constant.UpperInboundPalletIDRoleName);
+            if (tagData.TryGetTagValue(out inboundPalletID))
             {
-                PalletAtUpperInbound = palletAtInbound;
+                UpperInboundPalletID = inboundPalletID;
             }
             StartPlcTagCapture(
-               Constant.PalletAtUpperInboundRoleName,
-               _PalletAtUpperInbound_TagValueChanged,
+               Constant.UpperInboundPalletIDRoleName,
+               _UpperInboundPalletID_TagValueChanged,
                XTagDataCaptureUpdateMode.OnRefresh);
 
             tagData = ReadPlc(Constant.LowerOutboundClearRoleName);
@@ -719,8 +719,7 @@ namespace Mss.Operations
                 fault = string.Empty;
                 return true;
             }
-            return MesInterface.TryFetchPalletItem(
-                OperationCode,
+            return QueryMesPallet(
                 palletID,
                 out palletItem,
                 out fault);
@@ -833,20 +832,11 @@ namespace Mss.Operations
 
             ClearExtendedState(true);
 
-            if (CurrentPallet != null)
-            {
-                PalletEventTracker.Capture(
-                    CurrentPallet,
-                    OperationCode,
-                    PalletEvent.RecoveringPalletOnStartUp);
-            }
-            else
-            {
-                PalletEventTracker.Capture(
-                    PalletID,
-                    OperationCode,
-                    PalletEvent.RecoveringPalletOnStartUp);
-            }
+            PalletEventTracker.Capture(
+                PalletID,
+                CurrentPallet,
+                OperationCode,
+                PalletEvent.RecoveringPalletOnStartUp);
 
             if (DoGetCompleted())
             {
@@ -975,8 +965,7 @@ namespace Mss.Operations
                     || palletItem.Sku.IsNullOrWhiteSpace()
                     || palletItem.PalletID != PalletID)
                 {
-                    if (!MesInterface.TryFetchPalletItem(
-                        OperationCode,
+                    if (!QueryMesPallet(
                         PalletID,
                         out palletItem,
                         out _))
@@ -1137,22 +1126,13 @@ namespace Mss.Operations
 
         protected void SendGetCommand(int getCommand)
         {
-            if (CurrentPallet != null)
-            {
-                PalletEventTracker.Capture(
-                    CurrentPallet,
-                    OperationCode,
-                    PalletEvent.GetSent,
-                    getCommand);
-            }
-            else
-            {
-                PalletEventTracker.Capture(
-                    PalletID,
-                    OperationCode,
-                    PalletEvent.GetSent,
-                    getCommand);
-            }
+            PalletEventTracker.Capture(
+                PalletID,
+                CurrentPallet,
+                OperationCode,
+                PalletEvent.GetSent,
+                getCommand);
+
             GetCommand = getCommand;
             WritePlc(
                 Constant.CraneCommandRoleName,
@@ -1168,43 +1148,77 @@ namespace Mss.Operations
             getCommand = Constant.NoCraneCommand;
             extendedState = string.Empty;
             fault = string.Empty;
-            if ((PalletAtLowerInbound || PalletAtUpperInbound)
-                && DataLayer.CanDoStore(CraneNumber))
+            if (!LowerInboundPalletID.ValidPalletID()
+                && !UpperInboundPalletID.ValidPalletID())
+            {
+                return false;
+            }
+            getCommand = _GetStoreGetCommand(out Levels level, out string inboundPalletID);
+//             if (DataLayer.CanDoStore(
+//                 OperationCode,
+//                 CraneNumber,
+//                 level,
+//                 inboundPalletID,
+//                 out fault))
+//             {
+//                 if (CheckForFault(fault))
+//                 {
+//                     TelemetrySetCraneFaulted(fault);
+//                 }
+//                 return false;
+//             }
+//             CurrentCraneFunction = CraneFunction.Store;
+//             _previousStoreLevel = level;
+//             extendedState = $"({Constant.PalletTypeStore})  Getting Pallet {inboundPalletID} from {level.ToText()} Inbound ({getCommand})";
+//             return true;
+            if (DataLayer.CanDoStore(
+                OperationCode,
+                CraneNumber,
+                level,
+                inboundPalletID,
+                out fault))
             {
                 CurrentCraneFunction = CraneFunction.Store;
-                getCommand = _GetStoreCommand();
-                extendedState = $"({Constant.PalletTypeStore})  Getting Pallet from Inbound ({getCommand})";
+                _previousStoreLevel = level;
+                extendedState = $"({Constant.PalletTypeStore})  Getting Pallet {inboundPalletID} from {level.ToText()} Inbound ({getCommand})";
                 return true;
             }
+            getCommand = Constant.NoCraneCommand;
             return false;
         }
 
-        private int _GetStoreCommand()
+        private int _GetStoreGetCommand(
+            out Levels level,
+            out string inboundPalletID)
         {
             // Pallet is guaranteed to be at one of the Inbound Levels
             if (_previousStoreLevel == Levels.Lower )
             {
-                if (PalletAtUpperInbound)
+                if (UpperInboundPalletID.ValidPalletID())
                 {
-                    _previousStoreLevel = Levels.Upper;
+                    inboundPalletID = UpperInboundPalletID;
+                    level = Levels.Upper;
                     return UpperInboundLocation;
                 }
-                else // PalletAtLowerInbound
+                else //if (LowerInboundPalletID.ValidPalletID())
                 {
-                    _previousStoreLevel = Levels.Lower;
+                    inboundPalletID = LowerInboundPalletID;
+                    level = Levels.Lower;
                     return LowerInboundLocation;
                 }
             }
             else
             {
-                if (PalletAtLowerInbound)
+                if (LowerInboundPalletID.ValidPalletID())
                 {
-                    _previousStoreLevel = Levels.Lower;
+                    inboundPalletID = LowerInboundPalletID;
+                    level = Levels.Lower;
                     return LowerInboundLocation;
                 }
-                else // PalletAtUpperInbound
+                else //if (UpperInboundPalletID.ValidPalletID())
                 {
-                    _previousStoreLevel = Levels.Upper;
+                    inboundPalletID = UpperInboundPalletID;
+                    level = Levels.Upper;
                     return UpperInboundLocation;
                 }
             }
@@ -1252,24 +1266,43 @@ namespace Mss.Operations
             return true;
         }
 
-        protected bool TryStackPick(
+        protected bool TryFrontStackPick(
             out int getCommand,
             out string extendedState,
             out object extra)
         {
             extra = null;
-            if (!DataLayer.TryStackPick(
+            if (!DataLayer.TryFrontStackPick(
                 CraneNumber,
-                LowerOutboundClear,
                 UpperOutboundClear,
-                out _stackPickLevel,
                 out PalletItem palletItem,
                 out getCommand,
                 out extendedState))
             {
                 return false;
             }
-            CurrentCraneFunction = CraneFunction.StackPick;
+            CurrentCraneFunction = CraneFunction.Stack1Pick;
+            CurrentLoadItem = null;
+            CurrentPallet = palletItem;
+            return true;
+        }
+
+        protected bool TryRearStackPick(
+            out int getCommand,
+            out string extendedState,
+            out object extra)
+        {
+            extra = null;
+            if (!DataLayer.TryRearStackPick(
+                CraneNumber,
+                UpperOutboundClear,
+                out PalletItem palletItem,
+                out getCommand,
+                out extendedState))
+            {
+                return false;
+            }
+            CurrentCraneFunction = CraneFunction.Stack2Pick;
             CurrentLoadItem = null;
             CurrentPallet = palletItem;
             return true;
@@ -1309,27 +1342,18 @@ namespace Mss.Operations
         {
             if (InvalidLocationError)
             {
-                if (CurrentPallet != null)
-                {
-                    PalletEventTracker.Capture(
-                        CurrentPallet,
-                        OperationCode,
-                        PalletEvent.InvalidLocationError,
-                        GetCommand);
-                }
-                else
-                {
-                    PalletEventTracker.Capture(
-                        PalletID,
-                        OperationCode,
-                        PalletEvent.InvalidLocationError,
-                        GetCommand);
-                }
+                PalletEventTracker.Capture(
+                    PalletID,
+                    CurrentPallet,
+                    OperationCode,
+                    PalletEvent.InvalidLocationError,
+                    GetCommand);
+
                 XSystemEvent.Publish(
                     CraneNumber.ToText(),
                     XSystemEventLevel.Error,
-                    $"{GetCommand} is an Invalid Location!");
-                DataLayer.SetStorageLocationToDisabled(CraneNumber, GetCommand);
+                    $"{GetCommand} is an Invalid Location! Setting to Offline/Disabled.");
+                DataLayer.SetStorageLocationToOfflineDisabled(CraneNumber, GetCommand);
                 CurrentCraneFunction = CraneFunction.None;
                 ClearGetLocationError();
                 ClearExtendedState(true);
@@ -1337,22 +1361,13 @@ namespace Mss.Operations
             }
             else if (LocationEmptyError)
             {
-                if (CurrentPallet != null)
-                {
-                    PalletEventTracker.Capture(
-                        CurrentPallet,
-                        OperationCode,
-                        PalletEvent.LocationEmptyError,
-                        GetCommand);
-                }
-                else
-                {
-                    PalletEventTracker.Capture(
-                        PalletID,
-                        OperationCode,
-                        PalletEvent.LocationEmptyError,
-                        GetCommand);
-                }
+                PalletEventTracker.Capture(
+                    PalletID,
+                    CurrentPallet,
+                    OperationCode,
+                    PalletEvent.LocationEmptyError,
+                    GetCommand);
+
                 switch (CurrentCraneFunction)
                 {
                     case CraneFunction.LoadPick:
@@ -1360,7 +1375,8 @@ namespace Mss.Operations
                         DataLayer.ClearStorageBinByLocation(GetCommand);
                         break;
                     case CraneFunction.PurgePick:
-                    case CraneFunction.StackPick:
+                    case CraneFunction.Stack1Pick:
+                    case CraneFunction.Stack2Pick:
                     case CraneFunction.Audit:
                         DataLayer.ClearStorageBinByLocation(GetCommand);
                         break;
@@ -1386,19 +1402,13 @@ namespace Mss.Operations
                 if (CurrentPallet != null)
                 {
                     PalletEventTracker.Capture(
+                        PalletID,
                         CurrentPallet,
                         OperationCode,
                         PalletEvent.GetCompleted,
                         GetCommand);
                 }
-                else
-                {
-                    PalletEventTracker.Capture(
-                        PalletID,
-                        OperationCode,
-                        PalletEvent.GetCompleted,
-                        GetCommand);
-                }
+
                 if (DoGetCompleted())
                 {
                     TelemetrySetCurrentState(AssigningPutTaskState);
@@ -1420,15 +1430,6 @@ namespace Mss.Operations
             string fault;
             switch (CurrentCraneFunction)
             {
-//                 case CraneFunction.QAStore:
-//                     if (!QueryMesPallet(PalletID, out palletItem, out fault))
-//                     {
-//                         TelemetrySetCraneFaulted(fault);
-//                         return false;
-//                     }
-//                     CurrentPallet = palletItem;
-//                     DataLayer.MarkDuplicatesForAudit(CurrentPallet.PalletID);
-//                     break;
                 case CraneFunction.Store:
                     Levels level = GetCommand % 2 == 0
                         ? Levels.Upper
@@ -1458,8 +1459,10 @@ namespace Mss.Operations
                             {
                                 palletItem.Comment = CurrentPallet.Comment;
                             }
-                            if (CurrentPallet.Status == PalletStatus.Hold
-                                || CurrentPallet.Status == PalletStatus.Purge)
+                            if (palletItem.Status != PalletStatus.Hold
+                                && palletItem.Status != PalletStatus.Purge
+                                && (CurrentPallet.Status == PalletStatus.Hold
+                                    || CurrentPallet.Status == PalletStatus.Purge))
                             {
                                 palletItem.Status = CurrentPallet.Status;
                             }
@@ -1482,14 +1485,15 @@ namespace Mss.Operations
                         XSystemEvent.Publish(
                             CraneNumber.ToText(),
                             XSystemEventLevel.Error,
-                            $"Actual Q/A Pick Pallet ID {PalletID} did not match Inventory Pallet ID {CurrentPallet.PalletID} for Location {GetCommand}. Restoring pallet with correct data.");
+                            $"Actual {Constant.PalletTypePurge} Pallet ID {PalletID} did not match Inventory Pallet ID {CurrentPallet.PalletID} for Location {GetCommand}. Restoring pallet with correct data.");
                         CurrentPallet = palletItem;
                         CurrentCraneFunction = CraneFunction.Store;
                         PublishStateDetails();
                     }
                     DataLayer.CompleteStorageGetByLocation(GetCommand);
                     break;
-                case CraneFunction.StackPick:
+                case CraneFunction.Stack1Pick:
+                case CraneFunction.Stack2Pick:
                     if (PalletID != CurrentPallet.PalletID)
                     {
                         DataLayer.FlagAsDuplicate(CurrentPallet.PalletID);
@@ -1499,10 +1503,13 @@ namespace Mss.Operations
                             TelemetrySetCraneFaulted(fault);
                             return false;
                         }
+                        string palletType = CurrentCraneFunction == CraneFunction.Stack1Pick
+                            ? Constant.PalletTypeStack1
+                            : Constant.PalletTypeStack2;
                         XSystemEvent.Publish(
                             CraneNumber.ToText(),
                             XSystemEventLevel.Error,
-                            $"Actual Empty Pick Pallet ID {PalletID} did not match Inventory Pallet ID {CurrentPallet.PalletID} for Location {GetCommand}. Restoring pallet with correct data.");
+                            $"Actual {palletType} Pallet ID {PalletID} did not match Inventory Pallet ID {CurrentPallet.PalletID} for Location {GetCommand}. Restoring pallet with correct data.");
                         CurrentPallet = palletItem;
                         CurrentCraneFunction = CraneFunction.Store;
                         PublishStateDetails();
@@ -1522,18 +1529,22 @@ namespace Mss.Operations
                         XSystemEvent.Publish(
                             CraneNumber.ToText(),
                             XSystemEventLevel.Error,
-                            $"Actual Load Pick Pallet ID {PalletID} did not match Inventory Pallet ID {CurrentPallet.PalletID} for Location {GetCommand}. Restored pallet with correct data and Rolled Back Pick.");
+                            $"Actual {Constant.PalletTypeLoad} Pallet ID {PalletID} did not match Inventory Pallet ID {CurrentPallet.PalletID} for Location {GetCommand}. Restored pallet with correct data and Rolled Back Pick.");
                         CurrentPallet = palletItem;
+
+                        //??? BOTH NECESSARY, OR ONLY ONE? WHICH ONE?
+                        DataLayer.RollBackLoadPick(CurrentPallet.PalletID, true);
                         DataLayer.RollBackLoadPick(PalletID, true);
+
                         CurrentCraneFunction = CraneFunction.Store;
                         PublishStateDetails();
                     }
-                    if (CurrentPallet.Sku != palletItem.Sku)
+                    else if (CurrentPallet.Sku != palletItem.Sku)
                     {
                         XSystemEvent.Publish(
                             CraneNumber.ToText(),
                             XSystemEventLevel.Error,
-                            $"Actual Load Pick Pallet SKU {palletItem.Sku} did not match Inventory Pallet SKU {CurrentPallet.Sku} for Location {GetCommand}. Restored pallet with correct data and Rolled Back Pick.");
+                            $"Actual {Constant.PalletTypeLoad} Pallet SKU {palletItem.Sku} did not match Inventory Pallet SKU {CurrentPallet.Sku} for Location {GetCommand}. Restored pallet with correct data and Rolled Back Pick.");
                         CurrentPallet = palletItem;
                         DataLayer.RollBackLoadPick(PalletID, true);
                         CurrentCraneFunction = CraneFunction.Store;
@@ -1546,8 +1557,7 @@ namespace Mss.Operations
                     TelemetrySetCraneFaulted($"GET Completed with Current Crane Function of '{CurrentCraneFunction.ToText()}'");
                     return false;
             }
-            DataLayer.RemovePitPallet(CurrentPallet.PalletID);
-            TelemetrySetCurrentState(AssigningPutTaskState, string.Empty);
+            DataLayer.RemovePitPallet(PalletID);
             return true;
         }
 
@@ -1578,22 +1588,13 @@ namespace Mss.Operations
 
         protected void SendPutCommand(int putCommand)
         {
-            if (CurrentPallet != null)
-            {
-                PalletEventTracker.Capture(
-                    CurrentPallet,
-                    OperationCode,
-                    PalletEvent.PutSent,
-                    putCommand);
-            }
-            else
-            {
-                PalletEventTracker.Capture(
-                    PalletID,
-                    OperationCode,
-                    PalletEvent.PutSent,
-                    putCommand);
-            }
+            PalletEventTracker.Capture(
+                PalletID,
+                CurrentPallet,
+                OperationCode,
+                PalletEvent.PutSent,
+                putCommand);
+
             PutCommand = putCommand;
             WritePlc(
                 Constant.CraneCommandRoleName,
@@ -1610,19 +1611,21 @@ namespace Mss.Operations
                 case CraneFunction.Store:
                 case CraneFunction.Audit:
                     DataLayer.CompleteStorageGetByLocation(GetCommand);
-                    if (DataLayer.TryAssignHotJobAtCrane(
-                        CraneNumber,
-                        LowerOutboundClear,
-                        UpperOutboundClear,
-                        CurrentPallet,
-                        out LoadItem loadItem))
+                    if (CurrentPallet != null
+                        && !CurrentPallet.IsStack
+                        && DataLayer.TryAssignHotJobAtCrane(
+                            CraneNumber,
+                            LowerOutboundClear,
+                            UpperOutboundClear,
+                            CurrentPallet,
+                            out LoadItem loadItem))
                     {
                         DataLayer.RemovePitPallet(CurrentPallet.PalletID);
                         CurrentCraneFunction = CraneFunction.LoadPick;
                         CurrentLoadItem = loadItem;
                         CurrentPallet = CurrentLoadItem.Pallet;
                         putCommand = OutboundLocation(CurrentLoadItem.SlugLevel);
-                        extendedState = $"({Constant.PalletTypeHotJob})  Putting Hot Job Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
+                        extendedState = $"({Constant.PalletTypeHotJob})  Putting Hot Job Pallet {CurrentPallet.PalletID} to {CurrentLoadItem.SlugLevel.ToText()} Outbound ({putCommand})";
                         PublishStateDetails();
                     }
                     else if (CurrentPallet.IsStack
@@ -1661,15 +1664,19 @@ namespace Mss.Operations
                     break;
                 case CraneFunction.PurgePick:
                     putCommand = OutboundLocation(_purgeLevel);
-                    extendedState = $"({Constant.PalletTypePurge})  Putting Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
+                    extendedState = $"({Constant.PalletTypePurge})  Putting Pallet {CurrentPallet.PalletID} to {_purgeLevel.ToText()} Outbound ({putCommand})";
                     break;
-                case CraneFunction.StackPick:
-                    putCommand = OutboundLocation(_stackPickLevel);
-                    extendedState = $"({Constant.PalletTypeStack})  Putting Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
+                case CraneFunction.Stack1Pick:
+                    putCommand = OutboundLocation(Levels.Upper);
+                    extendedState = $"({Constant.PalletTypeStack1})  Putting Front Stack {CurrentPallet.PalletID} to Upper Outbound ({putCommand})";
+                    break;
+                case CraneFunction.Stack2Pick:
+                    putCommand = OutboundLocation(Levels.Upper);
+                    extendedState = $"({Constant.PalletTypeStack2})  Putting Rear Stack {CurrentPallet.PalletID} to Upper Outbound ({putCommand})";
                     break;
                 case CraneFunction.LoadPick:
                     putCommand = OutboundLocation(CurrentLoadItem.SlugLevel);
-                    extendedState = $"({Constant.PalletTypeLoad})  Putting Pallet {CurrentPallet.PalletID} to Outbound ({putCommand})";
+                    extendedState = $"({Constant.PalletTypeLoad})  Putting Pallet {CurrentPallet.PalletID} to {CurrentLoadItem.SlugLevel.ToText()} Outbound ({putCommand})";
                     break;
                 case CraneFunction.None:
                 default:
@@ -1691,27 +1698,18 @@ namespace Mss.Operations
         {
             if (InvalidLocationError)
             {
-                if (CurrentPallet != null)
-                {
-                    PalletEventTracker.Capture(
-                        CurrentPallet,
-                        OperationCode,
-                        PalletEvent.InvalidLocationError,
-                        PutCommand);
-                }
-                else
-                {
-                    PalletEventTracker.Capture(
-                        PalletID,
-                        OperationCode,
-                        PalletEvent.InvalidLocationError,
-                        PutCommand);
-                }
+                PalletEventTracker.Capture(
+                    PalletID,
+                    CurrentPallet,
+                    OperationCode,
+                    PalletEvent.InvalidLocationError,
+                    PutCommand);
+
                 XSystemEvent.Publish(
                     CraneNumber.ToText(),
                     XSystemEventLevel.Error,
                     $"{PutCommand} is an Invalid Location!");
-                DataLayer.SetStorageLocationToDisabled(CraneNumber, PutCommand);
+                DataLayer.SetStorageLocationToOfflineDisabled(CraneNumber, PutCommand);
                 ClearPutLocationError();
                 ClearExtendedState(true);
                 TelemetrySetCurrentState(AssigningPutTaskState);
@@ -1719,28 +1717,20 @@ namespace Mss.Operations
             }
             else if (LocationFullError)
             {
-                if (CurrentPallet != null)
-                {
-                    PalletEventTracker.Capture(
-                        CurrentPallet,
-                        OperationCode,
-                        PalletEvent.LocationFullError,
-                        PutCommand);
-                }
-                else
-                {
-                    PalletEventTracker.Capture(
-                        PalletID,
-                        OperationCode,
-                        PalletEvent.LocationFullError,
-                        PutCommand);
-                }
+                PalletEventTracker.Capture(
+                    PalletID,
+                    CurrentPallet,
+                    OperationCode,
+                    PalletEvent.LocationFullError,
+                    PutCommand);
+
                 switch (CurrentCraneFunction)
                 {
                     case CraneFunction.None:
                     case CraneFunction.LoadPick:
                     case CraneFunction.PurgePick:
-                    case CraneFunction.StackPick:
+                    case CraneFunction.Stack1Pick:
+                    case CraneFunction.Stack2Pick:
                         ClearPutLocationError();
                         TelemetrySetCraneFaulted($"Received Location Full Error during PUT of {CurrentCraneFunction.ToText()} to Location {PutCommand}");
                         break;
@@ -1755,22 +1745,13 @@ namespace Mss.Operations
             }
             else if (PutCompleted)
             {
-                if (CurrentPallet != null)
-                {
-                    PalletEventTracker.Capture(
-                        CurrentPallet,
-                        OperationCode,
-                        PalletEvent.PutCompleted,
-                        PutCommand);
-                }
-                else
-                {
-                    PalletEventTracker.Capture(
-                        PalletID,
-                        OperationCode,
-                        PalletEvent.PutCompleted,
-                        PutCommand);
-                }
+                PalletEventTracker.Capture(
+                    PalletID,
+                    CurrentPallet,
+                    OperationCode,
+                    PalletEvent.PutCompleted,
+                    PutCommand);
+
                 DoPutCompleted();
                 SetRewind();
             }
@@ -1817,9 +1798,10 @@ namespace Mss.Operations
                         CurrentPallet,
                         PitCode.Purge);
                     break;
-                case CraneFunction.StackPick:
+                case CraneFunction.Stack1Pick:
+                case CraneFunction.Stack2Pick:
                     DataLayer.SetPitPallet(
-                        _LevelFromOutboundLocation(PutCommand),
+                        Levels.Upper,
                         CurrentPallet,
                         PitCode.Stack);
                     break;
@@ -1832,9 +1814,9 @@ namespace Mss.Operations
 
         private Levels _LevelFromOutboundLocation(int outboundLocation)
         {
-            return outboundLocation % 2 == 1
-                ? Levels.Lower
-                : Levels.Upper;
+            return outboundLocation % 2 == 0
+                ? Levels.Upper
+                : Levels.Lower;
         }
 
         #endregion
@@ -1950,34 +1932,32 @@ namespace Mss.Operations
             }
         }
 
-        private void _PalletAtLowerInbound_TagValueChanged(object sender, XTagDataEventArgs e)
+        private void _LowerInboundPalletID_TagValueChanged(object sender, XTagDataEventArgs e)
         {
-            if (e.TagData.TryGetTagValue(out bool palletAtInbound))
+            if (e.TagData.TryGetTagValue(out string inboundPalletID))
             {
-                if (PalletAtLowerInbound != palletAtInbound)
+                if (LowerInboundPalletID != inboundPalletID)
                 {
-                    PublishFromCraneTelemetry("PalletAtLowerInbound", palletAtInbound.ToString());
+                    PublishFromCraneTelemetry("LowerInboundPalletID", inboundPalletID);
                 }
-                PalletAtLowerInbound = palletAtInbound;
-                string currentStateName = CurrentState.Name;
-                if (currentStateName == AwaitingGetTaskState)
+                LowerInboundPalletID = inboundPalletID;
+                if (CurrentState.Name == AwaitingGetTaskState)
                 {
                     RunCurrentStateHandler();
                 }
             }
         }
 
-        private void _PalletAtUpperInbound_TagValueChanged(object sender, XTagDataEventArgs e)
+        private void _UpperInboundPalletID_TagValueChanged(object sender, XTagDataEventArgs e)
         {
-            if (e.TagData.TryGetTagValue(out bool palletAtInbound))
+            if (e.TagData.TryGetTagValue(out string inboundPalletID))
             {
-                if (PalletAtUpperInbound != palletAtInbound)
+                if (UpperInboundPalletID != inboundPalletID)
                 {
-                    PublishFromCraneTelemetry("PalletAtUpperInbound", palletAtInbound.ToString());
+                    PublishFromCraneTelemetry("UpperInboundPalletID", inboundPalletID);
                 }
-                PalletAtUpperInbound = palletAtInbound;
-                string currentStateName = CurrentState.Name;
-                if (currentStateName == AwaitingGetTaskState)
+                UpperInboundPalletID = inboundPalletID;
+                if (CurrentState.Name == AwaitingGetTaskState)
                 {
                     RunCurrentStateHandler();
                 }

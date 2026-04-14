@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Mss.Collections
 {
-    public class LowerRecirc : RecircLoop
+    public class UpperRecircBuffer : RecircBuffer
     {
-        public override Levels Level => Levels.Lower;
+        public override Levels Level => Levels.Upper;
 
     }
 }

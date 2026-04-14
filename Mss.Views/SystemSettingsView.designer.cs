@@ -72,7 +72,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 152);
+            this.label2.Location = new System.Drawing.Point(10, 51);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(98, 13);
             this.label2.TabIndex = 8;
@@ -84,9 +84,9 @@
             this._lblAutoAcceptLoads.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblAutoAcceptLoads.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblAutoAcceptLoads.ForeColor = System.Drawing.Color.White;
-            this._lblAutoAcceptLoads.Location = new System.Drawing.Point(143, 146);
+            this._lblAutoAcceptLoads.Location = new System.Drawing.Point(143, 45);
             this._lblAutoAcceptLoads.Name = "_lblAutoAcceptLoads";
-            this._lblAutoAcceptLoads.Size = new System.Drawing.Size(117, 23);
+            this._lblAutoAcceptLoads.Size = new System.Drawing.Size(150, 23);
             this._lblAutoAcceptLoads.TabIndex = 29;
             this._lblAutoAcceptLoads.Text = "Disabled";
             this._lblAutoAcceptLoads.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -96,18 +96,18 @@
             this._cmbFifoMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._cmbFifoMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._cmbFifoMode.FormattingEnabled = true;
-            this._cmbFifoMode.Location = new System.Drawing.Point(143, 177);
+            this._cmbFifoMode.Location = new System.Drawing.Point(143, 74);
             this._cmbFifoMode.Name = "_cmbFifoMode";
-            this._cmbFifoMode.Size = new System.Drawing.Size(117, 23);
+            this._cmbFifoMode.Size = new System.Drawing.Size(150, 23);
             this._cmbFifoMode.TabIndex = 23;
             this._cmbFifoMode.SelectedIndexChanged += new System.EventHandler(this._CmbFifoMode_SelectedIndexChanged);
             // 
             // _btnAutoAcceptLoads
             // 
             this._btnAutoAcceptLoads.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnAutoAcceptLoads.Location = new System.Drawing.Point(143, 146);
+            this._btnAutoAcceptLoads.Location = new System.Drawing.Point(143, 45);
             this._btnAutoAcceptLoads.Name = "_btnAutoAcceptLoads";
-            this._btnAutoAcceptLoads.Size = new System.Drawing.Size(117, 23);
+            this._btnAutoAcceptLoads.Size = new System.Drawing.Size(150, 23);
             this._btnAutoAcceptLoads.TabIndex = 9;
             this._btnAutoAcceptLoads.Text = "Enable";
             this._btnAutoAcceptLoads.UseVisualStyleBackColor = true;
@@ -126,7 +126,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(10, 183);
+            this.label14.Location = new System.Drawing.Point(10, 80);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(60, 13);
             this.label14.TabIndex = 22;
@@ -137,9 +137,9 @@
             this._lblFifoMode.BackColor = System.Drawing.SystemColors.Window;
             this._lblFifoMode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblFifoMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblFifoMode.Location = new System.Drawing.Point(143, 177);
+            this._lblFifoMode.Location = new System.Drawing.Point(143, 74);
             this._lblFifoMode.Name = "_lblFifoMode";
-            this._lblFifoMode.Size = new System.Drawing.Size(117, 23);
+            this._lblFifoMode.Size = new System.Drawing.Size(150, 23);
             this._lblFifoMode.TabIndex = 32;
             this._lblFifoMode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -167,7 +167,7 @@
             this.navigator.Location = new System.Drawing.Point(0, 0);
             this.navigator.Name = "navigator";
             this.navigator.Padding = new System.Windows.Forms.Padding(5, 2, 5, 2);
-            this.navigator.Size = new System.Drawing.Size(746, 35);
+            this.navigator.Size = new System.Drawing.Size(775, 35);
             this.navigator.TabIndex = 34;
             // 
             // navigatorLblTitle
@@ -194,9 +194,9 @@
             // _btnLoadBEnabled
             // 
             this._btnLoadBEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnLoadBEnabled.Location = new System.Drawing.Point(143, 103);
+            this._btnLoadBEnabled.Location = new System.Drawing.Point(143, 207);
             this._btnLoadBEnabled.Name = "_btnLoadBEnabled";
-            this._btnLoadBEnabled.Size = new System.Drawing.Size(117, 23);
+            this._btnLoadBEnabled.Size = new System.Drawing.Size(150, 23);
             this._btnLoadBEnabled.TabIndex = 39;
             this._btnLoadBEnabled.Text = "Enable";
             this._btnLoadBEnabled.UseVisualStyleBackColor = true;
@@ -205,20 +205,20 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 80);
+            this.label4.Location = new System.Drawing.Point(10, 184);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(83, 13);
+            this.label4.Size = new System.Drawing.Size(80, 13);
             this.label4.TabIndex = 36;
-            this.label4.Text = "Load A Enabled";
+            this.label4.Text = "Slug A Enabled";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(10, 109);
+            this.label5.Location = new System.Drawing.Point(10, 213);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(83, 13);
+            this.label5.Size = new System.Drawing.Size(80, 13);
             this.label5.TabIndex = 38;
-            this.label5.Text = "Load B Enabled";
+            this.label5.Text = "Slug B Enabled";
             // 
             // _lblLoadBEnabled
             // 
@@ -226,9 +226,9 @@
             this._lblLoadBEnabled.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblLoadBEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblLoadBEnabled.ForeColor = System.Drawing.Color.White;
-            this._lblLoadBEnabled.Location = new System.Drawing.Point(143, 103);
+            this._lblLoadBEnabled.Location = new System.Drawing.Point(143, 207);
             this._lblLoadBEnabled.Name = "_lblLoadBEnabled";
-            this._lblLoadBEnabled.Size = new System.Drawing.Size(117, 23);
+            this._lblLoadBEnabled.Size = new System.Drawing.Size(150, 23);
             this._lblLoadBEnabled.TabIndex = 42;
             this._lblLoadBEnabled.Text = "Disabled";
             this._lblLoadBEnabled.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -236,9 +236,9 @@
             // _btnLoadAEnabled
             // 
             this._btnLoadAEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnLoadAEnabled.Location = new System.Drawing.Point(143, 74);
+            this._btnLoadAEnabled.Location = new System.Drawing.Point(143, 178);
             this._btnLoadAEnabled.Name = "_btnLoadAEnabled";
-            this._btnLoadAEnabled.Size = new System.Drawing.Size(118, 23);
+            this._btnLoadAEnabled.Size = new System.Drawing.Size(150, 23);
             this._btnLoadAEnabled.TabIndex = 37;
             this._btnLoadAEnabled.Text = "Enable";
             this._btnLoadAEnabled.UseVisualStyleBackColor = true;
@@ -250,83 +250,83 @@
             this._lblLoadAEnabled.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblLoadAEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblLoadAEnabled.ForeColor = System.Drawing.Color.White;
-            this._lblLoadAEnabled.Location = new System.Drawing.Point(143, 74);
+            this._lblLoadAEnabled.Location = new System.Drawing.Point(143, 178);
             this._lblLoadAEnabled.Name = "_lblLoadAEnabled";
-            this._lblLoadAEnabled.Size = new System.Drawing.Size(117, 23);
+            this._lblLoadAEnabled.Size = new System.Drawing.Size(150, 23);
             this._lblLoadAEnabled.TabIndex = 44;
             this._lblLoadAEnabled.Text = "Disabled";
             this._lblLoadAEnabled.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // _lblPreferredLoad
+            // _lblPreferredSlug
             // 
             this._lblPreferredSlug.BackColor = System.Drawing.SystemColors.Window;
             this._lblPreferredSlug.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblPreferredSlug.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblPreferredSlug.Location = new System.Drawing.Point(161, 45);
-            this._lblPreferredSlug.Name = "_lblPreferredLoad";
-            this._lblPreferredSlug.Size = new System.Drawing.Size(99, 23);
+            this._lblPreferredSlug.Location = new System.Drawing.Point(143, 149);
+            this._lblPreferredSlug.Name = "_lblPreferredSlug";
+            this._lblPreferredSlug.Size = new System.Drawing.Size(150, 23);
             this._lblPreferredSlug.TabIndex = 32;
             this._lblPreferredSlug.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(10, 51);
+            this.label10.Location = new System.Drawing.Point(10, 155);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(77, 13);
+            this.label10.Size = new System.Drawing.Size(74, 13);
             this.label10.TabIndex = 22;
-            this.label10.Text = "Preferred Load";
+            this.label10.Text = "Preferred Slug";
             // 
-            // _cmbPreferredLoad
+            // _cmbPreferredSlug
             // 
             this._cmbPreferredSlug.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._cmbPreferredSlug.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._cmbPreferredSlug.FormattingEnabled = true;
-            this._cmbPreferredSlug.Location = new System.Drawing.Point(143, 45);
-            this._cmbPreferredSlug.Name = "_cmbPreferredLoad";
-            this._cmbPreferredSlug.Size = new System.Drawing.Size(117, 23);
+            this._cmbPreferredSlug.Location = new System.Drawing.Point(143, 149);
+            this._cmbPreferredSlug.Name = "_cmbPreferredSlug";
+            this._cmbPreferredSlug.Size = new System.Drawing.Size(150, 23);
             this._cmbPreferredSlug.TabIndex = 23;
             this._cmbPreferredSlug.SelectedIndexChanged += new System.EventHandler(this._CmbPreferredLoad_SelectedIndexChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 214);
+            this.label3.Location = new System.Drawing.Point(10, 125);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(89, 13);
+            this.label3.Size = new System.Drawing.Size(86, 13);
             this.label3.TabIndex = 45;
-            this.label3.Text = "Load Pick Priority";
+            this.label3.Text = "Slug Pick Priority";
             // 
-            // _lblLoadPickPriority
+            // _lblSlugPickPriority
             // 
             this._lblSlugPickPriority.BackColor = System.Drawing.SystemColors.Window;
             this._lblSlugPickPriority.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblSlugPickPriority.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblSlugPickPriority.Location = new System.Drawing.Point(143, 209);
-            this._lblSlugPickPriority.Name = "_lblLoadPickPriority";
-            this._lblSlugPickPriority.Size = new System.Drawing.Size(117, 23);
+            this._lblSlugPickPriority.Location = new System.Drawing.Point(143, 120);
+            this._lblSlugPickPriority.Name = "_lblSlugPickPriority";
+            this._lblSlugPickPriority.Size = new System.Drawing.Size(150, 23);
             this._lblSlugPickPriority.TabIndex = 32;
             this._lblSlugPickPriority.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // _cmbLoadPickPriority
+            // _cmbSlugPickPriority
             // 
             this._cmbSlugPickPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._cmbSlugPickPriority.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._cmbSlugPickPriority.FormattingEnabled = true;
-            this._cmbSlugPickPriority.Location = new System.Drawing.Point(143, 209);
-            this._cmbSlugPickPriority.Name = "_cmbLoadPickPriority";
-            this._cmbSlugPickPriority.Size = new System.Drawing.Size(117, 23);
+            this._cmbSlugPickPriority.Location = new System.Drawing.Point(143, 120);
+            this._cmbSlugPickPriority.Name = "_cmbSlugPickPriority";
+            this._cmbSlugPickPriority.Size = new System.Drawing.Size(150, 23);
             this._cmbSlugPickPriority.TabIndex = 23;
-            this._cmbSlugPickPriority.SelectedIndexChanged += new System.EventHandler(this._CmbLoadPickPriority_SelectedIndexChanged);
+            this._cmbSlugPickPriority.SelectedIndexChanged += new System.EventHandler(this._CmbSlugPickPriority_SelectedIndexChanged);
             // 
             // _craneFunctionGrid
             // 
             this._craneFunctionGrid.EnableSort = true;
-            this._craneFunctionGrid.Location = new System.Drawing.Point(282, 45);
+            this._craneFunctionGrid.Location = new System.Drawing.Point(310, 45);
             this._craneFunctionGrid.Name = "_craneFunctionGrid";
             this._craneFunctionGrid.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this._craneFunctionGrid.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this._craneFunctionGrid.Size = new System.Drawing.Size(450, 427);
+            this._craneFunctionGrid.Size = new System.Drawing.Size(450, 452);
             this._craneFunctionGrid.TabIndex = 27;
             this._craneFunctionGrid.TabStop = true;
             this._craneFunctionGrid.ToolTipText = "";
@@ -359,7 +359,7 @@
             this.Controls.Add(this._lblFifoMode);
             this.Controls.Add(this._lblAuditAttempts);
             this.Name = "SystemSettingsView";
-            this.Size = new System.Drawing.Size(746, 485);
+            this.Size = new System.Drawing.Size(775, 513);
             this.Load += new System.EventHandler(this.SystemSettingsView_Load);
             this.navigator.ResumeLayout(false);
             this.navigator.PerformLayout();

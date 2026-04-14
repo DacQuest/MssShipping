@@ -36,9 +36,9 @@ namespace Mss.Views
 
         private SlugLetter _slugLetter;
 //         private string _loadName;
-        private bool _allowLabelReprint = false;
+        private bool _allowReprintLabel = false;
 //         private bool _leftClickLabelReprint = false;
-        private bool _allowItemEdit = false;
+        private bool _allowEditItem = false;
         private bool _allowRollback = false;
         private bool _showShortages = false;
         private bool _allowInsertEmpty = false;
@@ -67,13 +67,12 @@ namespace Mss.Views
             int flashDelayedPalletTimeoutSeconds)
         {
             _slugLetter = slugLetter;
-//             _loadName = loadName;
             _level = level;
-            _allowLabelReprint = allowLabelReprint;
+            _allowReprintLabel = allowLabelReprint;
             _allowRollback = allowRollback;
-            _allowItemEdit = allowItemEdit;
+            _allowEditItem = allowItemEdit;
             _allowInsertEmpty = allowInsertEmpty;
-            //             _leftClickLabelReprint = leftClickLabelReprint;
+//             _leftClickLabelReprint = leftClickLabelReprint;
             _showShortages = showShortages;
             _flashDelayedPalletTimeoutSeconds = flashDelayedPalletTimeoutSeconds;
 
@@ -321,10 +320,9 @@ namespace Mss.Views
 
         public static Position ConvertToGridPosition(int loadIndex)
         {
-            int row = 10 - LoadItem.RowNumberFromNodeIndex(loadIndex) + 1;
+//             int row = 10 - LoadItem.RowNumberFromNodeIndex(loadIndex) + 1;
+            int row = LoadItem.GridRowIndexFromNodeIndex(loadIndex);
             int col = LoadItem.LaneFromNodeIndex(loadIndex);
-
-
             return new Position(row, col);
         }
 
@@ -349,19 +347,22 @@ namespace Mss.Views
 
                 LoadItemStatus status = loadItem.Status;
 
-                bool labelReprintPossible
-                    = status == LoadItemStatus.Presequenced
-                        || status == LoadItemStatus.Sequenced
-                        || status == LoadItemStatus.Done
-                        || status == LoadItemStatus.Loadable;
+//                 bool labelReprintPossible = status >= LoadItemStatus.Presequenced
+//                         && status <= LoadItemStatus.Loadable;
+                bool allowReprintLabel = _allowReprintLabel
+                    && status >= LoadItemStatus.Presequenced
+                    && status <= LoadItemStatus.Loadable;
+                contextMenuReprint.Visible = allowReprintLabel;
 
-                contextMenuReprint.Visible = _allowLabelReprint && labelReprintPossible;
-                contextMenuEditItem.Visible = _allowItemEdit;
-//                 contextMenuRollback.Visible = _allowRollback
-//                     && ((loadItem.Status < LoadItemStatus.Sequenced && loadItem.Status > LoadItemStatus.Pickable)
-//                     || (loadItem.Status3rd < LoadItemStatus.Sequenced && loadItem.Status3rd > LoadItemStatus.Pickable));
+                contextMenuEditItem.Visible = _allowEditItem;
+
+                bool allowRollback = _allowRollback
+                    && status > LoadItemStatus.Pickable
+                    && status < LoadItemStatus.Sequenced;
+                contextMenuRollback.Visible = allowRollback;
 
                 // Insert Empty
+                bool allowInsertEmptyPallet = false;
 //                 bool allowInsertEmptyPallet = _allowInsertEmpty
 //                     && (status == LoadItemStatus.Pending || status == LoadItemStatus.Pickable)
 //                     && loadItem.Shortage;
@@ -371,12 +372,13 @@ namespace Mss.Views
 //                 contextMenuInsertEmptyPallet.Visible = allowInsertEmptyPallet;
 
                 // Show Context Menu
-//                 if (allowInsertEmptyPallet
-//                     || (_allowLabelReprint && labelReprintPossible)
-//                     || _allowItemEdit)
-//                 {
-//                     contextMenu.Show(this, e.X, e.Y);
-//                 }
+                if (allowReprintLabel
+                    || _allowEditItem
+                    || allowRollback
+                    || allowInsertEmptyPallet)
+                {
+                    contextMenu.Show(this, e.X, e.Y);
+                }
             }
         }
 
@@ -385,12 +387,15 @@ namespace Mss.Views
             LoadItem loadItem = _slugProxy.Items[loadIndex];
 
             ReprintLabelConfirmationForm form = new ReprintLabelConfirmationForm(
-                $"Do you want to reprint the label(s) for Pallet {loadItem.Pallet.PalletID}");
+                $"Do you want to reprint the label for Pallet {loadItem.Pallet.PalletID}");
             if (form.ShowDialog(this) == DialogResult.Yes)
             {
                 XMessaging.Publish(
                     ReprintLabelMessageData.ReprintLabelRequest,
-                    new ReprintLabelMessageData(loadItem.SlugLetter, loadItem.NodeIndex),
+                    new ReprintLabelMessageData(
+                        loadItem.SlugLetter,
+                        loadItem.SlugLevel,
+                        loadItem.NodeIndex),
                     XMessageScopes.All,
                     this);
             }

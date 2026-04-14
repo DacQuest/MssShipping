@@ -144,8 +144,8 @@ namespace Mss.Views
             column = new DataGridViewTextBoxColumn
             {
                 HeaderText = "Last Update",
-                DataPropertyName = "LastUpdateOnText",
-                Name = "LastUpdateOnColumn",
+                DataPropertyName = "LastUpdatedOnText",
+                Name = "LastUpdatedOnColumn",
                 SortMode = DataGridViewColumnSortMode.Automatic,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
             };

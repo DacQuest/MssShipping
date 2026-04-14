@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Magna.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.1.72\lib\net461\Dapper.dll</HintPath>
@@ -279,6 +282,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\DevExpress.Data.25.2.4\analyzers\dotnet\DevExpress.Generator.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Magna.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

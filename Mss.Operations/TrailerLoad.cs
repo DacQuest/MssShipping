@@ -58,8 +58,8 @@ namespace Mss.Operations
         private SystemSettings _systemSettings;
         private Broadcast _broadcast;
         private HoldCodes _holdCodes;
-        private LowerRecirc _lowerRecirc;
-        private UpperRecirc _upperRecirc;
+        private LowerRecircBuffer _lowerRecirc;
+        private UpperRecircBuffer _upperRecirc;
         private SlugA _slugA;
         private SlugB _slugB;
 
@@ -83,7 +83,7 @@ namespace Mss.Operations
         {
             base.DoStart();
 
-            DataLayer = DataLayer.Factory(
+            DataLayer = DataLayer.Create(
                 out _storage,
                 out _lowerPit,
                 out _upperPit,

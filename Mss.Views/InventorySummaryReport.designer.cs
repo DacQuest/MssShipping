@@ -480,7 +480,7 @@ namespace Mss.Views
             this.xrLabel2.SizeF = new System.Drawing.SizeF(339.3999F, 22.08F);
             this.xrLabel2.StylePriority.UseFont = false;
             this.xrLabel2.StylePriority.UseTextAlignment = false;
-            this.xrLabel2.Text = "Mss";
+            this.xrLabel2.Text = "Mississauga Seating Systems";
             this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
             // 
             // xrLabel1

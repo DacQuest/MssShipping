@@ -8,8 +8,8 @@ namespace Mss.Common
 {
     public enum FifoMode
     {
-        CraneFifo = 1,
-        BuildFifo = 2,
-        Closest   = 3
+        CraneFifo = 0,
+        BuildFifo = 1,
+        Closest   = 2
     }
 }

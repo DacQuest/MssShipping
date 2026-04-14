@@ -14,7 +14,7 @@ using Mss.Collections;
 
 namespace Mss.Views
 {
-    public partial class AdminBroadcastView : XSharedDictionaryProxyEditorView<int, BroadcastItem>
+    public partial class AdminBroadcastView : XSharedDictionaryProxyEditorView<string, BroadcastItem>
     {
         public AdminBroadcastView()
         {
@@ -33,7 +33,9 @@ namespace Mss.Views
 
         protected override string GetKeyInfo(object key)
         {
-            return key == null ? string.Empty : $"Broadcast Number {key:0000000})";
+            return key == null
+                ? string.Empty
+                : $"CSN {key})";
         }
 
         //protected override void OpenView()

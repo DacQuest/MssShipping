@@ -13,16 +13,22 @@ namespace Mss.Common
     {
         public const string ReprintLabelRequest = "ReprintLabelRequest";
 
-        public ReprintLabelMessageData(SlugLetter slugLetter, int loadIndex)
+        public ReprintLabelMessageData(
+            SlugLetter slugLetter,
+            Levels slugLevel,
+            int loadIndex)
         {
             XArgumentChecker.ThrowIfLessThanZero(loadIndex, "loadIndex");
             XArgumentChecker.ThrowIfGreaterThanOrEqualTo(Constant.LoadSize, loadIndex, "loadIndex");
 
             SlugLetter = slugLetter;
+            SlugLevel = slugLevel;
             LoadIndex = loadIndex;
         }
 
         public SlugLetter SlugLetter { get; } = SlugLetter.None;
+
+        public Levels SlugLevel { get; } = Levels.None;
 
         public int LoadIndex { get; } = -1;
     }

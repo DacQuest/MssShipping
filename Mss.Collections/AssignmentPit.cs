@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace Mss.Collections
 {
-    public class UpperRecirc : RecircLoop
+    public class AssignmentPit : Pit
     {
-        public override Levels Level => Levels.Upper;
+        public override Levels Level => Levels.None;
+
 
     }
 }

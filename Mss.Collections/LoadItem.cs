@@ -18,13 +18,7 @@ namespace Mss.Collections
 
         public int LoadCommandOffset => SlugLetter == SlugLetter.A ? 0 : 6;
 
-        public string Coordinates
-        {
-            get
-            {
-                return $"{SlugLetter}/Level:{SlugLevel}/Lane:{SlugLane}/Row:{SlugRow}";
-            }
-        }
+        public string Coordinates => GetLoadItemCoordinates(this);
 
         public bool IsInvalid => Status == LoadItemStatus.Invalid;
 
@@ -82,6 +76,11 @@ namespace Mss.Collections
 //             row = 12 - row;
 
             return row;
+        }
+
+        public static string GetLoadItemCoordinates(LoadItem loadItem)
+        {
+            return $"{loadItem.SlugLetter}/Level:{loadItem.SlugLevel}/Lane:{loadItem.SlugLane}/Row:{loadItem.SlugRow}";
         }
 
         public static int TransferMoveCommandFromNodeIndex(int loadCommandOffset, int nodeIndex)
@@ -245,9 +244,9 @@ namespace Mss.Collections
             _ = details.Append($"\r\n{spaces}Crane:   {Crane.ToText()}");
             _ = details.Append($"\r\n{spaces}Picked On:   {PickedOnText}");
             _ = details.Append($"\r\n{spaces}Slug Letter:   {SlugLetter.ToText()}");
-            _ = details.Append($"\r\n{spaces}Pick Mode:   {PickMode.ToText()}");
-            _ = details.Append($"\r\n{spaces}Pick Mode Pallet ID:   {PickModePalletID}");
-            _ = details.Append($"\r\n{spaces}Pick Mode Job ID:   {PickModeJobID}");
+//             _ = details.Append($"\r\n{spaces}Pick Mode:   {PickMode.ToText()}");
+//             _ = details.Append($"\r\n{spaces}Pick Mode Pallet ID:   {PickModePalletID}");
+//             _ = details.Append($"\r\n{spaces}Pick Mode Job ID:   {PickModeJobID}");
 
             _ = details.Append($"\r\n{spaces}Pallet:");
             _ = details.Append(Pallet.GetStateDetails(leadingSpaceCount * 2));

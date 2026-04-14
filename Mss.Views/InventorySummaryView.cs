@@ -61,20 +61,7 @@ namespace Mss.Views
             _dgvInventory.DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
             _dgvInventory.DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
 
-
-
-
-
-            //             DataGridViewImageColumn imageColumn;
             DataGridViewTextBoxColumn column;
-
-//             imageColumn = new DataGridViewImageColumn
-//             {
-//                 DataPropertyName = "StatusImage",
-//                 HeaderText = "",
-//                 Name = "StatusImageColumn"
-//             };
-//             dataGrid.Columns.Add(imageColumn);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -118,9 +105,39 @@ namespace Mss.Views
 
             column = new DataGridViewTextBoxColumn
             {
-                HeaderText = "PIT",
-                DataPropertyName = "PitText",
-                Name = "PitColumn",
+                HeaderText = "Crane 3",
+                DataPropertyName = "Crane3Text",
+                Name = "Crane3Column",
+                MinimumWidth = 80,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _dgvInventory.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Crane 4",
+                DataPropertyName = "Crane4Text",
+                Name = "Crane4Column",
+                MinimumWidth = 80,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _dgvInventory.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Upper PIT",
+                DataPropertyName = "UpperPitText",
+                Name = "UpperPitColumn",
+                MinimumWidth = 80,
+                SortMode = DataGridViewColumnSortMode.Automatic,
+            };
+            _dgvInventory.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Lower PIT",
+                DataPropertyName = "LowerPitText",
+                Name = "LowerPitColumn",
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic,
             };
@@ -148,9 +165,19 @@ namespace Mss.Views
 
             column = new DataGridViewTextBoxColumn
             {
-                HeaderText = "Q/A Pick",
-                DataPropertyName = "QAPickText",
-                Name = "QAColumn",
+                HeaderText = "Purge",
+                DataPropertyName = "PurgeText",
+                Name = "PurgeColumn",
+                MinimumWidth = 80,
+                SortMode = DataGridViewColumnSortMode.Automatic,
+            };
+            _dgvInventory.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Reserved",
+                DataPropertyName = "ReservedText",
+                Name = "ReservedColumn",
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic,
             };

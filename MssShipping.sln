@@ -25,19 +25,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mss.Views", "Mss.Views\Mss.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
-		Configuration\ShippingSystem.config = Configuration\ShippingSystem.config
+		Configuration\MssShipping.config = Configuration\MssShipping.config
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArchiveSqlScripts", "ArchiveSqlScripts", "{13B24C53-FE68-490E-8BEE-EAFA16017C4C}"
 	ProjectSection(SolutionItems) = preProject
 		ArchiveSqlScripts\CreateLoadArchiveTables.sql = ArchiveSqlScripts\CreateLoadArchiveTables.sql
 		ArchiveSqlScripts\CreatePalletEventTrackerTable.sql = ArchiveSqlScripts\CreatePalletEventTrackerTable.sql
+		ArchiveSqlScripts\CreatePurgePalletsTable.sql = ArchiveSqlScripts\CreatePurgePalletsTable.sql
 		ArchiveSqlScripts\CreateSystemEventArchiveTables.sql = ArchiveSqlScripts\CreateSystemEventArchiveTables.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MirrorSqlScripts", "MirrorSqlScripts", "{69B4569F-F496-4433-919E-9EFFF088D04F}"
 	ProjectSection(SolutionItems) = preProject
 		MirrorSqlScripts\CreateAndExpandAllMirrorTables.sql = MirrorSqlScripts\CreateAndExpandAllMirrorTables.sql
+		MirrorSqlScripts\InitStorage.sql = MirrorSqlScripts\InitStorage.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mss.LoadDirectorClient", "Mss.LoadDirectorClient\Mss.LoadDirectorClient.csproj", "{C64D3FC3-B4D5-4C2B-B5CE-C4FD8ECC53F5}"

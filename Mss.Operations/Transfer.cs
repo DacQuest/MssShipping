@@ -48,7 +48,7 @@ namespace Mss.Operations
             set => SetVariable(LoadALevelCompletedName, value);
         }
 
-        protected string LoadBLevelCompletedName = "Load A Level Completed";
+        protected string LoadBLevelCompletedName = "Load B Level Completed";
         protected bool LoadBLevelCompleted
         {
             get => GetVariable<bool>(LoadBLevelCompletedName);
@@ -182,9 +182,8 @@ namespace Mss.Operations
 
         protected override bool DoProcessPallet(out int moveCommand, out string extendedState)
         {
-            moveCommand = Constant.NoMoveCommand;
             if (DataLayer.ProcessPalletAtTransfer(
-                _parameters.Level,
+                Level,
                 PalletID,
                 out PalletItem palletItem,
                 out moveCommand,
@@ -211,8 +210,8 @@ namespace Mss.Operations
 
         protected override bool DoMoveCompleted()
         {
-            if (CachedMoveCommand != Constant.TFFinalPurgeMoveCommand
-                && CachedMoveCommand != Constant.TFStackMoveCommand)
+            if (CachedMoveCommand != Constant.TransferFinalPurgeMoveCommand
+                && CachedMoveCommand != Constant.TransferStackMoveCommand)
             {
                 if (!DataLayer.TrySetDone(
                     CurrentPallet.PalletID,

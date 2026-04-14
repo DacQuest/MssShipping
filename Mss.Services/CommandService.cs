@@ -24,8 +24,8 @@ namespace Mss.Services
         private SystemSettings _systemSettings;
         private Broadcast _broadcast;
         private HoldCodes _holdCodes;
-        private LowerRecirc _lowerRecirc;
-        private UpperRecirc _upperRecirc;
+        private LowerRecircBuffer _lowerRecircBuffer;
+        private UpperRecircBuffer _upperRecircBuffer;
         private SlugA _slugA;
         private SlugB _slugB;
         private DataLayer _dataLayer;
@@ -34,15 +34,15 @@ namespace Mss.Services
         {
             // There is no need to call SetServiceStatus() when overriding
 
-            _dataLayer = DataLayer.Factory(
+            _dataLayer = DataLayer.Create(
                 out _storage,
                 out _lowerPit,
                 out _upperPit,
                 out _systemSettings,
                 out _broadcast,
                 out _holdCodes,
-                out _lowerRecirc,
-                out _upperRecirc,
+                out _lowerRecircBuffer,
+                out _upperRecircBuffer,
                 out _slugA,
                 out _slugB);
 

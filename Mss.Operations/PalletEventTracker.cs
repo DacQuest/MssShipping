@@ -19,6 +19,53 @@ namespace Mss.Operations
 
         public static void Capture(
             string palletID,
+            PalletItem palletItem,
+            OperationCode operationCode,
+            PalletEvent palletEvent)
+        {
+            if (palletItem == null)
+            {
+                Capture(
+                    palletID,
+                    operationCode,
+                    palletEvent);
+            }
+            else
+            {
+                Capture(
+                    palletItem,
+                    operationCode,
+                    palletEvent);
+            }
+        }
+
+        public static void Capture(
+            string palletID,
+            PalletItem palletItem,
+            OperationCode operationCode,
+            PalletEvent palletEvent,
+            int moveCommand)
+        {
+            if (palletItem == null)
+            {
+                Capture(
+                    palletID,
+                    operationCode,
+                    palletEvent,
+                    moveCommand);
+            }
+            else
+            {
+                Capture(
+                    palletItem,
+                    operationCode,
+                    palletEvent,
+                    moveCommand);
+            }
+        }
+
+        public static void Capture(
+            string palletID,
             OperationCode operationCode,
             PalletEvent palletEvent)
         {
@@ -109,8 +156,8 @@ namespace Mss.Operations
                     connection.Open();
 
                     string sql = string.Format(
-                        @"INSERT INTO [PalletEventTracker] ([OccurredOn],[PalletID],[Sku],[JobID],[PalletStatus],[PalletStatusText],[OperationCode],[OperationCodeText],[PalletEvent],[PalletEventText],[MoveCommand],[Comment])" + 
-                                                 @" VALUES ('{0}',       '{1}',     '{2}','{3}'   {4},           '{5}',             {6},            '{7}',              {8},          '{9}',            {10},         '{11}');",
+                        @"INSERT INTO [PalletEventTracker] ([OccurredOn],[PalletID],[Sku],[JobID],[PalletStatus],[PalletStatusText],[OperationCode],[OperationCodeText],[PalletEvent],[PalletEventText],[MoveCommand],[Comment])
+                                                    VALUES ('{0}',       '{1}',     '{2}','{3}'   {4},           '{5}',             {6},            '{7}',              {8},          '{9}',            {10},         '{11}');",
                         DateTime.Now.ToString(Constant.DateTimeFormat),
                         palletID,
                         sku,

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using DacQuest.DFX.Core.Configuration;
 
-namespace Mss.Data
+namespace Mss.Services
 {
     [Serializable]
     public class MesInterfaceServiceParameterSetWrapper : XConfigurationParameterSet

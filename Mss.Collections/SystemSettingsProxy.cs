@@ -15,5 +15,8 @@ namespace Mss.Collections
         public bool SlugAEnabled => GetItem().SlugAEnabled;
         public bool SlugBEnabled => GetItem().SlugBEnabled;
         public SlugLetter PreferredSlug => GetItem().PreferredSlug;
+
+        public int SlugALoadNumber => GetItem().SlugALoadNumber;
+        public int SlugBLoadNumber => GetItem().SlugBLoadNumber;
     }
 }

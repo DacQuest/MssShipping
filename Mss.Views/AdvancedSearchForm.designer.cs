@@ -61,6 +61,7 @@
             this._chkPickOnly = new System.Windows.Forms.CheckBox();
             this._chkAudit = new System.Windows.Forms.CheckBox();
             this._chkApplyPalletStatus = new Mss.Views.CheckGroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this._chkOK = new System.Windows.Forms.CheckBox();
             this._chkHold = new System.Windows.Forms.CheckBox();
             this._chkReserved = new System.Windows.Forms.CheckBox();
@@ -74,7 +75,6 @@
             this._label5 = new System.Windows.Forms.Label();
             this._txtPrefilter = new System.Windows.Forms.TextBox();
             this._lstSkus = new System.Windows.Forms.ListBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this._groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._dtStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._dtEnd)).BeginInit();
@@ -165,7 +165,6 @@
             "Pallet ID",
             "Pallet Status",
             "SKU",
-            "Kit Code",
             "Built On",
             "Bin Status",
             "Vehicle Row"});
@@ -188,7 +187,6 @@
             "Pallet ID",
             "Pallet Status",
             "SKU",
-            "Kit Code",
             "Built On",
             "Bin Status",
             "Vehicle Row"});
@@ -220,7 +218,6 @@
             "Pallet ID",
             "Pallet Status",
             "SKU",
-            "Kit Code",
             "Built On",
             "Bin Status",
             "Vehicle Row"});
@@ -514,6 +511,16 @@
             this._chkApplyPalletStatus.Text = "By Pallet Status";
             this._chkApplyPalletStatus.CheckedChanged += new System.EventHandler(this._ChkApplyPalletStatus_CheckedChanged);
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(17, 125);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(72, 17);
+            this.checkBox1.TabIndex = 6;
+            this.checkBox1.Text = "Unknown";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // _chkOK
             // 
             this._chkOK.AutoSize = true;
@@ -666,16 +673,6 @@
             this._lstSkus.Size = new System.Drawing.Size(110, 288);
             this._lstSkus.TabIndex = 1;
             this._lstSkus.SelectedIndexChanged += new System.EventHandler(this._LstSkus_SelectedIndexChanged);
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(17, 125);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(72, 17);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "Unknown";
-            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // AdvancedSearchForm
             // 

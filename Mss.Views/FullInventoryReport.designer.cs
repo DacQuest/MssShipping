@@ -358,7 +358,7 @@
             this.xrLabel3.SizeF = new System.Drawing.SizeF(475.2083F, 23F);
             this.xrLabel3.StylePriority.UseFont = false;
             this.xrLabel3.StylePriority.UseTextAlignment = false;
-            this.xrLabel3.Text = "Mss";
+            this.xrLabel3.Text = "Mississauga Seating Systems";
             this.xrLabel3.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
             // 
             // xrLabel2

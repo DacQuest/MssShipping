@@ -154,20 +154,16 @@ namespace Mss.Data
                 SlugPickPriority slugPickPriority = systemSettingsItem.SlugPickPriority;
                 if (slugPickPriority == SlugPickPriority.Balanced)
                 {
-                    return _GetNoPriorityPrimarySlug(out primarySlug);
+                    return _GetBalancedPrimarySlug(out primarySlug);
                 }
-                bool slugAPicksToDo = _slugA.Any(l =>
-                    (l.Status == LoadItemStatus.Pending
-                    || l.Status == LoadItemStatus.Pickable)
-                    && (slugPickPriority == SlugPickPriority.SmallerLoadID
+                bool slugAPicksToDo = _slugA.Any(l => l.Status == LoadItemStatus.Pickable)
+                    && (slugPickPriority == SlugPickPriority.SmallerLoadNumber
                         || slugPickPriority == SlugPickPriority.SlugA
-                        || slugPickPriority == SlugPickPriority.SlugAOnly));
-                bool slugBPicksToDo = _slugB.Any(l =>
-                    (l.Status == LoadItemStatus.Pending
-                    || l.Status == LoadItemStatus.Pickable)
-                    && (slugPickPriority == SlugPickPriority.SmallerLoadID
+                        || slugPickPriority == SlugPickPriority.SlugAOnly);
+                bool slugBPicksToDo = _slugB.Any(l => l.Status == LoadItemStatus.Pickable)
+                    && (slugPickPriority == SlugPickPriority.SmallerLoadNumber
                         || slugPickPriority == SlugPickPriority.SlugB
-                        || slugPickPriority == SlugPickPriority.SlugBOnly));
+                        || slugPickPriority == SlugPickPriority.SlugBOnly);
 
                 primarySlug = null;
                 if (!slugAPicksToDo && !slugBPicksToDo)
@@ -186,7 +182,7 @@ namespace Mss.Data
                     {
                         primarySlug = _slugB;
                     }
-                    else if (slugPickPriority == SlugPickPriority.SmallerLoadID)
+                    else if (slugPickPriority == SlugPickPriority.SmallerLoadNumber)
                     {
                         int loadIDA = systemSettingsItem.SlugALoadNumber;
                         int loadIDB = systemSettingsItem.SlugBLoadNumber;
@@ -215,10 +211,10 @@ namespace Mss.Data
 
         internal Slug GetOtherSlug(Slug slug) => slug == _slugA ? _slugB : (Slug)_slugA;
 
-        private bool _GetNoPriorityPrimarySlug(out Slug primarySlug)
+        private bool _GetBalancedPrimarySlug(out Slug primarySlug)
         {
-            bool excludeSlugA = _slugA.AllPickedOrGreater;
-            bool excludeSlugB = _slugB.AllPickedOrGreater;
+            bool excludeSlugA = _slugA.AllPickingOrGreater;
+            bool excludeSlugB = _slugB.AllPickingOrGreater;
 
             if (excludeSlugA && excludeSlugB)
             {

@@ -43,10 +43,11 @@ namespace Mss.Views
 
             _cmbFifoMode.AddEnumItem(FifoMode.CraneFifo);
             _cmbFifoMode.AddEnumItem(FifoMode.BuildFifo);
+            _cmbFifoMode.AddEnumItem(FifoMode.Closest);
             _cmbFifoMode.SelectEnumItem(_systemSettingsProxy.Item.FifoMode);
 
+            _cmbSlugPickPriority.AddEnumItem(SlugPickPriority.SmallerLoadNumber);
             _cmbSlugPickPriority.AddEnumItem(SlugPickPriority.Balanced);
-            _cmbSlugPickPriority.AddEnumItem(SlugPickPriority.SmallerLoadID);
             _cmbSlugPickPriority.AddEnumItem(SlugPickPriority.SlugA);
             _cmbSlugPickPriority.AddEnumItem(SlugPickPriority.SlugB);
             _cmbSlugPickPriority.AddEnumItem(SlugPickPriority.SlugAOnly);
@@ -435,13 +436,13 @@ namespace Mss.Views
 
         }
 
-        private void _CmbLoadPickPriority_SelectedIndexChanged(object sender, EventArgs e)
+        private void _CmbSlugPickPriority_SelectedIndexChanged(object sender, EventArgs e)
         {
             SlugPickPriority currentPriority = _systemSettingsProxy.Item.SlugPickPriority;
             SlugPickPriority newPriority = _cmbSlugPickPriority.GetSelectedEnumItem<SlugPickPriority>();
             if (newPriority != currentPriority)
             {
-                if (_ConfirmChange("Load Pick Priority"))
+                if (_ConfirmChange("Slug Pick Priority"))
                 {
                     _systemSettingsProxy.SetItemProperty(
                       nameof(SystemSettingsItem.SlugPickPriority),

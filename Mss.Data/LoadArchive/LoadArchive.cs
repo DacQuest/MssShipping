@@ -133,7 +133,7 @@ namespace Mss.Data.LoadArchive
                         VehicleSku = broadcastItem.VehicleSku,
                         Vin = broadcastItem.Vin,
                         PickMode = broadcastItem.PickMode,
-                        PickModeValue = broadcastItem.PickModeValue,
+                        PickModeValue = broadcastItem.PickModeKey,
                         ReceivedOn = broadcastItem.ReceivedOn,
                         VehicleRowCount = broadcastItem.VehicleRowCount
                     };

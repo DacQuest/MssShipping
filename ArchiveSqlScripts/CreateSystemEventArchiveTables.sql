@@ -1,4 +1,4 @@
-USE [MssArchive]
+USE [MssShippingArchive]
 GO
 
 /****** Object:  Table [dbo].[SystemEventArchive]    Script Date: 06/09/2012 16:40:19 ******/

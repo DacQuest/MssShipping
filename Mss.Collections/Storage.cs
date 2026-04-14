@@ -15,18 +15,14 @@ namespace Mss.Collections
     public class Storage : XSharedArray<BinItem>
     {
 
-        public bool IsStorableBinAvailable(CraneNumber craneNumber)
+        public bool IsStorableBinAvailable(
+            CraneNumber craneNumber,
+            BinSize binSize)
         {
             _ = Lock();
             try
             {
-                return this.Any(b =>
-                    b.BinStatus == BinStatus.Empty
-                    && b.CraneNumber == craneNumber
-                    && !b.Disabled
-                    && !b.PickOnly
-                    && !b.Audit
-                    && !b.NotUsable);
+                return _GetStorableBin(craneNumber, binSize) != null;
             }
             finally
             {
@@ -42,13 +38,20 @@ namespace Mss.Collections
             try
             {
                 binItem = this
-                    .Reverse()
                     .FirstOrDefault(b =>
                         b.CraneNumber == craneNumber
                         && b.Audit
                         && !b.Disabled
                         && !b.NotUsable);
                 if (binItem == null)
+                {
+                    return false;
+                }
+                PalletItem binPallet = binItem.Pallet;
+
+                if (binItem.PickOnly
+                    && binPallet.BinSize != BinSize.None
+                    && !IsStorableBinAvailable(craneNumber, binItem.Pallet.BinSize))
                 {
                     return false;
                 }
@@ -72,6 +75,7 @@ namespace Mss.Collections
                 binItem = this
                     .FirstOrDefault(b =>
                         b.CraneNumber == craneNumber
+                        && b.BinStatus == BinStatus.Pickable
                         && b.Pallet.Status == PalletStatus.Purge
                         && !b.Audit
                         && !b.Disabled
@@ -90,7 +94,7 @@ namespace Mss.Collections
             }
         }
 
-        public bool TryAllocateStackPick(
+        public bool TryAllocateStack1Pick(
             CraneNumber craneNumber,
             out BinItem binItem)
         {
@@ -100,8 +104,37 @@ namespace Mss.Collections
                 binItem = this
                     .FirstOrDefault(b =>
                         b.CraneNumber == craneNumber
-                        && b.Pallet.IsStack
-//                         && b.Pallet.Status == PalletStatus.Stack
+                        && b.BinStatus == BinStatus.Pickable
+                        && b.Pallet.Sku == Constant.StackSku1
+                        && !b.Audit
+                        && !b.Disabled
+                        && !b.NotUsable);
+                if (binItem == null)
+                {
+                    return false;
+                }
+                binItem.BinStatus = BinStatus.GetAllocated;
+                this[binItem.NodeIndex] = binItem;
+                return true;
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
+        public bool TryAllocateStack2Pick(
+            CraneNumber craneNumber,
+            out BinItem binItem)
+        {
+            _ = Lock();
+            try
+            {
+                binItem = this
+                    .FirstOrDefault(b =>
+                        b.CraneNumber == craneNumber
+                        && b.BinStatus == BinStatus.Pickable
+                        && b.Pallet.Sku == Constant.StackSku2
                         && !b.Audit
                         && !b.Disabled
                         && !b.NotUsable);
@@ -122,20 +155,21 @@ namespace Mss.Collections
         public bool TryAllocateLoadPick(
             CraneNumber craneNumber,
             FifoMode fifoMode,
-            string sku,
+            BroadcastItem broadcastItem,
             out BinItem binItem)
         {
             _ = Lock();
             try
             {
-                if (fifoMode == FifoMode.Closest)
+                if (fifoMode == FifoMode.Closest
+                    && broadcastItem.PickMode == PickMode.BySku)
                 {
                     binItem = this
                         .Where(b =>
                         {
                             PalletItem pallet = b.Pallet;
                             return b.CraneNumber == craneNumber
-                                && pallet.Sku == sku
+                                && pallet.Sku == broadcastItem.Sku
                                 && pallet.Status == PalletStatus.OK
                                 && b.BinStatus == BinStatus.Pickable
                                 && !b.Audit
@@ -147,27 +181,60 @@ namespace Mss.Collections
                 }
                 else
                 {
-                    IEnumerable<BinItem> binItems = this
-                        .Where(b =>
-                        {
-                            PalletItem pallet = b.Pallet;
-                            return pallet.Sku == sku
-                                && pallet.Status == PalletStatus.OK
-                                && b.BinStatus == BinStatus.Pickable
-                                && !b.Audit
-                                && !b.Disabled
-                                && !b.NotUsable;
-                        })
-                        .OrderBy(b => b.Pallet.BuiltOn);
-
-                    binItem = binItems.FirstOrDefault();
-                    if (binItem != null)
+                    IEnumerable<BinItem> binItems;
+                    if (broadcastItem.PickMode == PickMode.ByPalletID)
                     {
-                        if (binItem.CraneNumber != craneNumber)
+                        binItem = this
+                            .FirstOrDefault((Func<BinItem, bool>)(b =>
+                            {
+                                PalletItem pallet = b.Pallet;
+                                return b.CraneNumber == craneNumber
+                                    && pallet.PalletID == broadcastItem.PickModeKey
+                                    && pallet.Status == PalletStatus.OK
+                                    && b.BinStatus == BinStatus.Pickable
+                                    && !b.Audit
+                                    && !b.Disabled
+                                    && !b.NotUsable;
+                            }));
+                    }
+                    else if (broadcastItem.PickMode == PickMode.ByJobID)
+                    {
+                        binItem = this
+                            .FirstOrDefault(b =>
+                            {
+                                PalletItem pallet = b.Pallet;
+                                return b.CraneNumber == craneNumber
+                                    && pallet.JobID == broadcastItem.PickModeKey
+                                    && pallet.Status == PalletStatus.OK
+                                    && b.BinStatus == BinStatus.Pickable
+                                    && !b.Audit
+                                    && !b.Disabled
+                                    && !b.NotUsable;
+                            });
+                    }
+                    else
+                    {
+                        binItems = this
+                                .Where(b =>
+                                {
+                                    PalletItem pallet = b.Pallet;
+                                    return pallet.Sku == broadcastItem.Sku
+                                        && pallet.Status == PalletStatus.OK
+                                        && b.BinStatus == BinStatus.Pickable
+                                        && !b.Audit
+                                        && !b.Disabled
+                                        && !b.NotUsable;
+                                })
+                                .OrderBy(b => b.Pallet.BuiltOn);
+                        binItem = binItems.FirstOrDefault();
+                        if (binItem != null)
                         {
-                            binItem = fifoMode == FifoMode.BuildFifo
-                                ? null
-                                : binItems.FirstOrDefault(b => b.CraneNumber == craneNumber);
+                            if (binItem.CraneNumber != craneNumber)
+                            {
+                                binItem = fifoMode == FifoMode.BuildFifo
+                                    ? null
+                                    : binItems.FirstOrDefault(b => b.CraneNumber == craneNumber);
+                            }
                         }
                     }
                     if (binItem != null)
@@ -183,35 +250,6 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         public void ClearBinByPalletID(string palletID, bool audit)
         {
@@ -251,7 +289,6 @@ namespace Mss.Collections
             }
         }
 
-
         public bool TryFindBinByPalletID(string palletID, out BinItem binItem)
         {
             _ = Lock();
@@ -268,6 +305,7 @@ namespace Mss.Collections
 
         public bool TryFindEmptyBin(
             CraneNumber craneNumber,
+            BinSize binSize,
             out BinItem bin)
         {
             _ = Lock();
@@ -276,6 +314,7 @@ namespace Mss.Collections
                 bin = this
                     .FirstOrDefault(b =>
                         b.CraneNumber == craneNumber
+                        && b.BinSize == binSize
                         && b.BinStatus == BinStatus.Empty
                         && !b.Disabled
                         && !b.PickOnly
@@ -503,12 +542,12 @@ namespace Mss.Collections
             }
         }
 
-        public int GetEmptyBinCount()
+        public int GetEmptyBinCount(CraneNumber craneNumber)
         {
-            return GetEmptyBinCount(CraneNumber.None);
+            return GetEmptyBinCount(BinSize.None, craneNumber);
         }
 
-        public int GetEmptyBinCount(CraneNumber craneNumber)
+        public int GetEmptyBinCount(BinSize binSize, CraneNumber craneNumber)
         {
             _ = Lock();
             try
@@ -517,6 +556,7 @@ namespace Mss.Collections
                 {
                     return (b.CraneNumber == craneNumber || craneNumber == CraneNumber.None)
                         && b.BinStatus == BinStatus.Empty
+                        && (b.BinSize == binSize || binSize == BinSize.None)
                         && !b.Audit
                         && !b.Disabled
                         && !b.PickOnly
@@ -528,32 +568,33 @@ namespace Mss.Collections
                 Unlock();
             }
         }
-        public bool AreBinsAvailable(
-            CraneNumber craneNumber,
-            int preallocatedBinCount,
-            bool isPalletStack)
-        {
-            _ = Lock();
-            try
-            {
-                int freeBins = this.Count(b =>
-                {
-                    return
-                        (b.CraneNumber == craneNumber || craneNumber == CraneNumber.None)
-                        //&& b.StackOnly == isPalletStack
-                        && b.BinStatus == BinStatus.Empty
-                        && !b.Audit
-                        && !b.NotUsable
-                        && !b.PickOnly
-                        && !b.Disabled;
-                }) - preallocatedBinCount;
-                return freeBins > 0;
-            }
-            finally
-            {
-                Unlock();
-            }
-        }
+
+//         public bool AreBinsAvailable(
+//             CraneNumber craneNumber,
+//             int preallocatedBinCount,
+//             bool isPalletStack)
+//         {
+//             _ = Lock();
+//             try
+//             {
+//                 int freeBins = this.Count(b =>
+//                 {
+//                     return
+//                         (b.CraneNumber == craneNumber || craneNumber == CraneNumber.None)
+//                         //&& b.StackOnly == isPalletStack
+//                         && b.BinStatus == BinStatus.Empty
+//                         && !b.Audit
+//                         && !b.NotUsable
+//                         && !b.PickOnly
+//                         && !b.Disabled;
+//                 }) - preallocatedBinCount;
+//                 return freeBins > 0;
+//             }
+//             finally
+//             {
+//                 Unlock();
+//             }
+//         }
         public void MarkDuplicatesForAudit(string palletID)
         {
             MarkDuplicatesForAudit(palletID, -1);
@@ -829,68 +870,80 @@ namespace Mss.Collections
             }
         }
 
-        private bool _GetStorableBin(CraneNumber craneNumber, out BinItem binItem)
+        private BinItem _GetStorableBin(
+            CraneNumber craneNumber,
+            BinSize binSize)
         {
-            binItem = this.FirstOrDefault(b =>
-                b.BinStatus == BinStatus.Empty
-                && b.CraneNumber == craneNumber
-                //&& !b.StackOnly
-                && !b.Disabled
-                && !b.PickOnly
-                && !b.Audit
-                && !b.NotUsable);
-            return binItem != null;
+            XArgumentChecker.ThrowIfNotContainedIn(
+                binSize,
+                nameof(binSize),
+                new[] { BinSize.Large, BinSize.Small } );
+
+            if (binSize == BinSize.Small)
+            {
+                BinItem binItem = _GetStorableSmallBin(craneNumber)
+                    ?? _GetStorableLargeBin(craneNumber);
+                return binItem;
+            }
+            return _GetStorableLargeBin(craneNumber);
         }
 
-        private bool _GetStorableStackBin(CraneNumber craneNumber, out BinItem binItem)
+        private BinItem _GetStorableSmallBin(CraneNumber craneNumber)
         {
-            binItem = this
-                .Reverse()
+            return this
                 .FirstOrDefault(b =>
                     b.BinStatus == BinStatus.Empty
                     && b.CraneNumber == craneNumber
+                    && b.BinSize == BinSize.Small
                     && !b.Disabled
                     && !b.PickOnly
                     && !b.Audit
                     && !b.NotUsable);
-            return binItem != null;
         }
 
-        public bool AllocatePut(
-            CraneNumber craneNumber,
-            PalletItem palletItem,
-            int maxAuditAttempts,
-            out BinItem binItem)
+        private BinItem _GetStorableLargeBin(CraneNumber craneNumber)
+        {
+            return this
+                .FirstOrDefault(b =>
+                    b.BinStatus == BinStatus.Empty
+                    && b.CraneNumber == craneNumber
+                    && b.BinSize == BinSize.Large
+                    && !b.Disabled
+                    && !b.PickOnly
+                    && !b.Audit
+                    && !b.NotUsable);
+        }
+
+        private BinItem _GetStorableStackBin(CraneNumber craneNumber)
+        {
+            return this
+                .Reverse()
+                .FirstOrDefault(b =>
+                    b.BinStatus == BinStatus.Empty
+                    && b.CraneNumber == craneNumber
+                    && b.BinSize == BinSize.Small
+                    && !b.Disabled
+                    && !b.PickOnly
+                    && !b.Audit
+                    && !b.NotUsable)
+                ?? this
+                    .Reverse()
+                    .FirstOrDefault(b =>
+                        b.BinStatus == BinStatus.Empty
+                        && b.CraneNumber == craneNumber
+                        && b.BinSize == BinSize.Large
+                        && !b.Disabled
+                        && !b.PickOnly
+                        && !b.Audit
+                        && !b.NotUsable);
+        }
+
+        public bool IsStorableStackBinAvailable(CraneNumber craneNumber)
         {
             _ = Lock();
             try
             {
-                if (!_GetStorableBin(craneNumber, out binItem))
-                {
-                    return false;
-                }
-                binItem.BinStatus = BinStatus.PutAllocated;
-                binItem.StoredOn = DateTime.Now;
-                binItem.Pallet = palletItem;
-                binItem.Audit = palletItem.Status == PalletStatus.Unknown;
-//                 if (binItem.Audit)
-//                 {
-//                     if (binItem.AuditAttempts >= maxAuditAttempts)
-//                     {
-//                         binItem.Audit = false;
-//                         binItem.AuditAttempts = 0;
-//                     }
-//                     else
-//                     {
-//                         binItem.AuditAttempts++;
-//                     }
-//                 }
-//                 else
-//                 {
-//                     binItem.AuditAttempts = 0;
-//                 }
-                this[binItem.NodeIndex] = binItem;
-                return true;
+                return _GetStorableStackBin(craneNumber) != null;
             }
             finally
             {
@@ -942,7 +995,16 @@ namespace Mss.Collections
             _ = Lock();
             try
             {
-                if (!_GetStorableBin(craneNumber, out binItem))
+                binItem = null;
+                if (palletItem.BinSize == BinSize.Small)
+                {
+                    binItem = _GetStorableSmallBin(craneNumber);
+                }
+                if (binItem == null)
+                {
+                    binItem = _GetStorableLargeBin(craneNumber);
+                }
+                if (binItem == null)
                 {
                     return false;
                 }
@@ -967,15 +1029,15 @@ namespace Mss.Collections
             _ = Lock();
             try
             {
-                if (!_GetStorableStackBin(craneNumber, out binItem))
+                binItem = _GetStorableStackBin(craneNumber);
+                if (binItem != null)
                 {
-                    return false;
+                    binItem.BinStatus = BinStatus.PutAllocated;
+                    binItem.StoredOn = DateTime.Now;
+                    binItem.Pallet = palletItem;
+                    this[binItem.NodeIndex] = binItem;
                 }
-                binItem.BinStatus = BinStatus.PutAllocated;
-                binItem.StoredOn = DateTime.Now;
-                binItem.Pallet = palletItem;
-                this[binItem.NodeIndex] = binItem;
-                return true;
+                return binItem != null;
             }
             finally
             {

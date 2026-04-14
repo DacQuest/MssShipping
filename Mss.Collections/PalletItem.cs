@@ -15,8 +15,15 @@ namespace Mss.Collections
         ? VehicleRow.Row1
         : VehicleRow.Row2;
 
-        public bool IsStack => Sku == Constant.FrontStackSku
-            || Sku == Constant.RearStackSku;
+        public bool IsStack => IsFrontStack || IsRearStack;
+
+        public bool IsFrontStack => Sku == Constant.StackSku1;
+
+        public bool IsRearStack => Sku == Constant.StackSku2;
+
+        public BinSize BinSize => VehicleRow == VehicleRow.Row1 && !IsStack
+            ? BinSize.Large
+            : BinSize.Small;
 
         public string BuiltOnText => BuiltOn > Constant.BeginningOfTime
             ? BuiltOn.ToString(Constant.DateTimeFormat)

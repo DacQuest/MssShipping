@@ -21,6 +21,7 @@ using DacQuest.DFX.Core.Threading;
 using Mss.Common;
 using Mss.Data;
 using Mss.Views;
+using DevExpress.XtraReports.UI;
 
 namespace Mss.Views
 {
@@ -64,8 +65,8 @@ namespace Mss.Views
             XProxyCache.Acquire(Constant.LowerPitName, out _lowerPitProxy);
 
             XProxyCache.Acquire(Constant.HoldCodesName, out _holdCodesProxy);
-            _storageProxy.DataItemChanged += _HoldCodesProxy_DataItemChanged;
-            _storageProxy.CollectionRefreshed += _HoldCodesProxy_CollectionRefreshed;
+            _holdCodesProxy.DataItemChanged += _HoldCodesProxy_DataItemChanged;
+            _holdCodesProxy.CollectionRefreshed += _HoldCodesProxy_CollectionRefreshed;
 
             XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
             _storageProxy.DataItemChanged += _StorageProxy_DataItemChanged;
@@ -74,11 +75,8 @@ namespace Mss.Views
             _allowBinEditing = _parameters.AllowBinEditing;
             _allowBulkEditing = _parameters.AllowBulkEditing;
             _allowPalletStatusEditing = _parameters.AllowPalletStatusEditing;
-            //             _allowSkuEditing =  _parameters.AllowSkuEditing;
 
             _initializingControl = true;
-
-            _spnHorizontal.Maximum = _parameters.MaxBank1Horizontal;
 
             _cmbBinStatus.AddEnumItem(BinStatus.Invalid);
             _cmbBinStatus.AddEnumItem(BinStatus.Empty);
@@ -246,6 +244,7 @@ namespace Mss.Views
             {
                 case PalletStatus.Hold:
                     needComment = string.IsNullOrWhiteSpace(palletItem.Comment);
+                    needHoldCode = palletItem.HoldCode == 0;
                     break;
                 case PalletStatus.Purge:
                     needComment = string.IsNullOrWhiteSpace(palletItem.Comment);
@@ -266,7 +265,7 @@ namespace Mss.Views
             }
             if (needComment || needHoldCode)
             {
-                XMessageBox.Show(
+                _ = XMessageBox.Show(
                     this,
                     message,
                     "Missing Information",
@@ -311,11 +310,11 @@ namespace Mss.Views
                 _originalBinItem,
                 ref _workingBinItem))
             {
-                NotifyUser("Original Item was stale. Changes were NOT saved. The fresh Bin data is now displayed.");
+                NotifyUser("The original data was stale. Changes were NOT saved. The current data is now displayed.");
             }
             else
             {
-                NotifyUser("Item saved by user.");
+                NotifyUser("Saved by user.");
             }
             _originalBinItem.Copy(_workingBinItem);
             _PopulateControls(_originalBinItem);
@@ -351,7 +350,7 @@ namespace Mss.Views
         //    return false;
         //}
 
-        public void GoToBinIndex(Int32 binIndex)
+        public void GoToBinIndex(int binIndex)
         {
             if (_originalBinItem.NodeIndex == binIndex)
             {
@@ -368,14 +367,13 @@ namespace Mss.Views
             _UpdateSpinners(binIndex);
             _forceContinue = false;
 
-            //            _GoToBinIndex(binIndex);
+//            _GoToBinIndex(binIndex);
         }
 
         private void _GoToBinIndex(int binIndex)
         {
             _lstMessages.Items.Clear();
             _originalBinItem.Copy(_storageProxy.GetAt(binIndex));
-            //            _workingBinItem.Copy(_originalBinItem);
             _PopulateControls(_originalBinItem);
         }
 
@@ -385,12 +383,12 @@ namespace Mss.Views
             if (binItem.NodeIndex == _originalBinItem.NodeIndex
                 && binItem.Different(_originalBinItem))
             {
-                //                 NotifyUser(
-                //                     String.Format(
-                //                         "Bin at {0}-{1}-{2} was edited externally. The new data is displayed.",
-                //                         _originalBinItem.BinAisleNumber,
-                //                         _originalBinItem.BinHorizontalNumber,
-                //                         _originalBinItem.BinVerticalNumber));
+//                 NotifyUser(
+//                     String.Format(
+//                         "Bin at {0}-{1}-{2} was edited externally. The new data is displayed.",
+//                         _originalBinItem.BinAisleNumber,
+//                         _originalBinItem.BinHorizontalNumber,
+//                         _originalBinItem.BinVerticalNumber));
                 _originalBinItem.Copy(binItem);
                 _PopulateControls(_originalBinItem);
             }
@@ -425,22 +423,12 @@ namespace Mss.Views
         private void _ShowSearchResults(List<BinItem> searchResults)
         {
             _ShowSearchResults(searchResults, false, true);
-            //             if (searchResults.Count > 0)
-            //             {
-            //                 _SetSearchResults(searchResults);
-            //             }
-            //             else
-            //             {
-            //                 XMessageBox.Show(
-            //                     this,
-            //                     "No matching results were found.",
-            //                     "Warning",
-            //                     MessageBoxButtons.OK,
-            //                     MessageBoxIcon.Warning);
-            //             }
         }
 
-        private void _ShowSearchResults(List<BinItem> searchResults, bool isAdvancedSearch, bool showEmptySearch)
+        private void _ShowSearchResults(
+            List<BinItem> searchResults,
+            bool isAdvancedSearch,
+            bool showEmptySearch)
         {
             if (searchResults.Count > 0)
             {
@@ -455,7 +443,7 @@ namespace Mss.Views
             }
             else if (showEmptySearch)
             {
-                XMessageBox.Show(
+                _ = XMessageBox.Show(
                     this,
                     "No matching results were found.",
                     "Search Results",
@@ -489,18 +477,12 @@ namespace Mss.Views
 
         private void _BtnPrintSearchResults_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Not Implemented Yet!");
-            return;
-//             if (_searchResults.Count > 0)
-//             {
-//                 SearchResultsReport report = new SearchResultsReport(_searchResults);
-//                 ReportPrintTool printTool = new ReportPrintTool(report);
-//                 //                 printTool.PreviewForm.Load += ReportPreviewForm_Load;
-//                 printTool.ShowPreview();
-//                 //                 printTool.ShowPreviewDialog();
-// 
-//                 //                 report.ShowPreview();
-//             }
+            if (_searchResults.Count > 0)
+            {
+                SearchResultsReport report = new SearchResultsReport(_searchResults);
+                ReportPrintTool printTool = new ReportPrintTool(report);
+                printTool.ShowPreview();
+            }
         }
 
         private void _BtnClearSearchResults_Click(object sender, EventArgs e)
@@ -681,6 +663,9 @@ namespace Mss.Views
 
             // Bin Data
             _lblBinNumber.Text = _workingBinItem.BinNumber.ToString();
+            _lblBinSize.Text = _workingBinItem.BinSize == BinSize.None
+                ? string.Empty
+                : _workingBinItem.BinSize.ToText();
             _lblBinStatus.Text = _workingBinItem.BinStatus.ToText();
             _chkAudit.Checked = _workingBinItem.Audit;
             //             _lblAuditAttempts.Text = _workingBinItem.AuditAttempts.ToString();
@@ -1008,16 +993,19 @@ namespace Mss.Views
 
         private void _InventorySummaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-//             InventorySummaryReport report = new InventorySummaryReport(_storageProxy.Items);
-//             ReportPrintTool printTool = new ReportPrintTool(report);
-//             printTool.ShowPreview();
+            InventorySummaryReport report = new InventorySummaryReport(
+                _storageProxy,
+                _upperPitProxy,
+                _lowerPitProxy);
+            ReportPrintTool printTool = new ReportPrintTool(report);
+            printTool.ShowPreview();
         }
 
         private void _FullInventoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-//             FullInventoryReport report = new FullInventoryReport(_storageProxy.Items);
-//             ReportPrintTool printTool = new ReportPrintTool(report);
-//             printTool.ShowPreview();
+            FullInventoryReport report = new FullInventoryReport(_storageProxy.Items);
+            ReportPrintTool printTool = new ReportPrintTool(report);
+            printTool.ShowPreview();
         }
 
 //         private void ReportPreviewForm_Load(object sender, EventArgs e)
@@ -1028,30 +1016,32 @@ namespace Mss.Views
 
         private void _NavigatorBtnFillBin_Click(object sender, EventArgs e)
         {
-            //QuickBinFillForm form = new QuickBinFillForm("Fill Bin");
-            //if (form.ShowDialog(this) == DialogResult.OK)
-            //{
-            //    if (!MesQuery.TryFetchPalletItem(
-            //        form.PalletID,
-            //        out PalletItem palletItem))
-            //    {
-            //        _ = XMessageBox.Show(
-            //            this,
-            //            "No data exists for this pallet.",
-            //            "Error",
-            //            MessageBoxButtons.OK,
-            //            MessageBoxIcon.Error);
-            //        return;
-            //    }
-            //    _originalBinItem.BinStatus = BinStatus.Pickable;
-            //    _originalBinItem.StoredOn = DateTime.Now;
-            //    _originalBinItem.Pallet = palletItem;
-            //    _storageProxy.SetAt(_originalBinItem.NodeIndex, _originalBinItem);
-            //    _upperPitProxy.Remove(palletItem.PalletID);
-            //    _lowerPitProxy.Remove(palletItem.PalletID);
-            //    _PopulateControls(_originalBinItem);
-            //}
-            //form.Dispose();
+            QuickBinFillForm form = new QuickBinFillForm("Fill Bin");
+            if (form.ShowDialog(this) == DialogResult.OK)
+            {
+                if (!MesInterface.TryFetchPalletItem(
+                    OperationCode.Unknown,
+                    form.PalletID,
+                    out PalletItem palletItem,
+                    out string fault))
+                {
+                    _ = XMessageBox.Show(
+                        this,
+                        fault,
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+                _originalBinItem.BinStatus = BinStatus.Pickable;
+                _originalBinItem.StoredOn = DateTime.Now;
+                _originalBinItem.Pallet = palletItem;
+                _ = _storageProxy.SetAt(_originalBinItem.NodeIndex, _originalBinItem);
+                _ = _upperPitProxy.Remove(palletItem.PalletID);
+                _ = _lowerPitProxy.Remove(palletItem.PalletID);
+                _PopulateControls(_originalBinItem);
+            }
+            form.Dispose();
         }
 
         private void _TxtComment_TextChanged(object sender, EventArgs e)
@@ -1082,57 +1072,57 @@ namespace Mss.Views
 
         }
 
-        private void _CmbSku_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Tab)
-            {
-                //                 if (!_skusProxy.ContainsKey(cmbPickSku.Text))
-                //                 {
-                //                     XMessageBox.Show(
-                //                         this,
-                //                         String.Format(
-                //                             "'{0}' is not a valid SKU.",
-                //                             cmbPickSku.Text),
-                //                         "Invalid SKU",
-                //                         MessageBoxButtons.OK,
-                //                         MessageBoxIcon.Error);
-                //                     cmbPickSku.SelectedItem = _workingBinItem.Pallet.PickSku;
-                //                     cmbPickSku.SelectAll();
-                //                 }
-                //                 else if (cmbPickSku.Text != _workingBinItem.Pallet.PickSku)
-                //                 {
-                //                     PalletItem palletItem = _workingBinItem.Pallet;
-                //                     palletItem.PickSku = cmbPickSku.Text;
-                //                     _workingBinItem.Pallet = palletItem;
-                //                 }
-                //                 _ValidatePickSku();
-            }
-        }
+//         private void _CmbSku_KeyDown(object sender, KeyEventArgs e)
+//         {
+//             if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Tab)
+//             {
+//                 if (!_skusProxy.ContainsKey(cmbPickSku.Text))
+//                 {
+//                     XMessageBox.Show(
+//                         this,
+//                         String.Format(
+//                             "'{0}' is not a valid SKU.",
+//                             cmbPickSku.Text),
+//                         "Invalid SKU",
+//                         MessageBoxButtons.OK,
+//                         MessageBoxIcon.Error);
+//                     cmbPickSku.SelectedItem = _workingBinItem.Pallet.PickSku;
+//                     cmbPickSku.SelectAll();
+//                 }
+//                 else if (cmbPickSku.Text != _workingBinItem.Pallet.PickSku)
+//                 {
+//                     PalletItem palletItem = _workingBinItem.Pallet;
+//                     palletItem.PickSku = cmbPickSku.Text;
+//                     _workingBinItem.Pallet = palletItem;
+//                 }
+//                 _ValidatePickSku();
+//             }
+//         }
 
-        private void _CmbSku_Leave(object sender, EventArgs e)
-        {
-            //             if (!_skusProxy.ContainsKey(cmbPickSku.Text))
-            //             {
-            //                 XMessageBox.Show(
-            //                     this,
-            //                     String.Format(
-            //                         "'{0}' is not a valid SKU.",
-            //                         cmbPickSku.Text),
-            //                     "Invalid SKU",
-            //                     MessageBoxButtons.OK,
-            //                     MessageBoxIcon.Error);
-            //                 cmbPickSku.Focus();
-            //                 cmbPickSku.SelectedItem = _workingBinItem.Pallet.PickSku;
-            //                 cmbPickSku.SelectAll();
-            //             }
-            //             else if (cmbPickSku.Text != _workingBinItem.Pallet.PickSku)
-            //             {
-            //                 PalletItem palletItem = _workingBinItem.Pallet;
-            //                 palletItem.PickSku = cmbPickSku.Text;
-            //                 _workingBinItem.Pallet = palletItem;
-            //             }
-            //             _ValidatePickSku();
-        }
+//         private void _CmbSku_Leave(object sender, EventArgs e)
+//         {
+//             if (!_skusProxy.ContainsKey(cmbPickSku.Text))
+//             {
+//                 XMessageBox.Show(
+//                     this,
+//                     String.Format(
+//                         "'{0}' is not a valid SKU.",
+//                         cmbPickSku.Text),
+//                     "Invalid SKU",
+//                     MessageBoxButtons.OK,
+//                     MessageBoxIcon.Error);
+//                 cmbPickSku.Focus();
+//                 cmbPickSku.SelectedItem = _workingBinItem.Pallet.PickSku;
+//                 cmbPickSku.SelectAll();
+//             }
+//             else if (cmbPickSku.Text != _workingBinItem.Pallet.PickSku)
+//             {
+//                 PalletItem palletItem = _workingBinItem.Pallet;
+//                 palletItem.PickSku = cmbPickSku.Text;
+//                 _workingBinItem.Pallet = palletItem;
+//             }
+//             _ValidatePickSku();
+//         }
 
         private void _SpnCrane_Enter(object sender, EventArgs e)
         {
@@ -1218,18 +1208,9 @@ namespace Mss.Views
             _ = _spnVertical.Focus();
         }
 
-        private void _StorageView_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void _ChkAudit_CheckedChanged(object sender, EventArgs e)
         {
             _workingBinItem.Audit = _chkAudit.Checked;
-            //if (_originalBinItem.BinStatus == BinStatus.Empty)
-            //{
-            //    _workingBinItem.BinStatus = BinStatus.Offline;
-            //}
         }
 
         private void _ByAuditsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1258,46 +1239,47 @@ namespace Mss.Views
 
         private void _LblBinNumber_Click(object sender, EventArgs e)
         {
-            //             if (CanSwitchToView(Constant.AdminStorageViewName))
-            //             {
-            // //                 int nodeIndex = _workingBinItem.NodeIndex;
-            //                 BinItem editGridItem = XDataItem.Clone(_workingBinItem);
-            //                 XDataItemEditorForm<BinItem> editForm = new XDataItemEditorForm<BinItem>();
-            //                 editForm.Initialize(
-            //                     "Bin Item Editor",
-            //                     editGridItem);
-            //                 if (editForm.ShowDialog(this) == DialogResult.OK)
-            //                 {
-            //                     editGridItem = editForm.EditedDataItem;
-            //                     _PopulateControls(editGridItem);
-            // //                     _workingBinItem.NodeIndex = nodeIndex;
-            //                     _SaveItem();
-            // //                     BinItem editedItem = editForm.EditedDataItem;
-            // //                     if (!_storageProxy.SafeSetAt(
-            // //                         binItem.NodeIndex,
-            // //                         editForm.OriginalDataItem,
-            // //                         ref editedItem))
-            // //                     {
-            // //                         MessageBox.Show(
-            // //                             this,
-            // //                             "Edit failed because the original Bin Item was stale.",
-            // //                             "Edit Failed");
-            // //                     }
-            //                 }
-            //             }
+            if (CanSwitchToView(Constant.AdminStorageViewName))
+            {
+//                 int nodeIndex = _workingBinItem.NodeIndex;
+                BinItem editGridItem = XDataItem.Clone(_workingBinItem);
+                XDataItemEditorForm<BinItem> editForm = new XDataItemEditorForm<BinItem>();
+                editForm.Initialize(
+                    "Bin Item Editor",
+                    editGridItem);
+                if (editForm.ShowDialog(this) == DialogResult.OK)
+                {
+                    editGridItem = editForm.EditedDataItem;
+                    _PopulateControls(editGridItem);
+//                     _workingBinItem.NodeIndex = nodeIndex;
+                    _SaveItem();
+//                     BinItem editedItem = editForm.EditedDataItem;
+//                     if (!_storageProxy.SafeSetAt(
+//                         binItem.NodeIndex,
+//                         editForm.OriginalDataItem,
+//                         ref editedItem))
+//                     {
+//                         MessageBox.Show(
+//                             this,
+//                             "Edit failed because the original Bin Item was stale.",
+//                             "Edit Failed");
+//                     }
+                }
+            }
         }
 
         private void _EnableConvertButtons()
         {
             bool enabled = _searchResults != null
                 && _searchResults.Count > 0
-                && ((_AreNewStatusAndHoldCodeAndCommentConsistent(
-                    _newStatus,
-                    _newHoldCode,
-                    _newComment,
-                    false)
-                        && _newStatus > PalletStatus.Invalid)
-                        || _markAudits || _unmarkAudits);
+                && ((_newStatus > PalletStatus.Invalid
+                    && _AreNewStatusAndHoldCodeAndCommentConsistent(
+                        _newStatus,
+                        _newHoldCode,
+                        _newComment,
+                        false))
+                    || _markAudits
+                    || _unmarkAudits);
 
             _btnConvert.Enabled = enabled;
             _btnConvertAll.Enabled = enabled;
@@ -1558,6 +1540,7 @@ namespace Mss.Views
             {
                 case PalletStatus.Hold:
                     needComment = string.IsNullOrWhiteSpace(comment);
+                    needHoldCode = holdCode == 0;
                     break;
                 case PalletStatus.Unknown:
                 case PalletStatus.Purge:
@@ -1581,7 +1564,7 @@ namespace Mss.Views
             {
                 if (showMessage)
                 {
-                    XMessageBox.Show(
+                    _ = XMessageBox.Show(
                         this,
                         message,
                         "Missing Information",
@@ -1605,7 +1588,6 @@ namespace Mss.Views
             }
             PalletItem searchPallet = searchResult.Pallet;
             string message = string.Empty;
-            //             bool isStatusConversion = true;
             if (_newStatus > PalletStatus.Invalid)
             {
                 message = string.Format(
@@ -1613,12 +1595,9 @@ namespace Mss.Views
                     searchPallet.PalletID,
                     searchPallet.Status.ToText(),
                     _newStatus.ToText());
-                //                 isStatusConversion = true;
-
             }
-            else if ((_markAudits || _unmarkAudits))
+            else if (_markAudits || _unmarkAudits)
             {
-                //                 isStatusConversion = false;
                 string auditString = _markAudits ? "mark" : "unmark";
                 message = $"Do you want to " + auditString + $" Pallet {searchPallet.PalletID} Audit?";
             }
@@ -1634,18 +1613,18 @@ namespace Mss.Views
                 BinItem newBinItem = XDataItem.Clone(originalBinItem);
                 PalletItem pallet = newBinItem.Pallet;
                 pallet.Status = _newStatus;
-                //                 if (!String.IsNullOrWhiteSpace(_newComment)
-                //                     && chkOverwriteComments.Checked)
-                //                 {
-                //                     pallet.Comment = _newComment;
-                //                 }
+//                 if (!_newComment.IsNullOrWhiteSpace()
+//                     && _chkOverwriteComments.Checked)
+//                 {
+//                     pallet.Comment = _newComment;
+//                 }
                 if (_newStatus == PalletStatus.Invalid)
                 {
                     pallet.Status = originalBinItem.Pallet.Status;
                 }
-                if (!string.IsNullOrWhiteSpace(_newComment)
+                if (!_newComment.IsNullOrWhiteSpace()
                     && (_chkOverwriteComments.Checked
-                        || string.IsNullOrWhiteSpace(pallet.Comment)))
+                        || pallet.Comment.IsNullOrWhiteSpace()))
                 {
                     pallet.Comment = _newComment;
                 }

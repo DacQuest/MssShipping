@@ -42,6 +42,22 @@ namespace Mss.Collections
             }
         }
 
+        public bool IsNextInLaneToSequence(int nodeIndex)
+        {
+            _ = Lock();
+            try
+            {
+                int previousIndex = Constant.PreviousInLaneLoadIndex[nodeIndex];
+                return previousIndex == Constant.BeforeFirst
+                    || this[previousIndex].Status == LoadItemStatus.Sequenced
+                    || this[previousIndex].Status == LoadItemStatus.Done;
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
         public bool TryFindByPalletID(
             string palletID,
             out LoadItem loadItem)
@@ -60,7 +76,7 @@ namespace Mss.Collections
             }
         }
 
-        public bool AllPickedOrGreater
+        public bool AllPickingOrGreater
         {
             get
             {
@@ -71,7 +87,7 @@ namespace Mss.Collections
                     {
                         LoadItemStatus status = l.Status;
                         return status == LoadItemStatus.Invalid
-                            || status >= LoadItemStatus.Picked;
+                            || status >= LoadItemStatus.Picking;
                     });
                 }
                 finally

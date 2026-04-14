@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Mss.Collections
 {
-    public class RecircLoopProxy : XSharedDictionaryProxy<string, PalletItem>
+    public class RecircBufferProxy : XSharedDictionaryProxy<string, PalletItem>
     {
     }
 }

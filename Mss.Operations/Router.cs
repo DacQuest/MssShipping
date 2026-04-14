@@ -16,6 +16,8 @@ namespace Mss.Operations
 {
     public class Router : LineOperationBase
     {
+        private RouterParameterSetWrapper _parameters;
+
         public override OperationCode OperationCode
         {
             get
@@ -44,12 +46,18 @@ namespace Mss.Operations
             }
         }
 
-//         protected override void ResetOperationVariables()
-//         {
-//             base.ResetOperationVariables();
-//         }
+        //         protected override void ResetOperationVariables()
+        //         {
+        //             base.ResetOperationVariables();
+        //         }
 
-        private RouterParameterSetWrapper _parameters;
+        protected string SizingTestResultName = "Sizing Test Result";
+        protected SizingTestResult SizingTestResult
+        {
+            get => GetVariable<SizingTestResult>(SizingTestResultName);
+            set => SetVariable(SizingTestResultName, value);
+        }
+
 
         public CraneNumber CraneNumber => _parameters.CraneNumber;
 
@@ -68,6 +76,7 @@ namespace Mss.Operations
         {
             base.RegisterCustomStates();
             RegisterState(AwaitingDestinationState, "Awaiting Destination", AwaitingDestinationStateHandler, true);
+            RegisterState(AwaitingSizingTestResultState, "Awaiting Sizing Test Result", AwaitingSizingTestResultStateHandler, true);
         }
 
         protected override void DoStart()
@@ -76,6 +85,14 @@ namespace Mss.Operations
 
             SystemSettings.DataItemChanged += _SystemSettings_DataItemChanged;
             Pit.DataItemChanged += _Pit_DataItemChanged;
+
+            if (CraneNumber == CraneNumber.Crane1)
+            {
+                StartPlcTagCapture(
+                    Constant.SizingTestResultRoleName,
+                    _SizingTestResult_TagValueChanged,
+                    XTagDataCaptureUpdateMode.OnChange);
+            }
         }
 
         protected override void DoStop()
@@ -92,15 +109,55 @@ namespace Mss.Operations
 
         protected override bool DoProcessPallet(out int moveCommand, out string extendedState)
         {
+            string fault;
+            PalletItem palletItem;
+
+            if (CraneNumber == CraneNumber.Crane1)
+            {
+                switch (SizingTestResult)
+                {
+                    case SizingTestResult.NoResult:
+                        moveCommand = Constant.NoMoveCommand;
+                        extendedState = string.Empty;
+                        SetCurrentState(AwaitingSizingTestResultState);
+                        return false;
+                    case SizingTestResult.Pass:
+                        // Nothing to do; Just fall through
+                        break;
+                    case SizingTestResult.Fail:
+                    default:
+                        if (!QueryMesPallet(
+                            PalletID,
+                            out palletItem,
+                            out fault))
+                        {
+                            moveCommand = Constant.NoMoveCommand;
+                            extendedState = string.Empty;
+                            SetOperationFaulted(fault);
+                            return false;
+                        }
+                        CurrentPallet = palletItem;
+                        CurrentPallet.Status = PalletStatus.Purge;
+                        CurrentPallet.Comment = "Failed Sizing Test";
+                        DataLayer.SetPitPallet(
+                            Level,
+                            CurrentPallet,
+                            PitCode.Purge);
+                        moveCommand = Constant.RouterMoveCommandForward;
+                        extendedState = $"(FAILED SIZING) Forwarding Pallet {CurrentPallet.PalletID} to Purge.";
+                        return false;
+                }
+            }
+
             if (!DataLayer.ProcessPalletAtRouter(
                 OperationCode,
                 CraneNumber,
                 Level,
                 PalletID,
-                out PalletItem palletItem,
+                out palletItem,
                 out moveCommand,
                 out extendedState,
-                out string fault))
+                out fault))
             {
                 if (IsFaulted(fault))
                 {
@@ -136,6 +193,17 @@ namespace Mss.Operations
 
         //==================================================================================
 
+        #region AwaitingSizingTestResult State
+
+        protected readonly string AwaitingSizingTestResultState = "AwaitingSizingTestResult";
+
+        protected virtual void AwaitingSizingTestResultStateHandler()
+        {
+        }
+        #endregion
+
+        //==================================================================================
+
         #region AwaitingMoveCompletedState
 
 //         protected override bool DoMoveCompleted()
@@ -165,5 +233,17 @@ namespace Mss.Operations
 
         //==================================================================================
 
+        private void _SizingTestResult_TagValueChanged(object sender, XTagDataEventArgs e)
+        {
+            if (e.TagData.TryGetTagValue(out int result))
+            {
+                SizingTestResult = (SizingTestResult)result;
+                if (SizingTestResult != SizingTestResult.NoResult
+                    && CurrentState.Name == AwaitingSizingTestResultState)
+                {
+                    SetCurrentState(ProcessPalletState);
+                }
+            }
+        }
     }
 }

@@ -8,11 +8,12 @@ namespace Mss.Common
 {
     public enum CraneFunction
     {
-        None      = 0,
-        Store     = 1,
-        Audit     = 2,
-        LoadPick  = 3,
-        PurgePick = 4,
-        StackPick = 5
+        None       = 0,
+        Store      = 1,
+        Audit      = 2,
+        LoadPick   = 3,
+        PurgePick  = 4,
+        Stack1Pick = 5,
+        Stack2Pick = 6
     }
 }

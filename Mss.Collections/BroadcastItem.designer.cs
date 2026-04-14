@@ -79,11 +79,11 @@ namespace Mss.Collections
 
         [XDataItemProperty(
             Comment = "Used to pick pallet based on Pick Mode other than BySku",
-            MaxLength = Constant.PickModeValueLength)]
-        public string PickModeValue
+            MaxLength = Constant.PickModeKeyLength)]
+        public string PickModeKey
         {
-            get => GetString(nameof(PickModeValue));
-            set => SetString(nameof(PickModeValue), value);
+            get => GetString(nameof(PickModeKey));
+            set => SetString(nameof(PickModeKey), value);
         }
 
         [XDataItemProperty(
@@ -95,11 +95,19 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-            Comment = "Number of Vehicle Rows associated with this Broadcast")]
+            Comment = "Number of Vehicle Rows associated with this Broadcast.")]
         public int VehicleRowCount
         {
             get => GetInt32(nameof(VehicleRowCount));
             set => SetInt32(nameof(VehicleRowCount), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "Indicates whether or not the SKU associated with this broacast is available.")]
+        public bool Shortage
+        {
+            get => GetBoolean(nameof(Shortage));
+            set => SetBoolean(nameof(Shortage), value);
         }
 
         //         [XDataItemProperty(
