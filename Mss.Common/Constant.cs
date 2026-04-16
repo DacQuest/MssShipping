@@ -21,6 +21,7 @@ namespace Mss.Common
 
         // Shared Collection Names
         public const string StorageName = "Storage";
+        public const string AssignmentPitName = "AssignmentPit";
         public const string LowerPitName = "LowerPit";
         public const string UpperPitName = "UpperPit";
         public const string SystemSettingsName = "SystemSettings";
@@ -43,6 +44,7 @@ namespace Mss.Common
         public const int MaxBroadcastSkip = 100;
         public const int MaxRotation = 9998;
         public const int PickModeKeyLength = 50;
+        public const int NoHoldCode = -1;
 
         public const string VehicleRow1CsnSuffix = "F";
         public const string VehicleRow2CsnSuffix = "B";
@@ -159,7 +161,7 @@ namespace Mss.Common
         // Operation Move Commands
         public const int NoMoveCommand = 0;
 
-        public const int Assignment1MoveCommandForwared = 1;
+        public const int Assignment1MoveCommandForward = 1;
         public const int Assignment1MoveCommandLower = 2;
 
         public const int Assignment2MoveCommandConsole = 1;

@@ -4,6 +4,7 @@ using DacQuest.DFX.Core.Strings;
 using Mss.Common;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -92,9 +93,34 @@ namespace Mss.Collections
         }
 
         public string ReceivedOnText => ReceivedOn > Constant.BeginningOfTime
-            ? ReceivedOn.ToString(Constant.DateTimeFormat)
+//             ? ReceivedOn.ToString(Constant.DateTimeFormat)
+            ? ReceivedOn.ToString("G")
             : string.Empty;
 
+        public string StatusText => Status.ToText();
+
+        public Image StatusImage
+        {
+            get
+            {
+                Image image = Properties.Resources.RoundRedBang16;
+                switch (Status)
+                {
+                    case BroadcastStatus.Invalid:
+                    case BroadcastStatus.Missing:
+                        image = Properties.Resources.RoundRedBang16;
+                        break;
+                    case BroadcastStatus.Shipped:
+                    case BroadcastStatus.Skip:
+                        image = Properties.Resources.RoundBlackDash16;
+                        break;
+                    case BroadcastStatus.OK:
+                        image = Shortage ? Properties.Resources.RoundYellowBangBorder16 : Properties.Resources.RoundGreenCheck16;
+                        break;
+                }
+                return image;
+            }
+        }
         public string GetStateDetails(int leadingSpaceCount)
         {
             string spaces = string.Concat(Enumerable.Repeat(' ', leadingSpaceCount));

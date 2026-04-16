@@ -248,6 +248,8 @@
     <Compile Include="LoadArchive\ShipperReport.Designer.cs">
       <DependentUpon>ShipperReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Pocos\LoadHeader.cs" />
+    <Compile Include="Pocos\PalletStatusChange.cs" />
     <Compile Include="SlugManager.cs" />
     <Compile Include="MesInterface.cs" />
     <Compile Include="Pocos\BroadcastDetail.cs" />

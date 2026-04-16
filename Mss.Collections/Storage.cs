@@ -155,9 +155,10 @@ namespace Mss.Collections
         public bool TryAllocateLoadPick(
             CraneNumber craneNumber,
             FifoMode fifoMode,
-            BroadcastItem broadcastItem,
+            LoadItem pickableLoadItem,
             out BinItem binItem)
         {
+            BroadcastItem broadcastItem = pickableLoadItem.Broadcast;
             _ = Lock();
             try
             {
@@ -185,17 +186,33 @@ namespace Mss.Collections
                     if (broadcastItem.PickMode == PickMode.ByPalletID)
                     {
                         binItem = this
-                            .FirstOrDefault((Func<BinItem, bool>)(b =>
+                            .FirstOrDefault(b =>
                             {
                                 PalletItem pallet = b.Pallet;
                                 return b.CraneNumber == craneNumber
                                     && pallet.PalletID == broadcastItem.PickModeKey
-                                    && pallet.Status == PalletStatus.OK
+                                    && pallet.Status == PalletStatus.Reserved
                                     && b.BinStatus == BinStatus.Pickable
                                     && !b.Audit
                                     && !b.Disabled
                                     && !b.NotUsable;
-                            }));
+                            });
+                        if (binItem != null)
+                        {
+                            if (binItem.Pallet.Sku != broadcastItem.Sku)
+                            {
+                                binItem.BinStatus = BinStatus.Offline;
+                                PalletItem foundPallet = binItem.Pallet;
+                                foundPallet.Comment = $"RESERVED PALLET SKU MISMATCH! See System Events.";
+                                binItem.Pallet = foundPallet;
+                                this[binItem.NodeIndex] = binItem;
+                                XSystemEvent.Publish(
+                                    "Reserved Pallet SKU Mismatch",
+                                    XSystemEventLevel.Error,
+                                    $"Broadcast SKU {broadcastItem.Sku} does not match Reserved Pallet SKU {foundPallet.Sku}. (Bin Location:{binItem.LocationText} / Slug:{pickableLoadItem.SlugLetter.ToText()} / CSN:{broadcastItem.Csn})");
+                                binItem = null;
+                            }
+                        }
                     }
                     else if (broadcastItem.PickMode == PickMode.ByJobID)
                     {
@@ -205,12 +222,28 @@ namespace Mss.Collections
                                 PalletItem pallet = b.Pallet;
                                 return b.CraneNumber == craneNumber
                                     && pallet.JobID == broadcastItem.PickModeKey
-                                    && pallet.Status == PalletStatus.OK
+                                    && pallet.Status == PalletStatus.Reserved
                                     && b.BinStatus == BinStatus.Pickable
                                     && !b.Audit
                                     && !b.Disabled
                                     && !b.NotUsable;
                             });
+                        if (binItem != null)
+                        {
+                            if (binItem.Pallet.Sku != broadcastItem.Sku)
+                            {
+                                binItem.BinStatus = BinStatus.Offline;
+                                PalletItem foundPallet = binItem.Pallet;
+                                foundPallet.Comment = $"RESERVED PALLET SKU MISMATCH! See System Events.";
+                                binItem.Pallet = foundPallet;
+                                this[binItem.NodeIndex] = binItem;
+                                XSystemEvent.Publish(
+                                    "Reserved Pallet SKU Mismatch",
+                                    XSystemEventLevel.Error,
+                                    $"Broadcast SKU {broadcastItem.Sku} does not match Reserved Pallet SKU {foundPallet.Sku}. (Bin Location:{binItem.LocationText} / Slug:{pickableLoadItem.SlugLetter.ToText()} / CSN:{broadcastItem.Csn})");
+                                binItem = null;
+                            }
+                        }
                     }
                     else
                     {
@@ -721,6 +754,111 @@ namespace Mss.Collections
                 Unlock();
             }
         }
+
+//         public Dictionary<string, int> GetPickableSkuCounts(
+//             out List<string> reservedPalletIDs,
+//             out List<string> reservedJobIDs)
+//         {
+//             reservedPalletIDs = new List<string>();
+//             reservedJobIDs = new List<string>();
+//             Dictionary<string, int> skuCounts = new Dictionary<string, int>();
+// 
+//             _ = Lock();
+//             try
+//             {
+//                 IEnumerable<BinItem> pickableBins = this
+//                     .Where(b =>
+//                     {
+//                         PalletItem palletItem = b.Pallet;
+//                         return b.BinStatus == BinStatus.Pickable
+//                             && (palletItem.Status == PalletStatus.OK
+//                                 || palletItem.Status == PalletStatus.Reserved)
+//                             && !b.Disabled
+//                             && !b.NotUsable;
+//                     });
+//                 foreach (BinItem pickableBin in pickableBins)
+//                 {
+//                     PalletItem pallet = pickableBin.Pallet;
+//                     if (pallet.Status == PalletStatus.Reserved)
+//                     {
+//                         reservedPalletIDs.Add(pallet.PalletID);
+//                         reservedJobIDs.Add(pallet.JobID);
+//                     }
+//                     else // pallet.Status == PalletStatus.OK
+//                     {
+//                         string sku = pallet.Sku;
+//                         if (skuCounts.TryGetValue(sku, out int count))
+//                         {
+//                             count++;
+//                         }
+//                         else
+//                         {
+//                             count = 1;
+//                         }
+//                         skuCounts[sku] = count;
+//                     }
+//                 }
+//                 return skuCounts;
+//             }
+//             finally
+//             {
+//                 Unlock();
+//             }
+//         }
+
+        public Dictionary<string, int> GetPickableSkuCounts(
+            out List<PalletPickModeKeys> reservedPalletKeys)
+        {
+            reservedPalletKeys = new List<PalletPickModeKeys>();
+            Dictionary<string, int> skuCounts = new Dictionary<string, int>();
+
+            _ = Lock();
+            try
+            {
+                IEnumerable<BinItem> pickableBins = this
+                    .Where(b =>
+                    {
+                        PalletItem palletItem = b.Pallet;
+                        return b.BinStatus == BinStatus.Pickable
+                            && (palletItem.Status == PalletStatus.OK
+                                || palletItem.Status == PalletStatus.Reserved)
+                            && !b.Disabled
+                            && !b.NotUsable;
+                    });
+                foreach (BinItem pickableBin in pickableBins)
+                {
+                    PalletItem pallet = pickableBin.Pallet;
+                    if (pallet.Status == PalletStatus.Reserved)
+                    {
+                        reservedPalletKeys.Add(
+                            new PalletPickModeKeys
+                            {
+                                PalletID = pallet.PalletID,
+                                JobID = pallet.JobID
+                            });
+                    }
+                    else // pallet.Status == PalletStatus.OK
+                    {
+                        string sku = pallet.Sku;
+                        if (skuCounts.TryGetValue(sku, out int count))
+                        {
+                            count++;
+                        }
+                        else
+                        {
+                            count = 1;
+                        }
+                        skuCounts[sku] = count;
+                    }
+                }
+                return skuCounts;
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
         public Dictionary<string, int> GetSkuCounts(PalletStatus palletStatuses)
         {
             return GetSkuCounts(CraneNumber.None, palletStatuses);

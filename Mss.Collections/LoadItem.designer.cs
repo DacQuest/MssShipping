@@ -49,13 +49,13 @@ namespace Mss.Collections
             set => SetBoolean(nameof(Transferring), value);
         }
 
-        [XDataItemProperty(
-            Comment = "")]
-        public bool Shortage
-        {
-            get => GetBoolean(nameof(Shortage));
-            set => SetBoolean(nameof(Shortage), value);
-        }
+//         [XDataItemProperty(
+//             Comment = "")]
+//         public bool Shortage
+//         {
+//             get => GetBoolean(nameof(Shortage));
+//             set => SetBoolean(nameof(Shortage), value);
+//         }
 
         [XDataItemProperty(
             Comment = "The letter of the Load (A=1 or B=2).",

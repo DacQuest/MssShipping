@@ -44,6 +44,9 @@ namespace Mss.Operations
         private Storage _storage;
         protected Storage Storage => _storage;
 
+        private AssignmentPit _assignmentPit;
+        protected AssignmentPit AssignmentPit => _assignmentPit;
+
         private LowerPit _lowerPit;
         protected LowerPit LowerPit => _lowerPit;
 
@@ -165,6 +168,7 @@ namespace Mss.Operations
 
             DataLayer = DataLayer.Create(
                 out _storage,
+                out _assignmentPit,
                 out _lowerPit,
                 out _upperPit,
                 out _systemSettings,

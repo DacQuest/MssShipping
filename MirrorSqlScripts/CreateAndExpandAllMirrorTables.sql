@@ -230,7 +230,6 @@ insert into @ColumnSets values
     ,[Crane] BIGINT DEFAULT 0 NOT NULL
     ,[PickedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
     ,[Transferring] BIT DEFAULT 0 NOT NULL
-    ,[Shortage] BIT DEFAULT 0 NOT NULL
     ,[SlugLetter] BIGINT DEFAULT 1 NOT NULL
     '),
     ('LoadItemB','
@@ -238,7 +237,6 @@ insert into @ColumnSets values
     ,[Crane] BIGINT DEFAULT 0 NOT NULL
     ,[PickedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
     ,[Transferring] BIT DEFAULT 0 NOT NULL
-    ,[Shortage] BIT DEFAULT 0 NOT NULL
     ,[SlugLetter] BIGINT DEFAULT 2 NOT NULL
     '),
     ('BroadcastItem','

@@ -26,7 +26,7 @@ namespace Mss.Views
     {
         private Levels _level = Levels.None;
         private SlugProxy _slugProxy = null;
-        private StorageProxy _storageProxy = null;
+//         private StorageProxy _storageProxy = null;
 //         private SystemSettingsProxy _systemSettingsProxy = null;
         private int _headerColumnWidth = 60;
         private int _dataColumnWidth = 245;
@@ -82,13 +82,13 @@ namespace Mss.Views
             XProxyCache.Acquire(_slugLetter.SlugName(), out _slugProxy);
             _slugProxy.DataItemChanged += _Slug_DataItemChanged;
             _slugProxy.CollectionRefreshed += _Slug_ColletionRefreshed;
-            if (_showShortages)
-            {
-                XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
-                _storageProxy.DataItemChanged += _Storage_DataItemChanged;
-                _storageProxy.CollectionRefreshed += _Storage_CollectionRefreshed;
-//                 XProxyCache.Acquire(Constant.SystemSettingsName, out _systemSettingsProxy);
-            }
+//             if (_showShortages)
+//             {
+//                 XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
+//                 _storageProxy.DataItemChanged += _Storage_DataItemChanged;
+//                 _storageProxy.CollectionRefreshed += _Storage_CollectionRefreshed;
+// //                 XProxyCache.Acquire(Constant.SystemSettingsName, out _systemSettingsProxy);
+//             }
 
             // Set up header attributes
             SourceGrid.Cells.Views.Header boldHeader = new SourceGrid.Cells.Views.Header
@@ -190,15 +190,15 @@ namespace Mss.Views
             RefreshItems(_slugProxy.Items);
         }
 
-        private void _Storage_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
-        {
-            RefreshItems(_slugProxy.Items);
-        }
+//         private void _Storage_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
+//         {
+//             RefreshItems(_slugProxy.Items);
+//         }
 
-        private void _Storage_CollectionRefreshed(object sender, EventArgs eventArgs)
-        {
-            RefreshItems(_slugProxy.Items);
-        }
+//         private void _Storage_CollectionRefreshed(object sender, EventArgs eventArgs)
+//         {
+//             RefreshItems(_slugProxy.Items);
+//         }
 
 //         private LoadItemStatus _GetStatusForDisplay(LoadItem loadItem)
 //         {
@@ -241,7 +241,7 @@ namespace Mss.Views
 //                 else
                 if (_showShortages
                     && loadItem.Status != LoadItemStatus.Invalid
-                    && loadItem.Shortage)
+                    && loadItem.Broadcast.Shortage)
                 {
                     borderColor = Color.Red;
                     wideBorder = true;

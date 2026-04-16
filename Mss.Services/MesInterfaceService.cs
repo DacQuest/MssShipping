@@ -21,11 +21,12 @@ namespace Mss.Services
 
         private const int _commandFetchBroadcast = FirstCustomCommand + 1;
         private const int _commandFetchHoldCodes = FirstCustomCommand + 2;
-//         private const int _commandFetchSkus = FirstCustomCommand + 3;
+        private const int _commandProcessPalletStatusChanges = FirstCustomCommand + 3;
 
         private MesInterfaceServiceParameterSetWrapper _parameters;
 
         private Storage _storage;
+        private AssignmentPit _assignmentPit;
         private LowerPit _lowerPit;
         private UpperPit _upperPit;
         private SystemSettings _systemSettings;
@@ -43,13 +44,14 @@ namespace Mss.Services
 
         private long _broadcastTimerID = 0;
         private long _holdCodesTimerID = 0;
-//         private long _skusTimerID = 0;
+        private long _statusChangeTimerID = 0;
 
         protected override bool OnStart()
         {
 
             DataLayer = DataLayer.Create(
                 out _storage,
+                out _assignmentPit,
                 out _lowerPit,
                 out _upperPit,
                 out _systemSettings,
@@ -63,7 +65,7 @@ namespace Mss.Services
             // There is no need to call SetServiceStatus() when overriding
             RegisterCustomCommand(_commandFetchBroadcast, "Fetch Broadcast Now");
             RegisterCustomCommand(_commandFetchHoldCodes, "Fetch Hold Codes Now");
-//             RegisterCustomCommand(_commandFetchSkus, "Fetch SKUs Now");
+            RegisterCustomCommand(_commandProcessPalletStatusChanges, "Process Status Changes Now");
 
             if (_parameters.FetchBroadcastOnStartUp)
             {
@@ -73,10 +75,10 @@ namespace Mss.Services
             {
                 _FetchHoldCodes();
             }
-//             if (_parameters.FetchSkusOnStartUp)
-//             {
-//                 _FetchSkus();
-//             }
+            if (_parameters.ProcessPalletStatusChangesOnStartUp)
+            {
+                _ProcessPalletStatusChanges();
+            }
 
             _StartAllPolling();
 
@@ -100,14 +102,14 @@ namespace Mss.Services
         {
             _StartBroadcastPollingTimer();
             _StartHoldCodesPollingTimer();
-//             _StartSkusPollingTimer();
+            _StartStatusChangePollingTimer();
         }
 
         private void _StopAllPolling()
         {
             _StopBroadcastPollingTimer();
             _StopHoldCodesPollingTimer();
-//             _StopSkusPollingTimer();
+            _StopStatusChangePollingTimer();
         }
 
         protected override void OnCustomCommand(int customCommand)
@@ -125,11 +127,11 @@ namespace Mss.Services
                     _FetchHoldCodes();
                     _StartHoldCodesPollingTimer();
                     break;
-//                 case _commandFetchSkus:
-//                     _StopSkusPollingTimer();
-//                     _FetchSkus();
-//                     _StartSkusPollingTimer();
-//                     break;
+                case _commandProcessPalletStatusChanges:
+                    _StopStatusChangePollingTimer();
+                    _ProcessPalletStatusChanges();
+                    _StartStatusChangePollingTimer();
+                    break;
             }
         }
 
@@ -191,7 +193,9 @@ namespace Mss.Services
             _StopHoldCodesPollingTimer();
             if (_parameters.HoldCodesPollingPeriodSeconds > 0)
             {
-                _holdCodesTimerID = StartTimer(_HoldCodesPollingTimer_Expired, _parameters.HoldCodesPollingPeriodSeconds * 1000, null);
+                _holdCodesTimerID = StartTimer(
+                    _HoldCodesPollingTimer_Expired,
+                    _parameters.HoldCodesPollingPeriodSeconds * 1000, null);
             }
         }
 
@@ -230,30 +234,42 @@ namespace Mss.Services
             }
         }
 
-//         private void _StartSkusPollingTimer()
-//         {
-//             _StopSkusPollingTimer();
-//             if (_parameters.SkusPollingPeriodSeconds > 0)
-//             {
-//                 _skusTimerID = StartTimer(_SkusPollingTimer_Expired, _parameters.SkusPollingPeriodSeconds * 1000, null);
-//             }
-//         }
+        private void _StartStatusChangePollingTimer()
+        {
+            _StopStatusChangePollingTimer();
+            if (_parameters.StatusChangePollingPeriodSeconds > 0)
+            {
+                _statusChangeTimerID = StartTimer(
+                    _StatusChangePollingTimer_Expired,
+                    _parameters.StatusChangePollingPeriodSeconds * 1000, null);
+            }
+        }
 
-//         private void _StopSkusPollingTimer()
-//         {
-//             if (_skusTimerID > 0)
-//             {
-//                 StopTimer(_skusTimerID);
-//                 _skusTimerID = 0;
-//             }
-//         }
+        private void _StopStatusChangePollingTimer()
+        {
+            if (_statusChangeTimerID > 0)
+            {
+                StopTimer(_statusChangeTimerID);
+                _statusChangeTimerID = 0;
+            }
+        }
 
-//         private void _SkusPollingTimer_Expired(XTimerEventArgs e)
-//         {
-//             _skusTimerID = 0;
-//             _FetchSkus();
-//             _StartSkusPollingTimer();
-//         }
+        private void _StatusChangePollingTimer_Expired(XTimerEventArgs e)
+        {
+            _statusChangeTimerID = 0;
+            _ProcessPalletStatusChanges();
+            _StartStatusChangePollingTimer();
+        }
+
+        private void _ProcessPalletStatusChanges()
+        {
+            // TODO
+//             if (MesInterface.FetchPalletStatusChanges(out List<PalletStatusChanges> palletStatusChanges))
+//             {
+// 
+//             }
+        }
+
 
 //         private void _FetchSkus()
 //         {

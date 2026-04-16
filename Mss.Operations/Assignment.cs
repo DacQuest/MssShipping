@@ -1,4 +1,7 @@
-﻿using Mss.Common;
+﻿using DacQuest.DFX.Core.DataItems.Collections;
+using DacQuest.DFX.Core.Strings;
+using Mss.Collections;
+using Mss.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,9 +35,77 @@ namespace Mss.Operations
             }
         }
 
+        //==================================================================================
+
+        protected override void RegisterCustomStates()
+        {
+            base.RegisterCustomStates();
+            RegisterState(AwaitingDestinationState, "Awaiting Destination", AwaitingDestinationStateHandler, true);
+        }
+
+        protected override void DoStart()
+        {
+            AssignmentPit.DataItemChanged += _AssignmentPit_DataItemChanged;
+        }
+
+        protected override void DoStop()
+        {
+            if (AssignmentPit != null)
+            {
+                AssignmentPit.DataItemChanged -= _AssignmentPit_DataItemChanged;
+            }
+        }
+
+        //==================================================================================
+
         protected override bool DoProcessPallet(out int moveCommand, out string extendedState)
         {
-            throw new NotImplementedException("Assignment Operation is not implemented!");
+            if (!DataLayer.ProcessPalletAtAssignment(
+                OperationCode,
+                PalletID,
+                out PalletItem palletItem,
+                out moveCommand,
+                out extendedState,
+                out string fault))
+            {
+                if (!fault.IsNullOrWhiteSpace())
+                {
+                    SetOperationFaulted(fault);
+                    return false;
+                }
+                _inhibitProcessPalletState = true;
+                SetCurrentState(AwaitingDestinationState, extendedState);
+                return false;
+            }
+            CurrentPallet = palletItem;
+            return true;
+        }
+
+        //==================================================================================
+
+        #region AwaitingDestination State
+
+        protected readonly string AwaitingDestinationState = "AwaitingDestination";
+        private bool _inhibitProcessPalletState = false;
+
+        protected virtual void AwaitingDestinationStateHandler()
+        {
+            if (!_inhibitProcessPalletState)
+            {
+                SetCurrentState(ProcessPalletState);
+            }
+            _inhibitProcessPalletState = false;
+        }
+        #endregion
+
+        //==================================================================================
+
+        private void _AssignmentPit_DataItemChanged(object sender, XDataItemChangedEventArgs e)
+        {
+            if (CurrentState.Name == AwaitingDestinationState)
+            {
+                RunCurrentStateHandler();
+            }
         }
 
     }

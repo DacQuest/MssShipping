@@ -17,8 +17,8 @@ namespace Mss.Collections
         public abstract Levels Level { get; }
 
         public void Set(
-            PalletItem palletItem,
             Levels level,
+            PalletItem palletItem,
             PitCode pitCode)
         {
             _ = Lock();

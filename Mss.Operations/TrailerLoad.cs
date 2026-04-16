@@ -53,6 +53,7 @@ namespace Mss.Operations
         protected SlugLetter SlugLetter => _parameters.SlugLetter;
 
         private Storage _storage;
+        private AssignmentPit _assignmentPit;
         private LowerPit _lowerPit;
         private UpperPit _upperPit;
         private SystemSettings _systemSettings;
@@ -85,6 +86,7 @@ namespace Mss.Operations
 
             DataLayer = DataLayer.Create(
                 out _storage,
+                out _assignmentPit,
                 out _lowerPit,
                 out _upperPit,
                 out _systemSettings,

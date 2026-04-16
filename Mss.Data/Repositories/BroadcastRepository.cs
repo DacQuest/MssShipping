@@ -75,7 +75,7 @@ namespace Mss.Data.Repositories
                 WHERE [KeyID] = @KeyID";
 
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("@KeyID", rawBroadcast.ID);
+            parameters.Add("@KeyID", rawBroadcast.QueueID);
             parameters.Add("@ProcessedDTTM", DateTime.Now.ToString(Constant.DateTimeFormat));
 
             int rowsAffected = Connection.Execute(sql, parameters);

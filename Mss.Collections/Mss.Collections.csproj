@@ -75,6 +75,7 @@
     <Compile Include="LoadItem.designer.cs">
       <DependentUpon>LoadItem.cs</DependentUpon>
     </Compile>
+    <Compile Include="PalletPickModeKeys.cs" />
     <Compile Include="SlugProxy.cs" />
     <Compile Include="LowerRecircBuffer.cs" />
     <Compile Include="PalletItem.cs" />

@@ -36,10 +36,10 @@ namespace Mss.Views
         {
             InitializeComponent();
 
-            dataGrid.DataSource = _bindingSource;
-            dataGrid.AutoGenerateColumns = false;
-            dataGrid.AutoSize = false;
-            dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            _broadcastGrid.DataSource = _bindingSource;
+            _broadcastGrid.AutoGenerateColumns = false;
+            _broadcastGrid.AutoSize = false;
+            _broadcastGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
             XProxyCache.Acquire(
                 Constant.BroadcastName,
@@ -54,6 +54,9 @@ namespace Mss.Views
             XProxyCache.Acquire(Constant.SlugAName, out _slugAProxy);
             _slugAProxy.DataItemChanged += _SlugAProxy_DataItemChanged;
 
+            XProxyCache.Acquire(Constant.SlugBName, out _slugBProxy);
+            _slugBProxy.DataItemChanged += _SlugBProxy_DataItemChanged;
+
             XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
             _storageProxy.DataItemChanged += _StorageChangedHandler;
 
@@ -64,58 +67,81 @@ namespace Mss.Views
             DataGridViewImageColumn imageColumn;
             DataGridViewTextBoxColumn column;
 
-            imageColumn = new DataGridViewImageColumn();
-            imageColumn.DataPropertyName = "StatusImage";
-            imageColumn.HeaderText = "";
-            imageColumn.Name = "StatusImageColumn";
-            dataGrid.Columns.Add(imageColumn);
+            imageColumn = new DataGridViewImageColumn
+            {
+                DataPropertyName = "StatusImage",
+                HeaderText = "",
+                Name = "StatusImageColumn"
+            };
+            _ = _broadcastGrid.Columns.Add(imageColumn);
 
-            column = new DataGridViewTextBoxColumn();
-            column.HeaderText = "Sequence";
-            column.DataPropertyName = "SequenceNumber";
-            column.Name = "SequenceNumberColumn";
-            column.SortMode = DataGridViewColumnSortMode.Automatic;
-            dataGrid.Columns.Add(column);
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Status",
+                DataPropertyName = "StatusText",
+                Name = "StatusColumn",
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _broadcastGrid.Columns.Add(column);
 
-            column = new DataGridViewTextBoxColumn();
-            column.HeaderText = "Status";
-            column.DataPropertyName = "StatusText";
-            column.Name = "StatusColumn";
-            column.SortMode = DataGridViewColumnSortMode.Automatic;
-            dataGrid.Columns.Add(column);
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "CSN",
+                DataPropertyName = "Csn",
+                Name = "CsnColumn",
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _broadcastGrid.Columns.Add(column);
 
-            column = new DataGridViewTextBoxColumn();
-            column.HeaderText = "Trim Code";
-            column.DataPropertyName = "TrimCode";
-            column.Name = "TrimCodeColumn";
-            column.SortMode = DataGridViewColumnSortMode.Automatic;
-            dataGrid.Columns.Add(column);
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "SKU",
+                DataPropertyName = "Sku",
+                Name = "SkuColumn",
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _broadcastGrid.Columns.Add(column);
 
-            column = new DataGridViewTextBoxColumn();
-            column.HeaderText = "VIN";
-            column.DataPropertyName = "Vin";
-            column.Name = "VinColumn";
-            column.SortMode = DataGridViewColumnSortMode.Automatic;
-            dataGrid.Columns.Add(column);
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "VIN",
+                DataPropertyName = "Vin",
+                Name = "VinColumn",
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _broadcastGrid.Columns.Add(column);
 
-            column = new DataGridViewTextBoxColumn();
-            column.HeaderText = "PVI";
-            column.DataPropertyName = "Pvi";
-            column.Name = "PviColumn";
-            column.SortMode = DataGridViewColumnSortMode.Automatic;
-            dataGrid.Columns.Add(column);
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Pick Mode",
+                DataPropertyName = "PickMode",
+                Name = "PickModeColumn",
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _broadcastGrid.Columns.Add(column);
 
-            column = new DataGridViewTextBoxColumn();
-            column.HeaderText = "Timestamp";
-            column.DataPropertyName = "ReceivedOn";
-            column.Name = "ReceivedOnColumn";
-            column.SortMode = DataGridViewColumnSortMode.Automatic;
-            column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGrid.Columns.Add(column);
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Pick Mode Key",
+                DataPropertyName = "PickModeKey",
+                Name = "PickModeKeyColumn",
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _broadcastGrid.Columns.Add(column);
 
-            navigatorBtnEdit.Visible = _parameters.AllowEdit;
-            navigatorBtnRelease.Visible = _parameters.AllowRelease;
-            navigatorBtnRecover.Visible = _parameters.AllowRecover;
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Received On",
+                DataPropertyName = "ReceivedOnText",
+                Name = "ReceivedOnColumn",
+                SortMode = DataGridViewColumnSortMode.Automatic,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            };
+            _ = _broadcastGrid.Columns.Add(column);
+
+//             _navigatorBtnEdit.Visible = _parameters.AllowEdit;
+//             _navigatorBtnRelease.Visible = _parameters.AllowRelease;
+            _navigatorBtnRecover.Visible = _parameters.AllowRecover;
 
             _UpdateGrid();
         }
@@ -125,7 +151,7 @@ namespace Mss.Views
             _parameters = parameters as BroadcastViewParameterSetWrapper;
         }
 
-        private void navigatorBtnRefreshItem_Click(object sender, EventArgs e)
+        private void _NavigatorBtnRefreshItem_Click(object sender, EventArgs e)
         {
             _storageProxy.Refresh();
             _slugAProxy.Refresh();
@@ -160,6 +186,11 @@ namespace Mss.Views
             _UpdateReleaseButton();
         }
 
+        private void _SlugBProxy_DataItemChanged(Object sender, XDataItemChangedEventArgs eventArgs)
+        {
+            _UpdateReleaseButton();
+        }
+
         private void _UpdateGrid()
         {
 //            _broadcastItems = _broadcastProxy.GetCurrentBroadcastItems(
@@ -184,22 +215,22 @@ namespace Mss.Views
 //                    "Broadcast   ( {0} of {1} broadcasts can be shipped )",
 //                    topAvailableCount,
 //                    _broadcastItems.Count);
-                lblTitle.Text = String.Format(
+                _lblTitle.Text = String.Format(
                     "Broadcast   ( {0} of {1} broadcasts can be shipped )",
                     topAvailableCount,
                     broadcastItems.Count);
             }
             else
             {
-                lblTitle.Text = "Broadcast   ( No broadcasts can be shipped )";
+                _lblTitle.Text = "Broadcast   ( No broadcasts can be shipped )";
             }
 
 //            navigatorLblCount.Text = String.Format("Count:  {0}", _broadcastItems.Count);
-            navigatorLblCount.Text = String.Format("Count:  {0}", broadcastItems.Count);
+            _navigatorLblCount.Text = String.Format("Count:  {0}", broadcastItems.Count);
 
 //            _bindingSource.DataSource = _broadcastItems;
             _bindingSource.DataSource = broadcastItems;
-            dataGrid.Update();
+            _broadcastGrid.Update();
             _UpdateRecoverButton();
             _UpdateReleaseButton();
         }
@@ -279,7 +310,7 @@ namespace Mss.Views
 
         private void _UpdateRecoverButton()
         {
-            navigatorBtnRecover.Enabled
+            _navigatorBtnRecover.Enabled
                 = _parameters.AllowRecover
 //                    && _broadcastItems
                     && _broadcastProxy.Values
@@ -287,17 +318,17 @@ namespace Mss.Views
                         .Count() > 0;
         }
 
-        private void navigatorBtnEdit_Click(object sender, EventArgs e)
+        private void _NavigatorBtnEdit_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Not implemented!");
+            _ = MessageBox.Show("Not implemented!");
         }
 
-        private void navigatorBtnRelease_Click(object sender, EventArgs e)
+        private void _NavigatorBtnRelease_Click(object sender, EventArgs e)
         {
             _DoRelease();
         }
 
-        private void navigatorBtnRecover_Click(object sender, EventArgs e)
+        private void _NavigatorBtnRecover_Click(object sender, EventArgs e)
         {
             _DoRecover();
         }
@@ -438,11 +469,11 @@ namespace Mss.Views
 //             }
         }
 
-        public Int32 ReleasableBroadcastItemCount
+        public int ReleasableBroadcastItemCount
         {
             get
             {
-                Int32 count = 0;
+                int count = 0;
 //                foreach (var item in _broadcastItems)
                 foreach (var item in _broadcastProxy.Values)
                 {
@@ -464,7 +495,7 @@ namespace Mss.Views
         //{
         //}
 
-        public override Boolean ViewClosing(bool force)
+        public override bool ViewClosing(bool force)
         {
             if (!force)
             {
@@ -549,7 +580,7 @@ namespace Mss.Views
 //             }
 //         }
 
-        private void navigatorBtnClose_Click(object sender, EventArgs e)
+        private void _NavigatorBtnClose_Click(object sender, EventArgs e)
         {
             CloseView();
         }

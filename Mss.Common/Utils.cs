@@ -22,6 +22,9 @@ namespace Mss.Common
         public static bool ValidSku(this string sku) //??? USE XValueValidator?
             => !sku.IsNullOrWhiteSpace();
 
+        public static bool IsStackSku(this string sku)
+            => sku == Constant.StackSku1 || sku == Constant.StackSku2;
+
         public static int[] CreateIntArray(
             int first,
             int last,

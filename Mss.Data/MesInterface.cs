@@ -260,7 +260,7 @@ namespace Mss.Data
                     Sku = detail.Sku,
                     Vin = header.Vin,
                     PickMode = detail.PickMode,
-                    PickModeKey = detail.PickModeValue,
+                    PickModeKey = detail.PickModeKey,
                     ReceivedOn = DateTime.Now,
                     VehicleRowCount = header.RowCount
                 };
@@ -277,7 +277,7 @@ namespace Mss.Data
                         Sku = detail.Sku,
                         Vin = header.Vin,
                         PickMode = detail.PickMode,
-                        PickModeKey = detail.PickModeValue,
+                        PickModeKey = detail.PickModeKey,
                         ReceivedOn = DateTime.Now,
                         VehicleRowCount = header.RowCount
                     };

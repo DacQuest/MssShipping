@@ -2,21 +2,15 @@
 using DacQuest.DFX.Core.Configuration;
 using DacQuest.DFX.Core.DataItems;
 using DacQuest.DFX.Core.DataItems.Collections;
-using DacQuest.DFX.Core.Messaging;
 using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Core.SystemEvents;
-using DevExpress.Charts.Native;
-using DevExpress.Printing.Utils.DocumentStoring;
 using Mss.Collections;
 using Mss.Common;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using static DevExpress.Utils.Drawing.Helpers.NativeMethods;
+using System.Text.RegularExpressions;
 using LA = Mss.Data.LoadArchive;
 
 namespace Mss.Data
@@ -24,6 +18,7 @@ namespace Mss.Data
     public class DataLayer : XDisposable
     {
         private Storage _storage;
+        private AssignmentPit _assignmentPit;
         private LowerPit _lowerPit;
         private UpperPit _upperPit;
         private SystemSettings _systemSettings;
@@ -38,6 +33,7 @@ namespace Mss.Data
 
         public static DataLayer Create(
             out Storage storage,
+            out AssignmentPit assignmentPit,
             out LowerPit lowerPit,
             out UpperPit upperPit,
             out SystemSettings systemSettings,
@@ -51,6 +47,7 @@ namespace Mss.Data
             DataLayer dataLayer = new DataLayer();
             return dataLayer._Initialize(
                 out storage,
+                out assignmentPit,
                 out lowerPit,
                 out upperPit,
                 out systemSettings,
@@ -64,6 +61,7 @@ namespace Mss.Data
 
         private DataLayer _Initialize(
             out Storage storage,
+            out AssignmentPit assignmentPit,
             out LowerPit lowerPit,
             out UpperPit upperPit,
             out SystemSettings systemSettings,
@@ -75,6 +73,7 @@ namespace Mss.Data
             out SlugB slugB)
         {
             _ = XSharedCollection.Open(Constant.StorageName, out _storage);
+            _ = XSharedCollection.Open(Constant.AssignmentPitName, out _assignmentPit);
             _ = XSharedCollection.Open(Constant.LowerPitName, out _lowerPit);
             _ = XSharedCollection.Open(Constant.UpperPitName, out _upperPit);
             _ = XSharedCollection.Open(Constant.SystemSettingsName, out _systemSettings);
@@ -87,6 +86,7 @@ namespace Mss.Data
 //             _ = XSharedCollection.Open(Constant.Name, out _);
 
             storage = _storage;
+            assignmentPit = _assignmentPit;
             lowerPit = _lowerPit;
             upperPit = _upperPit;
             systemSettings = _systemSettings;
@@ -112,6 +112,11 @@ namespace Mss.Data
             {
                 _systemSettings.Dispose();
                 _systemSettings = null;
+            }
+            if (_assignmentPit != null)
+            {
+                _assignmentPit.Dispose();
+                _assignmentPit = null;
             }
             if (_lowerPit != null)
             {
@@ -158,6 +163,7 @@ namespace Mss.Data
         private void _LockAll()
         {
             _ = _storage.Lock();
+            _ = _assignmentPit.Lock();
             _ = _lowerPit.Lock();
             _ = _upperPit.Lock();
             _ = _systemSettings.Lock();
@@ -178,6 +184,7 @@ namespace Mss.Data
             _systemSettings.Unlock();
             _upperPit.Unlock();
             _lowerPit.Unlock();
+            _assignmentPit.Unlock();
             _storage.Unlock();
         }
 
@@ -248,7 +255,91 @@ namespace Mss.Data
 
         #endregion
 
-        #region Upper and Lower Pit
+        #region Assignment, Upper, and Lower Pit
+
+        private bool _GetAvailableLevel(Levels preferredLevel, out Levels availableLevel)
+        {
+            availableLevel = Levels.None;
+
+            int upperAvailable = Constant.UpperBufferSize - _assignmentPit.Values.Count(p => p.PitCode == PitCode.Upper);
+            int lowerAvailable = Constant.LowerBufferSize - _assignmentPit.Values.Count(p => p.PitCode == PitCode.Lower);
+
+            if (upperAvailable > lowerAvailable)
+            {
+                availableLevel =  upperAvailable > 0
+                    ? Levels.Upper
+                    : Levels.None;
+            }
+            else if (lowerAvailable > upperAvailable)
+            {
+                availableLevel = lowerAvailable > 0
+                    ? Levels.Lower
+                    : Levels.None;
+            }
+            else if (upperAvailable > 0) // same available on each level so test one for zero
+            {
+                availableLevel = preferredLevel;
+            }
+            return availableLevel != Levels.None;
+        }
+
+        private int _GetAssignmentPitCodeCount(PitCode pitCode)
+        {
+            _LockAll();
+            try
+            {
+                return _assignmentPit
+                    .Values
+                    .Count(p => p.PitCode == pitCode);
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        public void SetAssignmentPitPallet(
+            PalletItem palletItem,
+            PitCode pitCode)
+        {
+            _LockAll();
+            try
+            {
+                _assignmentPit.Set(Levels.None, palletItem, pitCode);
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        public bool TryGetAssignmentPitItem(
+            string palletID,
+            out PitItem pitItem)
+        {
+            _LockAll();
+            try
+            {
+                return _assignmentPit.TryGetItem(palletID, out pitItem);
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        public void RemoveAssignmentPitPallet(string palletID)
+        {
+            _LockAll();
+            try
+            {
+                _ = _assignmentPit.Remove(palletID);
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
 
         public bool TryGetPitItem(
             string palletID,
@@ -319,13 +410,17 @@ namespace Mss.Data
                 Pit pit = level == Levels.Upper
                     ? (Pit)_upperPit
                     : (Pit)_lowerPit;
-                pit.Set(palletItem, level, pitCode);
+                pit.Set(level, palletItem, pitCode);
             }
             finally
             {
                 _UnlockAll();
             }
         }
+
+        #endregion
+
+        #region Recirc Buffer
 
         public void RemoveRecircBufferPallet(string palletID)
         {
@@ -509,7 +604,9 @@ namespace Mss.Data
                     return false;
                 }
                 loadItem.Status = LoadItemStatus.Picked;
-                loadItem.Shortage = false;
+                BroadcastItem broadcast = loadItem.Broadcast;
+                broadcast.Shortage = false;
+                loadItem.Broadcast = broadcast;
                 slug[loadItem.NodeIndex] = loadItem;
 
                 _slugManager.SetNextPickable(
@@ -564,7 +661,9 @@ namespace Mss.Data
                     return false;
                 }
                 loadItem.Status = LoadItemStatus.Presequenced;
-                loadItem.Shortage = false;
+                BroadcastItem broadcast = loadItem.Broadcast;
+                broadcast.Shortage = false;
+                loadItem.Broadcast = broadcast;
                 slug[loadItem.NodeIndex] = loadItem;
 
                _slugManager.SetNextPickable(
@@ -619,7 +718,9 @@ namespace Mss.Data
                     return false;
                 }
                 loadItem.Status = LoadItemStatus.Sequenced;
-                loadItem.Shortage = false;
+                BroadcastItem broadcast = loadItem.Broadcast;
+                broadcast.Shortage = false;
+                loadItem.Broadcast = broadcast;
                 slug[loadItem.NodeIndex] = loadItem;
 
                _slugManager.SetNextPickable(
@@ -675,7 +776,9 @@ namespace Mss.Data
                     return false;
                 }
                 loadItem.Status = LoadItemStatus.Done;
-                loadItem.Shortage = false;
+                BroadcastItem broadcast = loadItem.Broadcast;
+                broadcast.Shortage = false;
+                loadItem.Broadcast = broadcast;
                 slug[loadItem.NodeIndex] = loadItem;
 
                _slugManager.SetNextPickable(
@@ -756,9 +859,217 @@ namespace Mss.Data
         #endregion
 
         #region Assignment
+
+        public bool ProcessPalletAtAssignment(
+                OperationCode operationCode,
+                string palletID,
+                out PalletItem palletItem,
+                out int moveCommand,
+                out string extendedState,
+                out string fault)
+        {
+            switch (operationCode)
+            {
+                case OperationCode.AS1:
+                    return _ProcessPalletAtAssignment1(
+                        operationCode,
+                        palletID,
+                        out palletItem,
+                        out moveCommand,
+                        out extendedState,
+                        out fault);
+                case OperationCode.AS2:
+                    return _ProcessPalletAtAssignment2(
+                        operationCode,
+                        palletID,
+                        out palletItem,
+                        out moveCommand,
+                        out extendedState,
+                        out fault);
+                case OperationCode.AS3:
+                    return _ProcessPalletAtAssignment3(
+                        operationCode,
+                        palletID,
+                        out palletItem,
+                        out moveCommand,
+                        out extendedState,
+                        out fault);
+                default:
+                    palletItem = null;
+                    moveCommand = Constant.NoMoveCommand;
+                    extendedState = string.Empty;
+                    fault = $"Unknown Assignment Operation Code {operationCode}({operationCode.ToText()}).";
+                    return false;
+            }
+        }
+
+        private bool _ProcessPalletAtAssignment1(
+            OperationCode operationCode,
+            string palletID,
+            out PalletItem palletItem,
+            out int moveCommand,
+            out string extendedState,
+            out string fault)
+        {
+            moveCommand = Constant.NoMoveCommand;
+            extendedState = string.Empty;
+
+            if (!MesInterface.TryFetchPalletItem(
+                operationCode,
+                palletID,
+                true,
+                out PalletDestination destination,
+                out PalletItem fetchedPalletItem,
+                out fault))
+            {
+                palletItem = null;
+                return false;
+            }
+
+            _LockAll();
+            try
+            {
+                throw new NotImplementedException("_ProcessPalletAtAssignment3() not implemented!");
+
+//                 if (destination == PalletDestination.Purge
+//                     || fetchedPalletItem.Status == PalletStatus.Purge)
+//                 {
+//                     if (!_GetAvailableLevel(Levels.Lower, out Levels availableLevel))
+//                     {
+//                         palletItem = null;
+//                         moveCommand = Constant.NoMoveCommand;
+//                         extendedState = $"There is currently no destination available for Pallet {palletID}";
+//                         return false;
+//                     }
+//                     palletItem = fetchedPalletItem;
+//                     palletItem.Status = PalletStatus.Purge;
+//                     SetPitPallet(availableLevel, palletItem, PitCode.Purge);
+//                     moveCommand = availableLevel == Levels.Upper
+//                         ? Constant.Assignment1MoveCommandForward
+//                         : Constant.Assignment1MoveCommandLower;
+//                     extendedState = $"Assigning Purge Pallet {palletItem.PalletID} to {availableLevel.ToText()} Level.";
+//                     return true;
+//                 }
+//                 else if (destination == PalletDestination.Storage)
+//                 {
+//                     if (!_GetAvailableLevel(Levels.Lower, out Levels availableLevel))
+//                     {
+//                         palletItem = null;
+//                         moveCommand = Constant.NoMoveCommand;
+//                         extendedState = $"There is currently no destination available for Pallet {palletID}";
+//                         return false;
+//                     }
+// 
+// 
+// 
+// 
+// 
+//                 }
+
+
+
+//                 else if (destination == PalletDestination.Storage)
+//                 {
+//                     if (!_GetAvailableLevel(Levels.Lower, out Levels availableLevel))
+//                     {
+//                         palletItem = null;
+//                         moveCommand = Constant.NoMoveCommand;
+//                         extendedState = $"There is currently no destination available for Pallet {palletID}";
+//                         return false;
+//                     }
+//                     palletItem = fetchedPalletItem;
+//                     moveCommand = availableLevel == Levels.Upper
+//                         ? Constant.Assignment1MoveCommandForward
+//                         : Constant.Assignment1MoveCommandLower;
+//                     extendedState = fetchedPalletItem.Sku.IsStackSku()
+//                         ? $"Assigning Purge Pallet {palletItem.PalletID} to {availableLevel.ToText()} Level."
+//                         : palletItem.Status == PalletStatus.Hold
+//                             ? $"Assigning Hold Pallet {palletItem.PalletID} to {availableLevel.ToText()} Level."
+//                             : $"Assigning Pallet {palletItem.PalletID} to {availableLevel.ToText()} Level.";
+//                     PitCode pitCode = availableLevel == Levels.Upper
+//                         ? PitCode.Upper
+//                         : PitCode.Lower;
+//                     SetPitPallet(availableLevel, palletItem, pitCode);
+//                     return true;
+//                 }
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        private bool _ProcessPalletAtAssignment2(
+            OperationCode operationCode,
+            string palletID,
+            out PalletItem palletItem,
+            out int moveCommand,
+            out string extendedState,
+            out string fault)
+        {
+            moveCommand = Constant.NoMoveCommand;
+            extendedState = string.Empty;
+
+            if (!MesInterface.TryFetchPalletItem(
+                operationCode,
+                palletID,
+                true,
+                out PalletDestination destination,
+                out PalletItem fetchedPalletItem,
+                out fault))
+            {
+                palletItem = null;
+                return false;
+            }
+
+            _LockAll();
+            try
+            {
+                throw new NotImplementedException("_ProcessPalletAtAssignment2() not implemented!");
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        private bool _ProcessPalletAtAssignment3(
+            OperationCode operationCode,
+            string palletID,
+            out PalletItem palletItem,
+            out int moveCommand,
+            out string extendedState,
+            out string fault)
+        {
+            moveCommand = Constant.NoMoveCommand;
+            extendedState = string.Empty;
+
+            if (!MesInterface.TryFetchPalletItem(
+                operationCode,
+                palletID,
+                true,
+                out PalletDestination destination,
+                out PalletItem fetchedPalletItem,
+                out fault))
+            {
+                palletItem = null;
+                return false;
+            }
+
+            _LockAll();
+            try
+            {
+                throw new NotImplementedException("_ProcessPalletAtAssignment3() not implemented!");
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
         #endregion
 
-        #region Inbound Router
+        #region Router
 
         public bool ProcessPalletAtRouter(
             OperationCode operationCode,
@@ -1480,18 +1791,21 @@ namespace Mss.Data
         {
             foreach (LoadItem pickableItem in pickableItems)
             {
-                if (!_systemSettings.CanDoLoadPick(craneNumber, pickableItem.SlugLevel))
+                if (!_systemSettings.CanDoLoadPick(craneNumber, pickableItem.SlugLevel)
+                    || (pickableItem.SlugLevel == Levels.Lower && !lowerOutboundClear)
+                    || (pickableItem.SlugLevel == Levels.Upper && !upperOutboundClear)
+                    || !_CanPickToSlug(pickableItem.SlugLetter))
                 {
                     continue;
                 }
-                if (pickableItem.SlugLevel == Levels.Lower && !lowerOutboundClear)
-                {
-                    continue;
-                }
-                if (pickableItem.SlugLevel == Levels.Upper && !upperOutboundClear)
-                {
-                    continue;
-                }
+//                 if (pickableItem.SlugLevel == Levels.Lower && !lowerOutboundClear)
+//                 {
+//                     continue;
+//                 }
+//                 if (pickableItem.SlugLevel == Levels.Upper && !upperOutboundClear)
+//                 {
+//                     continue;
+//                 }
                 if (!_slugManager.TryGetSlugByLetter(pickableItem.SlugLetter, out Slug slug))
                 {
                     XSystemEvent.Publish(
@@ -1500,14 +1814,14 @@ namespace Mss.Data
                         $"Unknown Slug Letter {pickableItem.SlugLetter} referenced in LoadItem with NodeIndex {pickableItem.NodeIndex}.");
                     continue;
                 }
-                if (!_CanPickToSlug(slug.SlugLetter))
-                {
-                    continue;
-                }
+//                 if (!_CanPickToSlug(slug.SlugLetter))
+//                 {
+//                     continue;
+//                 }
                 if (_storage.TryAllocateLoadPick(
                     craneNumber,
                     _systemSettings.FifoMode,
-                    pickableItem.Broadcast,
+                    pickableItem,
                     out BinItem binItem))
                 {
                     loadItem = pickableItem;
@@ -2586,7 +2900,7 @@ namespace Mss.Data
                                 broadcast.Vin,
                                 broadcast.Rotation);
                             command.CommandText = sql;
-                            command.ExecuteNonQuery();
+                            _ = command.ExecuteNonQuery();
                         }
                     }
 
@@ -2636,6 +2950,234 @@ namespace Mss.Data
             }
             finally
             {
+                _UnlockAll();
+            }
+        }
+
+        #endregion
+
+        //==================================================================================
+
+        #region ShortageCalculator
+
+        public void CalculateShortages()
+        {
+            bool touchPrimary = false;
+            Slug primarySlug = null;
+            bool touchSecondary = false;
+            Slug secondarySlug = null;
+            bool touchBroadcast = false;
+
+            _LockAll();
+            try
+            {
+//                 Dictionary<string, int> skuCounts = _storage.GetPickableSkuCounts(
+//                     out List<string> reservedPalletIDs,
+//                     out List<string> reservedJobIDs);
+
+                Dictionary<string, int> skuCounts = _storage.GetPickableSkuCounts(
+                    out List<PalletPickModeKeys> reservedPalletKeys);
+
+                if (!_slugManager.TryGetPrimarySlug(
+                    _systemSettings.GetItem(),
+                    out primarySlug,
+                    out secondarySlug))
+                {
+                    return;
+                }
+
+                IEnumerable<LoadItem> primaryItems = primarySlug.GetLoadInPickSearchOrder();
+                foreach (LoadItem loadItem in primaryItems)
+                {
+                    bool shortage = false;
+                    LoadItemStatus status = loadItem.Status;
+                    if (status == LoadItemStatus.Waiting
+                        || status == LoadItemStatus.Pending
+                        || status == LoadItemStatus.Pickable)
+                    {
+                        BroadcastItem broadcast = loadItem.Broadcast;
+                        if (broadcast.PickMode == PickMode.ByPalletID)
+                        {
+                            PalletPickModeKeys match = reservedPalletKeys
+                                .FirstOrDefault(k => k.PalletID == broadcast.PickModeKey);
+                            shortage = match == null;
+                            if (!shortage)
+                            {
+                                _ = reservedPalletKeys.Remove(match);
+                            }
+                        }
+                        else if (broadcast.PickMode == PickMode.ByJobID)
+                        {
+                            PalletPickModeKeys match = reservedPalletKeys
+                                .FirstOrDefault(k => k.JobID == broadcast.PickModeKey);
+                            shortage = match == null;
+                            if (!shortage)
+                            {
+                                _ = reservedPalletKeys.Remove(match);
+                            }
+                        }
+                        else
+                        {
+                            string sku = loadItem.Broadcast.Sku;
+                            if (!skuCounts.TryGetValue(sku, out int count))
+                            {
+                                shortage = true;
+                            }
+                            else
+                            {
+                                if (--count < 0)
+                                {
+                                    shortage = true;
+                                    _ = skuCounts.Remove(sku);
+                                }
+                                else
+                                {
+                                    skuCounts[sku] = count;
+                                }
+                            }
+                        }
+                    }
+                    if (loadItem.Broadcast.Shortage != shortage)
+                    {
+                        BroadcastItem broadcast = loadItem.Broadcast;
+                        broadcast.Shortage = shortage;
+                        loadItem.Broadcast = broadcast;
+                        _ = primarySlug.SetAt(loadItem.NodeIndex, loadItem, true);
+                        touchPrimary = true;
+                    }
+                }
+
+                IEnumerable<LoadItem> secondaryItems = secondarySlug.GetLoadInPickSearchOrder();
+                foreach (LoadItem loadItem in secondaryItems)
+                {
+                    bool shortage = false;
+                    LoadItemStatus status = loadItem.Status;
+                    if (status == LoadItemStatus.Waiting
+                        || status == LoadItemStatus.Pending
+                        || status == LoadItemStatus.Pickable)
+                    {
+                        BroadcastItem broadcast = loadItem.Broadcast;
+                        if (broadcast.PickMode == PickMode.ByPalletID)
+                        {
+                            PalletPickModeKeys match = reservedPalletKeys
+                                .FirstOrDefault(k => k.PalletID == broadcast.PickModeKey);
+                            shortage = match == null;
+                            if (!shortage)
+                            {
+                                _ = reservedPalletKeys.Remove(match);
+                            }
+                        }
+                        else if (broadcast.PickMode == PickMode.ByJobID)
+                        {
+                            PalletPickModeKeys match = reservedPalletKeys
+                                .FirstOrDefault(k => k.JobID == broadcast.PickModeKey);
+                            shortage = match == null;
+                            if (!shortage)
+                            {
+                                _ = reservedPalletKeys.Remove(match);
+                            }
+                        }
+                        else
+                        {
+                            string sku = loadItem.Broadcast.Sku;
+                            if (!skuCounts.TryGetValue(sku, out int count))
+                            {
+                                shortage = true;
+                            }
+                            else
+                            {
+                                if (--count < 0)
+                                {
+                                    shortage = true;
+                                    _ = skuCounts.Remove(sku);
+                                }
+                                else
+                                {
+                                    skuCounts[sku] = count;
+                                }
+                            }
+                        }
+                    }
+                    if (loadItem.Broadcast.Shortage != shortage)
+                    {
+                        BroadcastItem broadcast = loadItem.Broadcast;
+                        broadcast.Shortage = shortage;
+                        loadItem.Broadcast = broadcast;
+                        _ = secondarySlug.SetAt(loadItem.NodeIndex, loadItem, true);
+                        touchSecondary = true;
+                    }
+                }
+
+                List<BroadcastItem> broadcastItems = _broadcast
+                    .GetCurrentBroadcastItems(
+                        _systemSettings.LastCsnReleased,
+                        _systemSettings.LargestRotationReceived);
+                foreach (BroadcastItem broadcast in broadcastItems)
+                {
+                    bool shortage = false;
+
+                    if (broadcast.PickMode == PickMode.ByPalletID)
+                    {
+                        PalletPickModeKeys match = reservedPalletKeys
+                            .FirstOrDefault(k => k.PalletID == broadcast.PickModeKey);
+                        shortage = match == null;
+                        if (!shortage)
+                        {
+                            _ = reservedPalletKeys.Remove(match);
+                        }
+                    }
+                    else if (broadcast.PickMode == PickMode.ByJobID)
+                    {
+                        PalletPickModeKeys match = reservedPalletKeys
+                            .FirstOrDefault(k => k.JobID == broadcast.PickModeKey);
+                        shortage = match == null;
+                        if (!shortage)
+                        {
+                            _ = reservedPalletKeys.Remove(match);
+                        }
+                    }
+                    else
+                    {
+                        string sku = broadcast.Sku;
+                        if (!skuCounts.TryGetValue(sku, out int count))
+                        {
+                            shortage = true;
+                        }
+                        else
+                        {
+                            if (--count < 0)
+                            {
+                                shortage = true;
+                                _ = skuCounts.Remove(sku);
+                            }
+                            else
+                            {
+                                skuCounts[sku] = count;
+                            }
+                        }
+                    }
+                    if (broadcast.Shortage != shortage)
+                    {
+                        broadcast.Shortage = shortage;
+                        _ = _broadcast.Update(broadcast.Csn, broadcast, true);
+                        touchBroadcast = true;
+                    }
+                }
+            }
+            finally
+            {
+                if (touchPrimary)
+                {
+                    primarySlug.Touch();
+                }
+                if (touchSecondary)
+                {
+                    secondarySlug.Touch();
+                }
+                if (touchBroadcast)
+                {
+                    _broadcast.Touch();
+                }
                 _UnlockAll();
             }
         }

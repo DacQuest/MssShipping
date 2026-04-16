@@ -18,20 +18,20 @@ namespace Mss.Views
             {
                 components.Dispose();
             }
-            if (_slugProxy != null)
-            {
-                _slugProxy.DataItemChanged -= _Slug_DataItemChanged;
-                _slugProxy.CollectionRefreshed -= _Slug_ColletionRefreshed;
-                XProxyCache.Release(_slugProxy);
-                _slugProxy = null;
-            }
-            if (_storageProxy != null)
-            {
-                _storageProxy.DataItemChanged -= _Storage_DataItemChanged;
-                _storageProxy.CollectionRefreshed -= _Storage_CollectionRefreshed;
-                XProxyCache.Release(_storageProxy);
-                _storageProxy = null;
-            }
+//             if (_slugProxy != null)
+//             {
+//                 _slugProxy.DataItemChanged -= _Slug_DataItemChanged;
+//                 _slugProxy.CollectionRefreshed -= _Slug_ColletionRefreshed;
+//                 XProxyCache.Release(_slugProxy);
+//                 _slugProxy = null;
+//             }
+//             if (_storageProxy != null)
+//             {
+//                 _storageProxy.DataItemChanged -= _Storage_DataItemChanged;
+//                 _storageProxy.CollectionRefreshed -= _Storage_CollectionRefreshed;
+//                 XProxyCache.Release(_storageProxy);
+//                 _storageProxy = null;
+//             }
             //             if (_systemSettingsProxy != null)
             //             {
             // //                _systemSettingsProxy.DataItemChanged -= _OnSystemSettingsChanged;

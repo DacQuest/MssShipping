@@ -44,23 +44,23 @@ namespace Mss.Services
             PickListValues = "true,false")]
         public bool FetchHoldCodesOnStartUp => _fetchHoldCodesOnStartUp;
 
-//         private int _skusPollingPeriodSeconds = 0;
-//         [XConfigurationProperty(
-//             "MesDataServiceParameterSetWrapper.SkusPollingPeriodSeconds",
-//             false,
-//             ValidDirectives = XConfigurationDirectives.AliasAndEncrypt,
-//             ValidationRegexString = @"^\d+$", // 0 and up
-//             DefaultValue = "0")]
-//         public int SkusPollingPeriodSeconds => _skusPollingPeriodSeconds;
+        private int _statusChangePollingPeriodSeconds = 0;
+        [XConfigurationProperty(
+            "MesDataServiceParameterSetWrapper.SkusPollingPeriodSeconds",
+            false,
+            ValidDirectives = XConfigurationDirectives.AliasAndEncrypt,
+            ValidationRegexString = @"^\d+$", // 0 and up
+            DefaultValue = "0")]
+        public int StatusChangePollingPeriodSeconds => _statusChangePollingPeriodSeconds;
 
 
-//         private bool _fetchSkusOnStartUp = false;
-//         [XConfigurationProperty(
-//             "",
-//             false,
-//             DefaultValue = "false",
-//             PickListValues = "true,false")]
-//         public bool FetchSkusOnStartUp => _fetchSkusOnStartUp;
+        private bool _processPalletStatusChangesOnStartUp = false;
+        [XConfigurationProperty(
+            "",
+            false,
+            DefaultValue = "false",
+            PickListValues = "true,false")]
+        public bool ProcessPalletStatusChangesOnStartUp => _processPalletStatusChangesOnStartUp;
 
     }
 }

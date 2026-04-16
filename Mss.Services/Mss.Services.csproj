@@ -58,6 +58,7 @@
     <Compile Include="MesInterfaceServiceParameterSetWrapper.cs" />
     <Compile Include="PlcTagService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShortageCalculatorService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mss.Collections\Mss.Collections.csproj">

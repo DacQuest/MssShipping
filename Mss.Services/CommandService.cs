@@ -19,6 +19,7 @@ namespace Mss.Services
         //public static readonly int MyCustomCommand2 = XService.FirstCustomCommand + 1;
 
         private Storage _storage;
+        private AssignmentPit _assignmentPit;
         private LowerPit _lowerPit;
         private UpperPit _upperPit;
         private SystemSettings _systemSettings;
@@ -36,6 +37,7 @@ namespace Mss.Services
 
             _dataLayer = DataLayer.Create(
                 out _storage,
+                out _assignmentPit,
                 out _lowerPit,
                 out _upperPit,
                 out _systemSettings,

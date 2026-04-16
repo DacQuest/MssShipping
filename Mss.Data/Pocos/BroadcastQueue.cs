@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Dapper.Contrib.Extensions;
+using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace Mss.Data.Pocos
 {
@@ -9,17 +10,17 @@ namespace Mss.Data.Pocos
     public class BroadcastQueue
     {
         [Key]
-        [Column("KeyID")]
-        public int ID { get; set; }
+        [Identity]
+        public int QueueID { get; set; }
 
-        [Column("HDR_DATA_ID")]
         public int HeaderID { get; set; }
 
         public bool Processed { get; set; }
-        [Column("ProcessedDTTM")]
-        public DateTime ProcessedOn { get; set; }
 
-        [LeftJoin("SHIP_BroadcastHdr", "HDR_DATA_ID", "HDR_DATA_ID")]
+        [Column("ProcessedDTTM")]
+        public DateTime? ProcessedOn { get; set; }
+
+        [LeftJoin("SHIP_BroadcastHeader", "HeaderID", "HeaderID")]
         public BroadcastHeader BroadcastHeader { get; set; }
     }
 }

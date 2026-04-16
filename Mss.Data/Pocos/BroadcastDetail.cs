@@ -1,6 +1,7 @@
 ﻿using Mss.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 using Dapper.Contrib.Extensions;
+using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace Mss.Data.Pocos
 {
@@ -8,10 +9,9 @@ namespace Mss.Data.Pocos
     public class BroadcastDetail
     {
         [Key]
-        [Column("DTL_DATA_ID")]
+        [Identity]
         public int DetailID { get; set; }
 
-        [Column("HDR_DATA_ID")]
         public int HeaderID { get; set; }
 
         public VehicleRow VehicleRow { get; set; }
@@ -23,6 +23,6 @@ namespace Mss.Data.Pocos
         public PickMode PickMode { get; set; }
 
         [Column("PickModeValue")]
-        public string PickModeValue { get; set; }
+        public string PickModeKey { get; set; }
     }
 }

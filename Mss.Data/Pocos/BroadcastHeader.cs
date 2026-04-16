@@ -5,7 +5,7 @@ using Dapper.Contrib.Extensions;
 
 namespace Mss.Data.Pocos
 {
-    [Dapper.Contrib.Extensions.Table("SHIP_BroadcastHdr")]
+    [Dapper.Contrib.Extensions.Table("SHIP_BroadcastHeader")]
     public class BroadcastHeader
     {
         [Key]
