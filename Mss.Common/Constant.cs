@@ -10,7 +10,9 @@ namespace Mss.Common
     {
         public static readonly DateTime BeginningOfTime = DateTime.Parse("01/01/2000 00:00:00");
         public static readonly DateTime BeforeBeginningOfTime = DateTime.Parse("12/31/1999 11:59:59");
-        public static readonly string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
+        public static readonly string LongDateTimeFormat24 = "yyyy-MM-dd HH:mm:ss.fff";
+        public static readonly string DateTimeFormat24 = "yyyy-MM-dd HH:mm:ss";
+        public static readonly string DisplayDateTimeFormat12 = "MM/dd/yyyy hh:mm:ss tt";
 
         public const string PalletTrackerTableName = "PalletTracker";
         public const string PurgePalletsTableName = "PurgePallets";
@@ -18,6 +20,8 @@ namespace Mss.Common
         // Connection String Names
         public const string ArchiveConnectionStringName = "ArchiveConnectionString";
         public const string MesConnectionStringName = "MesConnectionString";
+
+        public const string PalletStatusChangeEventContext = "Pallet Status Change";
 
         // Shared Collection Names
         public const string StorageName = "Storage";
@@ -44,7 +48,8 @@ namespace Mss.Common
         public const int MaxBroadcastSkip = 100;
         public const int MaxRotation = 9998;
         public const int PickModeKeyLength = 50;
-        public const int NoHoldCode = -1;
+        public const int NoHoldCode = 0;
+        public const int IgnoreHoldCode = -1;
 
         public const string VehicleRow1CsnSuffix = "F";
         public const string VehicleRow2CsnSuffix = "B";

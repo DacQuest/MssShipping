@@ -1,17 +1,19 @@
-﻿using System;
+﻿using Dapper.Contrib.Extensions;
+using MicroOrm.Dapper.Repositories.Attributes;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations.Schema;
-using Dapper.Contrib.Extensions;
 
 namespace Mss.Data.Pocos
 {
     [Dapper.Contrib.Extensions.Table("SHIP_HoldCode")]
     public class HoldCode
     {
-        [Column("DATA_ID")]
+        [Key]
+        [Identity]
         public int ID { get; set; }
 
         [Column("HoldCode")]

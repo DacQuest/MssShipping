@@ -55,24 +55,26 @@
             this._lblAuditAttempts = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this._grpPalletData = new System.Windows.Forms.GroupBox();
-            this._cmbHoldCode = new System.Windows.Forms.ComboBox();
-            this._lblCommentLength = new System.Windows.Forms.Label();
+            this._lblJobID = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this._lblCommentRemainingCharacters = new System.Windows.Forms.Label();
             this._lblComment = new System.Windows.Forms.Label();
             this._lblBuiltOn = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this._lblPalletID = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this._cmbPalletStatus = new System.Windows.Forms.ComboBox();
-            this._lblPalletStatus = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this._lblVehicleRow = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this._lblHoldCode = new System.Windows.Forms.Label();
+            this._lblPalletID = new System.Windows.Forms.Label();
             this._lblSku = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
             this._txtComment = new System.Windows.Forms.TextBox();
+            this._lblVehicleRow = new System.Windows.Forms.Label();
+            this._cmbPalletStatus = new System.Windows.Forms.ComboBox();
+            this._cmbHoldCode = new System.Windows.Forms.ComboBox();
+            this._lblHoldCode = new System.Windows.Forms.Label();
+            this._lblPalletStatus = new System.Windows.Forms.Label();
             this._lblMessages = new System.Windows.Forms.Label();
             this._btnClearMessages = new System.Windows.Forms.Button();
             this._lstMessages = new System.Windows.Forms.ListBox();
@@ -107,14 +109,16 @@
             this._btnConvertAll = new System.Windows.Forms.Button();
             this._btnConvert = new System.Windows.Forms.Button();
             this._chkBulkMarkAudit = new System.Windows.Forms.CheckBox();
-            this._chkUnmarkAudit = new System.Windows.Forms.CheckBox();
+            this._chkBulkUnmarkAudit = new System.Windows.Forms.CheckBox();
             this._pnlConversion = new System.Windows.Forms.Panel();
+            this._lblNewHoldCode = new System.Windows.Forms.Label();
             this._cmbNewStatus = new System.Windows.Forms.ComboBox();
             this._lblNewStatus = new System.Windows.Forms.Label();
             this._chkOverwriteComments = new System.Windows.Forms.CheckBox();
             this._lblRemainingCharacters = new System.Windows.Forms.Label();
             this._lblNewComment = new System.Windows.Forms.Label();
             this._txtNewComment = new System.Windows.Forms.TextBox();
+            this._cmbNewHoldCode = new System.Windows.Forms.ComboBox();
             this._spnSide = new System.Windows.Forms.NumericUpDown();
             this._lblSide = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
@@ -477,24 +481,26 @@
             // 
             // _grpPalletData
             // 
-            this._grpPalletData.Controls.Add(this._cmbHoldCode);
-            this._grpPalletData.Controls.Add(this._lblCommentLength);
+            this._grpPalletData.Controls.Add(this._lblJobID);
+            this._grpPalletData.Controls.Add(this.label5);
+            this._grpPalletData.Controls.Add(this._lblCommentRemainingCharacters);
             this._grpPalletData.Controls.Add(this._lblComment);
             this._grpPalletData.Controls.Add(this._lblBuiltOn);
             this._grpPalletData.Controls.Add(this.label12);
             this._grpPalletData.Controls.Add(this.label11);
             this._grpPalletData.Controls.Add(this.label4);
-            this._grpPalletData.Controls.Add(this._lblPalletID);
-            this._grpPalletData.Controls.Add(this.label20);
-            this._grpPalletData.Controls.Add(this._cmbPalletStatus);
-            this._grpPalletData.Controls.Add(this._lblPalletStatus);
-            this._grpPalletData.Controls.Add(this.label7);
             this._grpPalletData.Controls.Add(this.label8);
-            this._grpPalletData.Controls.Add(this._lblVehicleRow);
-            this._grpPalletData.Controls.Add(this.label6);
-            this._grpPalletData.Controls.Add(this._lblHoldCode);
+            this._grpPalletData.Controls.Add(this._lblPalletID);
             this._grpPalletData.Controls.Add(this._lblSku);
+            this._grpPalletData.Controls.Add(this.label7);
+            this._grpPalletData.Controls.Add(this.label6);
+            this._grpPalletData.Controls.Add(this.label20);
             this._grpPalletData.Controls.Add(this._txtComment);
+            this._grpPalletData.Controls.Add(this._lblVehicleRow);
+            this._grpPalletData.Controls.Add(this._cmbPalletStatus);
+            this._grpPalletData.Controls.Add(this._cmbHoldCode);
+            this._grpPalletData.Controls.Add(this._lblHoldCode);
+            this._grpPalletData.Controls.Add(this._lblPalletStatus);
             this._grpPalletData.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._grpPalletData.Location = new System.Drawing.Point(355, 156);
             this._grpPalletData.Name = "_grpPalletData";
@@ -503,25 +509,34 @@
             this._grpPalletData.TabStop = false;
             this._grpPalletData.Text = "Pallet Data";
             // 
-            // _cmbHoldCode
+            // _lblJobID
             // 
-            this._cmbHoldCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this._cmbHoldCode.FormattingEnabled = true;
-            this._cmbHoldCode.Location = new System.Drawing.Point(406, 47);
-            this._cmbHoldCode.MaxDropDownItems = 16;
-            this._cmbHoldCode.Name = "_cmbHoldCode";
-            this._cmbHoldCode.Size = new System.Drawing.Size(210, 21);
-            this._cmbHoldCode.TabIndex = 45;
+            this._lblJobID.BackColor = System.Drawing.SystemColors.Window;
+            this._lblJobID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblJobID.Location = new System.Drawing.Point(82, 47);
+            this._lblJobID.Name = "_lblJobID";
+            this._lblJobID.Size = new System.Drawing.Size(534, 21);
+            this._lblJobID.TabIndex = 47;
+            this._lblJobID.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // _lblCommentLength
+            // label5
             // 
-            this._lblCommentLength.BackColor = System.Drawing.SystemColors.Window;
-            this._lblCommentLength.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblCommentLength.Location = new System.Drawing.Point(583, 128);
-            this._lblCommentLength.Name = "_lblCommentLength";
-            this._lblCommentLength.Size = new System.Drawing.Size(33, 21);
-            this._lblCommentLength.TabIndex = 44;
-            this._lblCommentLength.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(15, 51);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(38, 13);
+            this.label5.TabIndex = 46;
+            this.label5.Text = "Job ID";
+            // 
+            // _lblCommentRemainingCharacters
+            // 
+            this._lblCommentRemainingCharacters.BackColor = System.Drawing.SystemColors.Window;
+            this._lblCommentRemainingCharacters.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblCommentRemainingCharacters.Location = new System.Drawing.Point(583, 128);
+            this._lblCommentRemainingCharacters.Name = "_lblCommentRemainingCharacters";
+            this._lblCommentRemainingCharacters.Size = new System.Drawing.Size(33, 21);
+            this._lblCommentRemainingCharacters.TabIndex = 44;
+            this._lblCommentRemainingCharacters.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // _lblComment
             // 
@@ -529,9 +544,9 @@
             this._lblComment.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblComment.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblComment.ForeColor = System.Drawing.SystemColors.WindowText;
-            this._lblComment.Location = new System.Drawing.Point(93, 128);
+            this._lblComment.Location = new System.Drawing.Point(82, 128);
             this._lblComment.Name = "_lblComment";
-            this._lblComment.Size = new System.Drawing.Size(484, 21);
+            this._lblComment.Size = new System.Drawing.Size(495, 21);
             this._lblComment.TabIndex = 43;
             this._lblComment.TextChanged += new System.EventHandler(this._lblComment_TextChanged);
             // 
@@ -539,9 +554,9 @@
             // 
             this._lblBuiltOn.BackColor = System.Drawing.SystemColors.Window;
             this._lblBuiltOn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblBuiltOn.Location = new System.Drawing.Point(93, 101);
+            this._lblBuiltOn.Location = new System.Drawing.Point(389, 20);
             this._lblBuiltOn.Name = "_lblBuiltOn";
-            this._lblBuiltOn.Size = new System.Drawing.Size(210, 21);
+            this._lblBuiltOn.Size = new System.Drawing.Size(227, 21);
             this._lblBuiltOn.TabIndex = 30;
             this._lblBuiltOn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -557,7 +572,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(15, 105);
+            this.label11.Location = new System.Drawing.Point(339, 24);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(44, 13);
             this.label11.TabIndex = 29;
@@ -566,79 +581,49 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 51);
+            this.label4.Location = new System.Drawing.Point(15, 79);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(66, 13);
             this.label4.TabIndex = 3;
             this.label4.Text = "Pallet Status";
             // 
-            // _lblPalletID
-            // 
-            this._lblPalletID.BackColor = System.Drawing.SystemColors.Window;
-            this._lblPalletID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblPalletID.Location = new System.Drawing.Point(93, 20);
-            this._lblPalletID.Name = "_lblPalletID";
-            this._lblPalletID.Size = new System.Drawing.Size(210, 21);
-            this._lblPalletID.TabIndex = 1;
-            this._lblPalletID.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(15, 78);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(67, 13);
-            this.label20.TabIndex = 12;
-            this.label20.Text = "Vehicle Row";
-            // 
-            // _cmbPalletStatus
-            // 
-            this._cmbPalletStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this._cmbPalletStatus.FormattingEnabled = true;
-            this._cmbPalletStatus.Location = new System.Drawing.Point(93, 47);
-            this._cmbPalletStatus.MaxDropDownItems = 16;
-            this._cmbPalletStatus.Name = "_cmbPalletStatus";
-            this._cmbPalletStatus.Size = new System.Drawing.Size(210, 21);
-            this._cmbPalletStatus.TabIndex = 4;
-            this._cmbPalletStatus.SelectedIndexChanged += new System.EventHandler(this._CmbPalletStatus_SelectedIndexChanged);
-            // 
-            // _lblPalletStatus
-            // 
-            this._lblPalletStatus.BackColor = System.Drawing.SystemColors.Window;
-            this._lblPalletStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblPalletStatus.Location = new System.Drawing.Point(93, 47);
-            this._lblPalletStatus.Name = "_lblPalletStatus";
-            this._lblPalletStatus.Size = new System.Drawing.Size(210, 21);
-            this._lblPalletStatus.TabIndex = 42;
-            this._lblPalletStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(334, 51);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(57, 13);
-            this.label7.TabIndex = 5;
-            this.label7.Text = "Hold Code";
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(334, 24);
+            this.label8.Location = new System.Drawing.Point(306, 79);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(29, 13);
             this.label8.TabIndex = 5;
             this.label8.Text = "SKU";
             // 
-            // _lblVehicleRow
+            // _lblPalletID
             // 
-            this._lblVehicleRow.BackColor = System.Drawing.SystemColors.Window;
-            this._lblVehicleRow.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblVehicleRow.Location = new System.Drawing.Point(93, 74);
-            this._lblVehicleRow.Name = "_lblVehicleRow";
-            this._lblVehicleRow.Size = new System.Drawing.Size(210, 21);
-            this._lblVehicleRow.TabIndex = 13;
-            this._lblVehicleRow.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this._lblPalletID.BackColor = System.Drawing.SystemColors.Window;
+            this._lblPalletID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblPalletID.Location = new System.Drawing.Point(82, 20);
+            this._lblPalletID.Name = "_lblPalletID";
+            this._lblPalletID.Size = new System.Drawing.Size(73, 21);
+            this._lblPalletID.TabIndex = 1;
+            this._lblPalletID.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _lblSku
+            // 
+            this._lblSku.BackColor = System.Drawing.SystemColors.Window;
+            this._lblSku.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblSku.Location = new System.Drawing.Point(342, 75);
+            this._lblSku.Name = "_lblSku";
+            this._lblSku.Size = new System.Drawing.Size(274, 21);
+            this._lblSku.TabIndex = 42;
+            this._lblSku.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(15, 106);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(57, 13);
+            this.label7.TabIndex = 5;
+            this.label7.Text = "Hold Code";
             // 
             // label6
             // 
@@ -649,37 +634,80 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Pallet ID";
             // 
-            // _lblHoldCode
+            // label20
             // 
-            this._lblHoldCode.BackColor = System.Drawing.SystemColors.Window;
-            this._lblHoldCode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblHoldCode.Location = new System.Drawing.Point(406, 47);
-            this._lblHoldCode.Name = "_lblHoldCode";
-            this._lblHoldCode.Size = new System.Drawing.Size(210, 21);
-            this._lblHoldCode.TabIndex = 42;
-            this._lblHoldCode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // _lblSku
-            // 
-            this._lblSku.BackColor = System.Drawing.SystemColors.Window;
-            this._lblSku.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblSku.Location = new System.Drawing.Point(406, 20);
-            this._lblSku.Name = "_lblSku";
-            this._lblSku.Size = new System.Drawing.Size(210, 21);
-            this._lblSku.TabIndex = 42;
-            this._lblSku.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(164, 24);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(67, 13);
+            this.label20.TabIndex = 12;
+            this.label20.Text = "Vehicle Row";
             // 
             // _txtComment
             // 
             this._txtComment.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._txtComment.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._txtComment.Location = new System.Drawing.Point(93, 128);
+            this._txtComment.Location = new System.Drawing.Point(82, 128);
             this._txtComment.MaxLength = 50;
             this._txtComment.Name = "_txtComment";
             this._txtComment.Size = new System.Drawing.Size(484, 21);
             this._txtComment.TabIndex = 15;
             this._txtComment.WordWrap = false;
             this._txtComment.TextChanged += new System.EventHandler(this._TxtComment_TextChanged);
+            // 
+            // _lblVehicleRow
+            // 
+            this._lblVehicleRow.BackColor = System.Drawing.SystemColors.Window;
+            this._lblVehicleRow.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblVehicleRow.Location = new System.Drawing.Point(237, 20);
+            this._lblVehicleRow.Name = "_lblVehicleRow";
+            this._lblVehicleRow.Size = new System.Drawing.Size(90, 21);
+            this._lblVehicleRow.TabIndex = 13;
+            this._lblVehicleRow.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _cmbPalletStatus
+            // 
+            this._cmbPalletStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cmbPalletStatus.FormattingEnabled = true;
+            this._cmbPalletStatus.Location = new System.Drawing.Point(82, 75);
+            this._cmbPalletStatus.MaxDropDownItems = 16;
+            this._cmbPalletStatus.Name = "_cmbPalletStatus";
+            this._cmbPalletStatus.Size = new System.Drawing.Size(210, 21);
+            this._cmbPalletStatus.TabIndex = 4;
+            this._cmbPalletStatus.SelectedIndexChanged += new System.EventHandler(this._CmbPalletStatus_SelectedIndexChanged);
+            // 
+            // _cmbHoldCode
+            // 
+            this._cmbHoldCode.DisplayMember = "Description";
+            this._cmbHoldCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cmbHoldCode.FormattingEnabled = true;
+            this._cmbHoldCode.Location = new System.Drawing.Point(82, 102);
+            this._cmbHoldCode.MaxDropDownItems = 16;
+            this._cmbHoldCode.Name = "_cmbHoldCode";
+            this._cmbHoldCode.Size = new System.Drawing.Size(534, 21);
+            this._cmbHoldCode.TabIndex = 45;
+            this._cmbHoldCode.ValueMember = "Code";
+            this._cmbHoldCode.SelectedIndexChanged += new System.EventHandler(this._CmbHoldCode_SelectedIndexChanged);
+            // 
+            // _lblHoldCode
+            // 
+            this._lblHoldCode.BackColor = System.Drawing.SystemColors.Window;
+            this._lblHoldCode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblHoldCode.Location = new System.Drawing.Point(82, 102);
+            this._lblHoldCode.Name = "_lblHoldCode";
+            this._lblHoldCode.Size = new System.Drawing.Size(534, 21);
+            this._lblHoldCode.TabIndex = 42;
+            this._lblHoldCode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _lblPalletStatus
+            // 
+            this._lblPalletStatus.BackColor = System.Drawing.SystemColors.Window;
+            this._lblPalletStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblPalletStatus.Location = new System.Drawing.Point(82, 75);
+            this._lblPalletStatus.Name = "_lblPalletStatus";
+            this._lblPalletStatus.Size = new System.Drawing.Size(210, 21);
+            this._lblPalletStatus.TabIndex = 42;
+            this._lblPalletStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // _lblMessages
             // 
@@ -767,7 +795,7 @@
             this._navigator.Location = new System.Drawing.Point(0, 0);
             this._navigator.Name = "_navigator";
             this._navigator.Padding = new System.Windows.Forms.Padding(5, 2, 5, 2);
-            this._navigator.Size = new System.Drawing.Size(1004, 35);
+            this._navigator.Size = new System.Drawing.Size(1000, 35);
             this._navigator.TabIndex = 13;
             // 
             // _navigatorBtnRefreshItem
@@ -956,7 +984,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(375, 52);
+            this.label10.Location = new System.Drawing.Point(377, 51);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(50, 15);
             this.label10.TabIndex = 20;
@@ -966,7 +994,7 @@
             // 
             this._btnConvertAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._btnConvertAll.Enabled = false;
-            this._btnConvertAll.Location = new System.Drawing.Point(851, 48);
+            this._btnConvertAll.Location = new System.Drawing.Point(851, 45);
             this._btnConvertAll.Name = "_btnConvertAll";
             this._btnConvertAll.Size = new System.Drawing.Size(105, 23);
             this._btnConvertAll.TabIndex = 43;
@@ -978,7 +1006,7 @@
             // 
             this._btnConvert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._btnConvert.Enabled = false;
-            this._btnConvert.Location = new System.Drawing.Point(851, 19);
+            this._btnConvert.Location = new System.Drawing.Point(851, 16);
             this._btnConvert.Name = "_btnConvert";
             this._btnConvert.Size = new System.Drawing.Size(105, 23);
             this._btnConvert.TabIndex = 42;
@@ -990,29 +1018,32 @@
             // 
             this._chkBulkMarkAudit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._chkBulkMarkAudit.AutoSize = true;
-            this._chkBulkMarkAudit.Location = new System.Drawing.Point(147, 23);
+            this._chkBulkMarkAudit.Location = new System.Drawing.Point(188, 23);
             this._chkBulkMarkAudit.Name = "_chkBulkMarkAudit";
             this._chkBulkMarkAudit.Size = new System.Drawing.Size(92, 17);
             this._chkBulkMarkAudit.TabIndex = 4;
             this._chkBulkMarkAudit.Text = "Set Audit Flag";
             this._chkBulkMarkAudit.UseVisualStyleBackColor = true;
+            this._chkBulkMarkAudit.Visible = false;
             this._chkBulkMarkAudit.CheckedChanged += new System.EventHandler(this._ChkBulkMarkAudit_CheckedChanged);
             // 
-            // _chkUnmarkAudit
+            // _chkBulkUnmarkAudit
             // 
-            this._chkUnmarkAudit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this._chkUnmarkAudit.AutoSize = true;
-            this._chkUnmarkAudit.Location = new System.Drawing.Point(245, 23);
-            this._chkUnmarkAudit.Name = "_chkUnmarkAudit";
-            this._chkUnmarkAudit.Size = new System.Drawing.Size(100, 17);
-            this._chkUnmarkAudit.TabIndex = 50;
-            this._chkUnmarkAudit.Text = "Clear Audit Flag";
-            this._chkUnmarkAudit.UseVisualStyleBackColor = true;
-            this._chkUnmarkAudit.CheckedChanged += new System.EventHandler(this._ChkUnmarkAudit_CheckedChanged);
+            this._chkBulkUnmarkAudit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this._chkBulkUnmarkAudit.AutoSize = true;
+            this._chkBulkUnmarkAudit.Location = new System.Drawing.Point(286, 23);
+            this._chkBulkUnmarkAudit.Name = "_chkBulkUnmarkAudit";
+            this._chkBulkUnmarkAudit.Size = new System.Drawing.Size(100, 17);
+            this._chkBulkUnmarkAudit.TabIndex = 50;
+            this._chkBulkUnmarkAudit.Text = "Clear Audit Flag";
+            this._chkBulkUnmarkAudit.UseVisualStyleBackColor = true;
+            this._chkBulkUnmarkAudit.Visible = false;
+            this._chkBulkUnmarkAudit.CheckedChanged += new System.EventHandler(this._ChkBulkUnmarkAudit_CheckedChanged);
             // 
             // _pnlConversion
             // 
             this._pnlConversion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this._pnlConversion.Controls.Add(this._lblNewHoldCode);
             this._pnlConversion.Controls.Add(this._cmbNewStatus);
             this._pnlConversion.Controls.Add(this._btnConvertAll);
             this._pnlConversion.Controls.Add(this._btnConvert);
@@ -1020,23 +1051,34 @@
             this._pnlConversion.Controls.Add(this._chkOverwriteComments);
             this._pnlConversion.Controls.Add(this._lblRemainingCharacters);
             this._pnlConversion.Controls.Add(this._lblNewComment);
-            this._pnlConversion.Controls.Add(this._chkUnmarkAudit);
+            this._pnlConversion.Controls.Add(this._chkBulkUnmarkAudit);
             this._pnlConversion.Controls.Add(this._chkBulkMarkAudit);
             this._pnlConversion.Controls.Add(this._txtNewComment);
-            this._pnlConversion.Location = new System.Drawing.Point(15, 414);
+            this._pnlConversion.Controls.Add(this._cmbNewHoldCode);
+            this._pnlConversion.Location = new System.Drawing.Point(15, 396);
             this._pnlConversion.Name = "_pnlConversion";
-            this._pnlConversion.Size = new System.Drawing.Size(971, 104);
+            this._pnlConversion.Size = new System.Drawing.Size(971, 143);
             this._pnlConversion.TabIndex = 73;
             this._pnlConversion.Visible = false;
+            // 
+            // _lblNewHoldCode
+            // 
+            this._lblNewHoldCode.AutoSize = true;
+            this._lblNewHoldCode.Location = new System.Drawing.Point(0, 46);
+            this._lblNewHoldCode.Name = "_lblNewHoldCode";
+            this._lblNewHoldCode.Size = new System.Drawing.Size(82, 13);
+            this._lblNewHoldCode.TabIndex = 58;
+            this._lblNewHoldCode.Text = "New Hold Code";
+            this._lblNewHoldCode.Visible = false;
             // 
             // _cmbNewStatus
             // 
             this._cmbNewStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._cmbNewStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._cmbNewStatus.FormattingEnabled = true;
-            this._cmbNewStatus.Location = new System.Drawing.Point(0, 21);
+            this._cmbNewStatus.Location = new System.Drawing.Point(0, 19);
             this._cmbNewStatus.Name = "_cmbNewStatus";
-            this._cmbNewStatus.Size = new System.Drawing.Size(133, 21);
+            this._cmbNewStatus.Size = new System.Drawing.Size(179, 21);
             this._cmbNewStatus.TabIndex = 51;
             this._cmbNewStatus.SelectedIndexChanged += new System.EventHandler(this._CmbNewStatus_SelectedIndexChanged);
             // 
@@ -1044,7 +1086,7 @@
             // 
             this._lblNewStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._lblNewStatus.AutoSize = true;
-            this._lblNewStatus.Location = new System.Drawing.Point(0, 7);
+            this._lblNewStatus.Location = new System.Drawing.Point(0, 4);
             this._lblNewStatus.Name = "_lblNewStatus";
             this._lblNewStatus.Size = new System.Drawing.Size(91, 13);
             this._lblNewStatus.TabIndex = 50;
@@ -1054,7 +1096,7 @@
             // 
             this._chkOverwriteComments.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._chkOverwriteComments.AutoSize = true;
-            this._chkOverwriteComments.Location = new System.Drawing.Point(0, 88);
+            this._chkOverwriteComments.Location = new System.Drawing.Point(0, 126);
             this._chkOverwriteComments.Name = "_chkOverwriteComments";
             this._chkOverwriteComments.Size = new System.Drawing.Size(162, 17);
             this._chkOverwriteComments.TabIndex = 55;
@@ -1066,7 +1108,7 @@
             // 
             this._lblRemainingCharacters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._lblRemainingCharacters.AutoSize = true;
-            this._lblRemainingCharacters.Location = new System.Drawing.Point(379, 63);
+            this._lblRemainingCharacters.Location = new System.Drawing.Point(443, 106);
             this._lblRemainingCharacters.Name = "_lblRemainingCharacters";
             this._lblRemainingCharacters.Size = new System.Drawing.Size(25, 13);
             this._lblRemainingCharacters.TabIndex = 56;
@@ -1077,11 +1119,11 @@
             // 
             this._lblNewComment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._lblNewComment.AutoSize = true;
-            this._lblNewComment.Location = new System.Drawing.Point(0, 49);
+            this._lblNewComment.Location = new System.Drawing.Point(0, 88);
             this._lblNewComment.Name = "_lblNewComment";
-            this._lblNewComment.Size = new System.Drawing.Size(143, 13);
+            this._lblNewComment.Size = new System.Drawing.Size(183, 13);
             this._lblNewComment.TabIndex = 53;
-            this._lblNewComment.Text = "Comment (Required for Hold)";
+            this._lblNewComment.Text = "Comment (Required for Hold && Purge)";
             this._lblNewComment.Visible = false;
             // 
             // _txtNewComment
@@ -1089,14 +1131,28 @@
             this._txtNewComment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._txtNewComment.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._txtNewComment.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._txtNewComment.Location = new System.Drawing.Point(0, 63);
+            this._txtNewComment.Location = new System.Drawing.Point(0, 102);
             this._txtNewComment.MaxLength = 50;
             this._txtNewComment.Name = "_txtNewComment";
-            this._txtNewComment.Size = new System.Drawing.Size(373, 21);
+            this._txtNewComment.Size = new System.Drawing.Size(437, 21);
             this._txtNewComment.TabIndex = 54;
             this._txtNewComment.Visible = false;
             this._txtNewComment.WordWrap = false;
             this._txtNewComment.TextChanged += new System.EventHandler(this._TxtNewComment_TextChanged);
+            // 
+            // _cmbNewHoldCode
+            // 
+            this._cmbNewHoldCode.DisplayMember = "Description";
+            this._cmbNewHoldCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cmbNewHoldCode.FormattingEnabled = true;
+            this._cmbNewHoldCode.Location = new System.Drawing.Point(1, 62);
+            this._cmbNewHoldCode.MaxDropDownItems = 16;
+            this._cmbNewHoldCode.Name = "_cmbNewHoldCode";
+            this._cmbNewHoldCode.Size = new System.Drawing.Size(437, 21);
+            this._cmbNewHoldCode.TabIndex = 57;
+            this._cmbNewHoldCode.ValueMember = "Code";
+            this._cmbNewHoldCode.Visible = false;
+            this._cmbNewHoldCode.SelectedIndexChanged += new System.EventHandler(this._CmbNewHoldCode_SelectedIndexChanged);
             // 
             // _spnSide
             // 
@@ -1144,7 +1200,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(133, 52);
+            this.label17.Location = new System.Drawing.Point(133, 51);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(32, 15);
             this.label17.TabIndex = 20;
@@ -1160,7 +1216,7 @@
             this._searchResultsGrid.Name = "_searchResultsGrid";
             this._searchResultsGrid.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this._searchResultsGrid.SelectionMode = SourceGrid.GridSelectionMode.Row;
-            this._searchResultsGrid.Size = new System.Drawing.Size(971, 64);
+            this._searchResultsGrid.Size = new System.Drawing.Size(971, 44);
             this._searchResultsGrid.TabIndex = 19;
             this._searchResultsGrid.TabStop = true;
             this._searchResultsGrid.ToolTipText = "";
@@ -1196,7 +1252,7 @@
             this.Controls.Add(this.label17);
             this.Controls.Add(this.label3);
             this.Name = "StorageView";
-            this.Size = new System.Drawing.Size(1004, 530);
+            this.Size = new System.Drawing.Size(1000, 551);
             ((System.ComponentModel.ISupportInitialize)(this._spnVertical)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._spnHorizontal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._spnCrane)).EndInit();
@@ -1291,7 +1347,7 @@
         private System.Windows.Forms.Button _btnConvertAll;
         private System.Windows.Forms.Button _btnConvert;
         private System.Windows.Forms.CheckBox _chkBulkMarkAudit;
-        private System.Windows.Forms.CheckBox _chkUnmarkAudit;
+        private System.Windows.Forms.CheckBox _chkBulkUnmarkAudit;
         private System.Windows.Forms.Panel _pnlConversion;
         private System.Windows.Forms.ComboBox _cmbNewStatus;
         private System.Windows.Forms.Label _lblNewStatus;
@@ -1302,11 +1358,15 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label _lblVehicleRow;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label _lblCommentLength;
+        private System.Windows.Forms.Label _lblCommentRemainingCharacters;
         private System.Windows.Forms.ComboBox _cmbHoldCode;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label _lblHoldCode;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label _lblBinSize;
+        private System.Windows.Forms.Label _lblJobID;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label _lblNewHoldCode;
+        private System.Windows.Forms.ComboBox _cmbNewHoldCode;
     }
 }

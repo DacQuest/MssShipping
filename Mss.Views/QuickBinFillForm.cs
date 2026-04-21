@@ -17,23 +17,27 @@ namespace Mss.Views
 {
     public partial class QuickBinFillForm : Form
     {
-        public string PalletID
-        {
-            get;
-            private set;
-        }
+        public bool MustBeRearPalletID { get; }
 
-        public QuickBinFillForm(string caption)
+        public string PalletID { get; private set; }
+
+        public QuickBinFillForm(string caption, bool mustBeRearPalletID)
         {
             InitializeComponent();
             Text = caption;
+            MustBeRearPalletID = mustBeRearPalletID;
         }
 
         private void _TxtPalletID_TextChanged(object sender, EventArgs e)
         {
             PalletID = txtPalletID.Text;
-            btnOK.Enabled = !PalletID.IsNullOrWhiteSpace();
+//             btnOK.Enabled = !PalletID.IsNullOrWhiteSpace();
+            btnOK.Enabled = PalletID.ValidPalletID;
         }
 
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -12,9 +12,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Mss.Data
 {
@@ -28,23 +25,37 @@ namespace Mss.Data
             out PalletItem palletItem,
             out string fault)
         {
-            return TryFetchPalletItem(
+            return _TryFetchPalletItem(
                 operationCode,
                 palletID,
-                false,
                 out _,
                 out palletItem,
                 out fault);
         }
-        public static bool TryFetchPalletItem(
+
+        public static bool TryFetchPalletItemAtAS1andAS2(
             OperationCode operationCode,
             string palletID,
-            bool requestDestination,
-            out PalletDestination destination,
+            out bool sendToConsoleArea,
             out PalletItem palletItem,
             out string fault)
         {
-            destination = PalletDestination.None;
+            return _TryFetchPalletItem(
+                operationCode,
+                palletID,
+                out sendToConsoleArea,
+                out palletItem,
+                out fault);
+        }
+
+        private static bool _TryFetchPalletItem(
+            OperationCode operationCode,
+            string palletID,
+            out bool sendToConsoleArea,
+            out PalletItem palletItem,
+            out string fault)
+        {
+            sendToConsoleArea = false;
             palletItem = null;
             fault = string.Empty;
 
@@ -72,10 +83,6 @@ namespace Mss.Data
                     palletIDParam.Direction = ParameterDirection.Input;
                     palletIDParam.Value = palletID;
 
-                    SqlParameter destinationRequestParam = command.Parameters.Add("@DestinationRequest", SqlDbType.Bit);
-                    destinationRequestParam.Direction = ParameterDirection.Input;
-                    destinationRequestParam.Value = requestDestination;
-
                     SqlParameter jobIDParam = command.Parameters.Add("@JobID", SqlDbType.VarChar, 50);
                     jobIDParam.Direction = ParameterDirection.Output;
 
@@ -94,8 +101,8 @@ namespace Mss.Data
                     SqlParameter commentParam = command.Parameters.Add("@Comment", SqlDbType.VarChar, 50);
                     commentParam.Direction = ParameterDirection.Output;
 
-                    SqlParameter destinationParam = command.Parameters.Add("@DestinationStatus", SqlDbType.Int);
-                    destinationParam.Direction = ParameterDirection.Output;
+                    SqlParameter sendToConsoleAreaParam = command.Parameters.Add("@SendToConsoleArea", SqlDbType.Bit);
+                    sendToConsoleAreaParam.Direction = ParameterDirection.Output;
 
                     try
                     {
@@ -114,7 +121,7 @@ namespace Mss.Data
                             BuiltOn = (DateTime)builtOnParam.Value,
                             Comment = (string)commentParam.Value
                         };
-                        destination = (PalletDestination)destinationParam.Value;
+                        sendToConsoleArea = (bool)sendToConsoleAreaParam.Value;
                         return true;
                     }
                     catch (Exception x)
@@ -131,7 +138,6 @@ namespace Mss.Data
             }
         }
 
-        // Destructive! Cannot be called from anywhere but MesDataService._ProcessBroadcast()
         public static bool TryFetchBroadcast(
             int maxBroadcastNumbersToFetch,
             string lastCsnReleased,
@@ -140,158 +146,398 @@ namespace Mss.Data
         {
             broadcastItems = new List<BroadcastItem>();
 
-            BroadcastRepository broadcastRepository = new BroadcastRepository(_Connection);
-            if (!broadcastRepository.TryFetchRawBroadcasts(out IEnumerable<BroadcastQueue> rawBroadcasts))
+            try
             {
-                broadcastItems = null;
-                return false;
-            }
-
-            foreach (BroadcastQueue rawBroadcast in rawBroadcasts.Take(maxBroadcastNumbersToFetch))
-            {
-                BroadcastHeader broadcastHeader = rawBroadcast.BroadcastHeader;
-                if (broadcastHeader == null)
+                IEnumerable<BroadcastQueue> pendingItems;
+                IEnumerable<BroadcastHeader> headersWithDetails;
+                using (IDbConnection connection = _Connection)
                 {
-                    XSystemEvent.Publish(
-                        nameof(MesInterface),
-                        XSystemEventLevel.Error,
-                        $"MES Broadcast Header ID {rawBroadcast.HeaderID} has no header data.");
-//                     _ = broadcastRepository.Delete(rawBroadcast);
-                    continue;
-                }
-                List<BroadcastDetail> broadcastDetails = broadcastHeader.BroadcastDetails;
-                if (broadcastDetails == null
-                    || broadcastDetails.Count == 0
-                    || broadcastDetails.Count != broadcastHeader.RowCount)
-                {
-                    XSystemEvent.Publish(
-                        nameof(MesInterface),
-                        XSystemEventLevel.Error,
-                        $"MES BroadcastHeader {broadcastHeader.HeaderID} has an invalid detail count.");
-//                     _ = broadcastRepository.Delete(rawBroadcast);
-                    continue;
-                }
+                    connection.Open();
+                    BroadcastQueueRepository queueRepository = new BroadcastQueueRepository(connection);
+                    BroadcastHeaderRepository headerRepository = new BroadcastHeaderRepository(connection);
 
-                bool outOfOrder = false;
-                int lastRotationReleased = BroadcastItem.RotationFromCsn(lastCsnReleased); ;
-                int rotationNumber = broadcastHeader.Rotation;
-                if (rotationNumber != largestRotationReceived + 1)
-                {
-                    if (rotationNumber <= lastRotationReleased)
-                    {
-                        XSystemEvent.Publish(
-                            nameof(MesInterface),
-                            XSystemEventLevel.Warning,
-                            $"Received a Rotation Number {rotationNumber} which is smaller than or equal to the rotation of the LastCsnReleased {lastCsnReleased}. Broadcast record discarded.");
-                        continue;
-                    }
-                    outOfOrder = true;
-//                     int modRotationNumber = rotationNumber % 10000;
-//                     if (modRotationNumber != 0 && modRotationNumber <= Constant.MaxRotation)
-                    if (!BroadcastItem.AutoSkipFromRotation(rotationNumber))
-                    {
-                        XSystemEvent.Publish(
-                            nameof(MesInterface),
-                            XSystemEventLevel.Warning,
-                            $"Received Rotation Number {rotationNumber} out of order.");
-                    }
-//                     else
-//                     {
-//                         XSystemEvent.Publish(
-//                             nameof(MesInterface),
-//                             XSystemEventLevel.Notification,
-//                             $"Millionth Broadcast Number Boundary Crossed ({broadcastNumber}).");
-//                     }
+                    pendingItems = queueRepository
+                        .FindAll<BroadcastHeader>(
+                            q => !q.Processed,
+                            q => q.BroadcastHeader)
+                        .Take(maxBroadcastNumbersToFetch);
 
-                    if (rotationNumber > largestRotationReceived)
+                    // Get all unique HeaderIDs from the pending items
+                    List<int> headerIDs = pendingItems
+                        .Where(q => q.BroadcastHeader != null)
+                        .Select(q => q.BroadcastHeader.HeaderID)
+                        .Distinct()
+                        .ToList();
+
+                    // Fetch all relevant headers with their details in one call
+                    headersWithDetails = headerRepository
+                        .FindAll<BroadcastDetail>(
+                            h => headerIDs.Contains(h.HeaderID),
+                            h => h.BroadcastDetails);
+
+                    // Build a lookup for fast matching
+                    Dictionary<int, BroadcastHeader> headerLookup = headersWithDetails
+                        .ToDictionary(h => h.HeaderID);
+
+                    // Assign the populated headers back to each queue item
+                    foreach (BroadcastQueue pendingItem in pendingItems)
                     {
-                        if (Math.Abs(largestRotationReceived - rotationNumber) > Constant.MaxBroadcastSkip)
+                        if (pendingItem.BroadcastHeader != null &&
+                            headerLookup.TryGetValue(pendingItem.BroadcastHeader.HeaderID, out BroadcastHeader populated))
                         {
-//                             broadcastRepository.MarkAsProcessed(rawBroadcast);
+                            pendingItem.BroadcastHeader.BroadcastDetails = populated.BroadcastDetails
+                                ?? new List<BroadcastDetail>();
+                        }
+                    }
+
+                    foreach (BroadcastQueue pendingItem in pendingItems)
+                    {
+                        BroadcastHeader header = pendingItem.BroadcastHeader;
+                        if (header == null)
+                        {
                             XSystemEvent.Publish(
                                 nameof(MesInterface),
                                 XSystemEventLevel.Error,
-                                $"Received Rotation Number {rotationNumber} which is more than {Constant.MaxBroadcastSkip} larger than Largest Rotation Received. Broadcast record not processed.");
-                            return broadcastItems.Count > 0;
+                                $"MES Broadcast Header ID {pendingItem.HeaderID} has no header data.");
+                            continue;
                         }
-                    }
-                }
-
-                if (outOfOrder)
-                {
-                    int startRotation = largestRotationReceived + 1;
-                    int endRotation = rotationNumber;
-                    for (int missingRotationNumber = startRotation;
-                        missingRotationNumber < endRotation;
-                        missingRotationNumber++)
-                    {
-                        BroadcastStatus status = BroadcastStatus.Missing;
-//                         int mod = missingRotationNumber % 10000;
-//                         if (mod == 0 || mod > Constant.MaxRotation)
-                        if (BroadcastItem.AutoSkipFromRotation(missingRotationNumber))
+                        List<BroadcastDetail> details = header.BroadcastDetails;
+                        if (details == null
+                            || details.Count == 0
+                            || details.Count != header.RowCount)
                         {
-                            status = BroadcastStatus.Skip;
+                            XSystemEvent.Publish(
+                                nameof(MesInterface),
+                                XSystemEventLevel.Error,
+                                $"MES BroadcastHeader {header.HeaderID} has an invalid detail count.");
+                            continue;
                         }
 
-                        BroadcastItem missingBroadcastItem = new BroadcastItem
+                        bool outOfOrder = false;
+                        int lastRotationReleased = BroadcastItem.RotationFromCsn(lastCsnReleased); ;
+                        int rotationNumber = header.Rotation;
+                        if (rotationNumber != largestRotationReceived + 1)
                         {
-                            Status = status,
-                            Csn = _FormatCsn(missingRotationNumber, VehicleRow.Row1),
-                            VehicleSku = string.Empty,
-                            Sku = string.Empty,
-                            Vin = string.Empty,
-                            PickMode = PickMode.BySku,
-                            PickModeKey = string.Empty,
-                            ReceivedOn = DateTime.Now,
-                            VehicleRowCount = 0
-                        };
-                        broadcastItems.Add(missingBroadcastItem);
+                            if (rotationNumber <= lastRotationReleased)
+                            {
+                                XSystemEvent.Publish(
+                                    nameof(MesInterface),
+                                    XSystemEventLevel.Warning,
+                                    $"Received a Rotation Number {rotationNumber} which is smaller than or equal to the rotation of the LastCsnReleased {lastCsnReleased}. Broadcast record discarded.");
+                                continue;
+                            }
+                            outOfOrder = true;
+                            if (!BroadcastItem.AutoSkipFromRotation(rotationNumber))
+                            {
+                                XSystemEvent.Publish(
+                                    nameof(MesInterface),
+                                    XSystemEventLevel.Warning,
+                                    $"Received Rotation Number {rotationNumber} out of order.");
+                            }
+
+                            if (rotationNumber > largestRotationReceived)
+                            {
+                                if (Math.Abs(largestRotationReceived - rotationNumber) > Constant.MaxBroadcastSkip)
+                                {
+                                    XSystemEvent.Publish(
+                                        nameof(MesInterface),
+                                        XSystemEventLevel.Error,
+                                        $"Received Rotation Number {rotationNumber} which is more than {Constant.MaxBroadcastSkip} larger than Largest Rotation Received. Broadcast record not processed.");
+                                    return broadcastItems.Count > 0;
+                                }
+                            }
+                        }
+
+                        if (outOfOrder)
+                        {
+                            int startRotation = largestRotationReceived + 1;
+                            int endRotation = rotationNumber;
+                            for (int missingRotationNumber = startRotation;
+                                missingRotationNumber < endRotation;
+                                missingRotationNumber++)
+                            {
+                                BroadcastStatus status = BroadcastStatus.Missing;
+                                if (BroadcastItem.AutoSkipFromRotation(missingRotationNumber))
+                                {
+                                    status = BroadcastStatus.Skip;
+                                }
+
+                                BroadcastItem missingBroadcastItem = new BroadcastItem
+                                {
+                                    Status = status,
+                                    Csn = _FormatCsn(missingRotationNumber, VehicleRow.Row1),
+                                    VehicleSku = string.Empty,
+                                    Sku = string.Empty,
+                                    Vin = string.Empty,
+                                    PickMode = PickMode.BySku,
+                                    PickModeKey = string.Empty,
+                                    ReceivedOn = DateTime.Now,
+                                    VehicleRowCount = 0
+                                };
+                                broadcastItems.Add(missingBroadcastItem);
+                            }
+                        }
+
+                        BroadcastItem row1BroadcastItem = null;
+                        BroadcastItem row2BroadcastItem = null;
+                        BroadcastDetail detail = header.BroadcastDetails.SingleOrDefault(d => d.VehicleRow == VehicleRow.Row1);
+                        if (detail != null)
+                        {
+                            row1BroadcastItem = new BroadcastItem
+                            {
+                                Status = BroadcastStatus.OK,
+                                Csn = _FormatCsn(header.Rotation, VehicleRow.Row1),
+                                VehicleSku = header.VehicleSku,
+                                Sku = detail.Sku,
+                                Vin = header.Vin,
+                                PickMode = detail.PickMode,
+                                PickModeKey = detail.PickModeKey,
+                                ReceivedOn = DateTime.Now,
+                                VehicleRowCount = header.RowCount
+                            };
+
+                            if (header.RowCount == 2)
+                            {
+                                detail = header.BroadcastDetails.Single(d => d.VehicleRow == VehicleRow.Row2);
+                                if (detail != null)
+                                {
+                                    row2BroadcastItem = new BroadcastItem
+                                    {
+                                        Status = BroadcastStatus.OK,
+                                        Csn = _FormatCsn(header.Rotation, VehicleRow.Row2),
+                                        VehicleSku = header.VehicleSku,
+                                        Sku = detail.Sku,
+                                        Vin = header.Vin,
+                                        PickMode = detail.PickMode,
+                                        PickModeKey = detail.PickModeKey,
+                                        ReceivedOn = DateTime.Now,
+                                        VehicleRowCount = header.RowCount
+                                    };
+                                    broadcastItems.Add(row2BroadcastItem);
+                                }
+                                else
+                                {
+                                    XSystemEvent.Publish(
+                                        nameof(TryFetchBroadcast),
+                                        XSystemEventLevel.Error,
+                                        $"HeaderID {header.HeaderID} does not have Row 2 Details in the SHIPBroadcastDetails table.");
+                                    return true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            XSystemEvent.Publish(
+                                nameof(TryFetchBroadcast),
+                                XSystemEventLevel.Error,
+                                $"HeaderID {header.HeaderID} does not have Row 1 Details in the SHIPBroadcastDetails table.");
+                            return true;
+                        }
+                        broadcastItems.Add(row1BroadcastItem);
+                        if (row2BroadcastItem != null)
+                        {
+                            broadcastItems.Add(row2BroadcastItem);
+                        }
+                        if (row1BroadcastItem.Rotation > largestRotationReceived)
+                        {
+                            largestRotationReceived = row1BroadcastItem.Rotation;
+                        }
+                        pendingItem.Processed = true;
+                        pendingItem.ProcessedOn = DateTime.Now;
+                        _ = queueRepository.Update(pendingItem);
                     }
                 }
-
-                BroadcastHeader header = rawBroadcast.BroadcastHeader;
-                BroadcastDetail detail = header.BroadcastDetails.Single(d => d.VehicleRow == VehicleRow.Row1);
-                
-                BroadcastItem row1BroadcastItem = new BroadcastItem
-                {
-                    Status = BroadcastStatus.OK,
-                    Csn = _FormatCsn(header.Rotation, VehicleRow.Row1),
-                    VehicleSku = header.VehicleSku,
-                    Sku = detail.Sku,
-                    Vin = header.Vin,
-                    PickMode = detail.PickMode,
-                    PickModeKey = detail.PickModeKey,
-                    ReceivedOn = DateTime.Now,
-                    VehicleRowCount = header.RowCount
-                };
-                broadcastItems.Add(row1BroadcastItem);
-
-                if (rawBroadcast.BroadcastHeader.RowCount == 2)
-                {
-                    detail = header.BroadcastDetails.Single(d => d.VehicleRow == VehicleRow.Row2);
-                    BroadcastItem row2BroadcastItem = new BroadcastItem
-                    {
-                        Status = BroadcastStatus.OK,
-                        Csn = _FormatCsn(header.Rotation, VehicleRow.Row2),
-                        VehicleSku = header.VehicleSku,
-                        Sku = detail.Sku,
-                        Vin = header.Vin,
-                        PickMode = detail.PickMode,
-                        PickModeKey = detail.PickModeKey,
-                        ReceivedOn = DateTime.Now,
-                        VehicleRowCount = header.RowCount
-                    };
-                    broadcastItems.Add(row2BroadcastItem);
-                }
-                if (row1BroadcastItem.Rotation > largestRotationReceived)
-                {
-                    largestRotationReceived = row1BroadcastItem.Rotation;
-                }
-                _ = broadcastRepository.TryMarkAsProcessed(rawBroadcast);
+                return true;
             }
-            return broadcastItems.Count > 0;
-
+            catch (Exception x)
+            {
+                x.PublishSystemEvent(nameof(TryFetchBroadcast));
+                return false;
+            }
         }
+
+        //         public static bool TryFetchBroadcast(
+        //             int maxBroadcastNumbersToFetch,
+        //             string lastCsnReleased,
+        //             int largestRotationReceived,
+        //             out List<BroadcastItem> broadcastItems)
+        //         {
+        //             broadcastItems = new List<BroadcastItem>();
+        // 
+        //             BroadcastHeaderRepository broadcastRepository = new BroadcastHeaderRepository(_Connection);
+        //             if (!broadcastRepository.TryFetchRawBroadcasts(out IEnumerable<BroadcastQueue> broadcastEntries))
+        //             {
+        //                 broadcastItems = null;
+        //                 return false;
+        //             }
+        // 
+        //             foreach (BroadcastQueue broadcastEntry in broadcastEntries.Take(maxBroadcastNumbersToFetch))
+        //             {
+        //                 BroadcastHeader broadcastHeader = broadcastEntry.BroadcastHeader;
+        //                 if (broadcastHeader == null)
+        //                 {
+        //                     XSystemEvent.Publish(
+        //                         nameof(MesInterface),
+        //                         XSystemEventLevel.Error,
+        //                         $"MES Broadcast Header ID {broadcastEntry.HeaderID} has no header data.");
+        // //                     _ = broadcastRepository.Delete(rawBroadcast);
+        //                     continue;
+        //                 }
+        //                 List<BroadcastDetail> broadcastDetails = broadcastHeader.BroadcastDetails;
+        //                 if (broadcastDetails == null
+        //                     || broadcastDetails.Count == 0
+        //                     || broadcastDetails.Count != broadcastHeader.RowCount)
+        //                 {
+        //                     XSystemEvent.Publish(
+        //                         nameof(MesInterface),
+        //                         XSystemEventLevel.Error,
+        //                         $"MES BroadcastHeader {broadcastHeader.HeaderID} has an invalid detail count.");
+        // //                     _ = broadcastRepository.Delete(rawBroadcast);
+        //                     continue;
+        //                 }
+        // 
+        //                 bool outOfOrder = false;
+        //                 int lastRotationReleased = BroadcastItem.RotationFromCsn(lastCsnReleased); ;
+        //                 int rotationNumber = broadcastHeader.Rotation;
+        //                 if (rotationNumber != largestRotationReceived + 1)
+        //                 {
+        //                     if (rotationNumber <= lastRotationReleased)
+        //                     {
+        //                         XSystemEvent.Publish(
+        //                             nameof(MesInterface),
+        //                             XSystemEventLevel.Warning,
+        //                             $"Received a Rotation Number {rotationNumber} which is smaller than or equal to the rotation of the LastCsnReleased {lastCsnReleased}. Broadcast record discarded.");
+        //                         continue;
+        //                     }
+        //                     outOfOrder = true;
+        // //                     int modRotationNumber = rotationNumber % 10000;
+        // //                     if (modRotationNumber != 0 && modRotationNumber <= Constant.MaxRotation)
+        //                     if (!BroadcastItem.AutoSkipFromRotation(rotationNumber))
+        //                     {
+        //                         XSystemEvent.Publish(
+        //                             nameof(MesInterface),
+        //                             XSystemEventLevel.Warning,
+        //                             $"Received Rotation Number {rotationNumber} out of order.");
+        //                     }
+        // //                     else
+        // //                     {
+        // //                         XSystemEvent.Publish(
+        // //                             nameof(MesInterface),
+        // //                             XSystemEventLevel.Notification,
+        // //                             $"Millionth Broadcast Number Boundary Crossed ({broadcastNumber}).");
+        // //                     }
+        // 
+        //                     if (rotationNumber > largestRotationReceived)
+        //                     {
+        //                         if (Math.Abs(largestRotationReceived - rotationNumber) > Constant.MaxBroadcastSkip)
+        //                         {
+        // //                             broadcastRepository.MarkAsProcessed(rawBroadcast);
+        //                             XSystemEvent.Publish(
+        //                                 nameof(MesInterface),
+        //                                 XSystemEventLevel.Error,
+        //                                 $"Received Rotation Number {rotationNumber} which is more than {Constant.MaxBroadcastSkip} larger than Largest Rotation Received. Broadcast record not processed.");
+        //                             return broadcastItems.Count > 0;
+        //                         }
+        //                     }
+        //                 }
+        // 
+        //                 if (outOfOrder)
+        //                 {
+        //                     int startRotation = largestRotationReceived + 1;
+        //                     int endRotation = rotationNumber;
+        //                     for (int missingRotationNumber = startRotation;
+        //                         missingRotationNumber < endRotation;
+        //                         missingRotationNumber++)
+        //                     {
+        //                         BroadcastStatus status = BroadcastStatus.Missing;
+        // //                         int mod = missingRotationNumber % 10000;
+        // //                         if (mod == 0 || mod > Constant.MaxRotation)
+        //                         if (BroadcastItem.AutoSkipFromRotation(missingRotationNumber))
+        //                         {
+        //                             status = BroadcastStatus.Skip;
+        //                         }
+        // 
+        //                         BroadcastItem missingBroadcastItem = new BroadcastItem
+        //                         {
+        //                             Status = status,
+        //                             Csn = _FormatCsn(missingRotationNumber, VehicleRow.Row1),
+        //                             VehicleSku = string.Empty,
+        //                             Sku = string.Empty,
+        //                             Vin = string.Empty,
+        //                             PickMode = PickMode.BySku,
+        //                             PickModeKey = string.Empty,
+        //                             ReceivedOn = DateTime.Now,
+        //                             VehicleRowCount = 0
+        //                         };
+        //                         broadcastItems.Add(missingBroadcastItem);
+        //                     }
+        //                 }
+        // 
+        //                 BroadcastHeader header = broadcastEntry.BroadcastHeader;
+        //                 BroadcastDetail detail = header.BroadcastDetails.SingleOrDefault(d => d.VehicleRow == VehicleRow.Row1);
+        //                 if (detail != null)
+        //                 {
+        //                     BroadcastItem row1BroadcastItem = new BroadcastItem
+        //                     {
+        //                         Status = BroadcastStatus.OK,
+        //                         Csn = _FormatCsn(header.Rotation, VehicleRow.Row1),
+        //                         VehicleSku = header.VehicleSku ?? string.Empty,
+        //                         Sku = detail.Sku ?? string.Empty,
+        //                         Vin = header.Vin ?? string.Empty,
+        //                         PickMode = detail.PickMode,
+        //                         PickModeKey = detail.PickModeKey ?? string.Empty,
+        //                         ReceivedOn = DateTime.Now,
+        //                         VehicleRowCount = header.RowCount
+        //                     };
+        //                     broadcastItems.Add(row1BroadcastItem);
+        // 
+        //                     if (broadcastEntry.BroadcastHeader.RowCount == 2)
+        //                     {
+        //                         detail = header.BroadcastDetails.Single(d => d.VehicleRow == VehicleRow.Row2);
+        //                         if (detail != null)
+        //                         {
+        //                             BroadcastItem row2BroadcastItem = new BroadcastItem
+        //                             {
+        //                                 Status = BroadcastStatus.OK,
+        //                                 Csn = _FormatCsn(header.Rotation, VehicleRow.Row2),
+        //                                 VehicleSku = header.VehicleSku,
+        //                                 Sku = detail.Sku,
+        //                                 Vin = header.Vin,
+        //                                 PickMode = detail.PickMode,
+        //                                 PickModeKey = detail.PickModeKey,
+        //                                 ReceivedOn = DateTime.Now,
+        //                                 VehicleRowCount = header.RowCount
+        //                             };
+        //                             broadcastItems.Add(row2BroadcastItem);
+        //                         }
+        //                         else
+        //                         {
+        //                             //ERROR  No row 2
+        //                         }
+        //                     }
+        //                 }
+        //                 else
+        //                 {
+        //                     //ERROR No row 1
+        //                 }
+        //                 if (error || !_ValidateBroadcast(header.RowCount, row1BroadcastItem, row2BroadcastItem))
+        //                 {
+        // 
+        //                 }
+        // 
+        // 
+        // 
+        // 
+        // 
+        //                 if (row1BroadcastItem.Rotation > largestRotationReceived)
+        //                 {
+        //                     largestRotationReceived = row1BroadcastItem.Rotation;
+        //                 }
+        //                 _ = broadcastRepository.TryMarkAsProcessed(broadcastEntry);
+        //             }
+        //             return broadcastItems.Count > 0;
+        // 
+        //         }
 
         private static string _FormatCsn(int rotationNumber, VehicleRow vehicleRow)
         {
@@ -331,36 +577,37 @@ namespace Mss.Data
             }
         }
 
-//         public bool TryFetchPalletStatusChangeRequests(
-//             out IEnumerable<PalletStatusChangeRequest> requests,
-//             out string fault)
-//         {
-//             try
-//             {
-//                 HoldCodesRepository holdCodesRepository = new HoldCodesRepository(_Connection);
-//                 if (!holdCodesRepository.TryFetchRawHoldCodes(out IEnumerable<HoldCode> rawHoldCodes))
-//                 {
-//                     holdCodes = null;
-//                     return false;
-//                 }
-// 
-//                 holdCodes = rawHoldCodes
-//                     .Select(r =>
-//                         new HoldCodeItem
-//                         {
-//                             HoldCode = r.Code,
-//                             Description = r.Description
-//                         })
-//                     .ToList();
-//                 return true;
-//             }
-//             catch (Exception x)
-//             {
-//                 x.PublishSystemEvent(nameof(TryFetchHoldCodes));
-//                 holdCodes = null;
-//                 return false;
-//             }
-//         }
+        public static bool TryFetchPendingStatusChangeRequests(
+            out IEnumerable<StatusChangeQueue> pendingRequests)
+        {
+            try
+            {
+                StatusChangeQueueRepository repository = new StatusChangeQueueRepository(_Connection);
+                return repository.TryFetchStatusChangeRequests(
+                    out pendingRequests);
+            }
+            catch (Exception x)
+            {
+                x.PublishSystemEvent(nameof(TryFetchPendingStatusChangeRequests));
+                pendingRequests = null;
+                return false;
+            }
+        }
+
+        public static bool UpdateProcessedStatusChangeRequests(
+            IEnumerable<StatusChangeQueue> processedRequests)
+        {
+            try
+            {
+                StatusChangeQueueRepository repository = new StatusChangeQueueRepository(_Connection);
+                return repository.TryUpdateProcessedStatusChangeRequests(processedRequests);
+            }
+            catch (Exception x)
+            {
+                x.PublishSystemEvent(nameof(UpdateProcessedStatusChangeRequests));
+                return false;
+            }
+        }
 
         private static SqlConnection _Connection => new SqlConnection(
             XConfiguration.GetConnectionString(Constant.MesConnectionStringName));

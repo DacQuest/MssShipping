@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Dapper.Contrib.Extensions;
+using MicroOrm.Dapper.Repositories.Attributes;
+using System;
 
 namespace Mss.Data.Pocos
 {
@@ -9,7 +11,7 @@ namespace Mss.Data.Pocos
     public class BroadcastHeader
     {
         [Key]
-        [Column("HDR_DATA_ID")]
+        [Identity]
         public int HeaderID { get; set; }
 
         [Column("RotationNo")]
@@ -24,7 +26,17 @@ namespace Mss.Data.Pocos
         [Column("PalletCount")]
         public int RowCount { get; set; }
 
-        [LeftJoin("SHIP_BroadcastDtl", "HDR_DATA_ID", "HDR_DATA_ID")]
+//         [Column("EventDTTM")]
+//         public DateTime? EventTimestamp { get; set; }
+// 
+//         [Column("ProdDate")]
+//         public DateTime? ProductionTimestamp { get; set; }
+// 
+//         public string Shift { get; set; }
+// 
+//         public int? Period { get; set; }
+
+        [LeftJoin("SHIP_BroadcastDetail", "HeaderID", "HeaderID")]
         public List<BroadcastDetail> BroadcastDetails { get; set; }
     }
 }

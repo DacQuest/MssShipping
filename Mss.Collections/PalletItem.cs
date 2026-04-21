@@ -26,7 +26,7 @@ namespace Mss.Collections
             : BinSize.Small;
 
         public string BuiltOnText => BuiltOn > Constant.BeginningOfTime
-            ? BuiltOn.ToString(Constant.DateTimeFormat)
+            ? BuiltOn.ToString(Constant.LongDateTimeFormat24)
             : string.Empty;
 
         public string GetStateDetails(int leadingSpaceCount)

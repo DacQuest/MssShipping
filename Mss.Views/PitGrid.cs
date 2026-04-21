@@ -24,22 +24,27 @@ namespace Mss.Views
 {
     public partial class PitGrid : Grid
     {
-        public const int PalletIDColumnIndex = 1;
-        public const int StatusColumnIndex = 2;
-        public const int HoldCodeColumnIndex = 3;
-        public const int SkuColumnIndex = 4;
-        public const int JobIDColumnIndex = 5;
-        public const int DestinationOrBuiltOnColumnIndex = 6;
-        public const int BuiltOnColumnIndex = 7;
+        public const int PitCodeColumnIndex = 1;
+        public const int SetOnColumnIndex = 2;
+        public const int PalletIDColumnIndex = 3;
+        public const int StatusColumnIndex = 4;
+        public const int HoldCodeColumnIndex = 5;
+        public const int SkuColumnIndex = 6;
+        public const int JobIDColumnIndex = 7;
+//         public const int DestinationOrBuiltOnColumnIndex = 6;
+//         public const int BuiltOnColumnIndex = 7;
         public int TotalColumnCount = 8;
 
+        public const int PitCodeColumnWidth = 100;
+        public const int SetOnColumnWidth = 160;
         public const int PalletIDColumnWidth = 70;
         public const int StatusColumnWidth = 110;
-        public const int HoldCodeColumnWidth = 150;
-        public const int SkuColumnWidth = 110;
-        public const int JobIDColumnWidth = 110;
-        public const int DestinationColumnWidth = 90;
-        public const int ReceivedOnColumnWidth = 162;
+        public const int HoldCodeColumnWidth = 500;
+        public const int SkuColumnWidth = 80;
+        public const int JobIDColumnWidth = 400;
+
+        //         public const int DestinationColumnWidth = 90;
+        //         public const int ReceivedOnColumnWidth = 162;
 
         private List<PitItem> _pitItems;
 //         private string _pitName;
@@ -48,9 +53,9 @@ namespace Mss.Views
         private PitProxy _pitProxy = null;
         private HoldCodesProxy _holdCodesProxy = null;
 
-        private int _headerColumnWidth = 22;
-        private int _headerRowHeight = 22;
-        private int _dataRowHeight = 22;
+        public const int HeaderColumnWidth = 22;
+        public const int HeaderRowHeight = 22;
+        public const int DataRowHeight = 22;
         private SourceGrid.Cells.Controllers.ToolTipText _toolTipController;
 
         private bool _allowPalletEditing = false;
@@ -76,11 +81,11 @@ namespace Mss.Views
         //            base.OnPaint(pe);
         //        }
 
-        private class _ValueChangedEvent : SourceGrid.Cells.Controllers.ControllerBase
+        private class ValueChangedEvent : SourceGrid.Cells.Controllers.ControllerBase
         {
-            PitGrid _pitGrid;
+            private readonly PitGrid _pitGrid;
 
-            public _ValueChangedEvent(PitGrid pitGrid)
+            public ValueChangedEvent(PitGrid pitGrid)
             {
                 _pitGrid = pitGrid;
             }
@@ -112,7 +117,7 @@ namespace Mss.Views
                 }
                 if (!_pitGrid._pitProxy.SafeUpdate(pitItem.PalletID, originalPitItem, ref pitItem))
                 {
-                    XMessageBox.Show(
+                    _ = XMessageBox.Show(
                         _pitGrid,
                         "The Pallet Item that you edited was stale. The changes were not saved.",
                         "Changes not saved",
@@ -146,10 +151,12 @@ namespace Mss.Views
 
             BorderStyle = BorderStyle.FixedSingle;
 
-            _toolTipController = new SourceGrid.Cells.Controllers.ToolTipText();
-            _toolTipController.IsBalloon = true;
+            _toolTipController = new SourceGrid.Cells.Controllers.ToolTipText
+            {
+                IsBalloon = true
+            };
 
-            this.Controller.AddController(new _ValueChangedEvent(this));
+            this.Controller.AddController(new ValueChangedEvent(this));
 
             _SetUpGrid();
 
@@ -257,18 +264,16 @@ namespace Mss.Views
                 //    _currentPalletID = 0;
                 //    _pitProxy.Remove(palletIDToDelete);
                 //}
-                string pitName = _pitProxy.CollectionName == Constant.UpperPitName
-                    ? "Upper"
-                    : "Lower";
-                PitDeleteForm form = new PitDeleteForm(_currentPalletID, pitName);
-                form.ShowDialog();
-                if (form.DialogResult == DialogResult.OK)
+                string pitName = _pitProxy.CollectionName.LeftOfLast('P');
+                using (PitDeleteForm form = new PitDeleteForm(_currentPalletID, pitName))
                 {
-                    string palletIDToDelete = _currentPalletID;
-                    _currentPalletID = Constant.NoPalletID;
-                    _ = _pitProxy.Remove(palletIDToDelete);
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        string palletIDToDelete = _currentPalletID;
+                        _currentPalletID = Constant.NoPalletID;
+                        _ = _pitProxy.Remove(palletIDToDelete);
+                    }
                 }
-                form.Dispose();
             }
         }
 
@@ -305,9 +310,11 @@ namespace Mss.Views
             this.Selection.EnableMultiSelection = false;
 
             // Set up header attributes
-            SourceGrid.Cells.Views.Header boldHeader = new SourceGrid.Cells.Views.Header();
-            boldHeader.Font = new Font(Font, FontStyle.Bold);
-            boldHeader.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
+            SourceGrid.Cells.Views.Header boldHeader = new SourceGrid.Cells.Views.Header
+            {
+                Font = new Font(Font, FontStyle.Bold),
+                TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter
+            };
 
             int ColumnCount = TotalColumnCount;
             if (!_showDestination)
@@ -319,7 +326,7 @@ namespace Mss.Views
             FixedColumns = 1;
 
             Rows.Insert(0);
-            Rows[0].Height = _headerRowHeight;
+            Rows[0].Height = HeaderRowHeight;
 
             ICell cell;
             for (int index = 0; index < ColumnsCount; index++)
@@ -329,12 +336,16 @@ namespace Mss.Views
                 switch (index)
                 {
                     case 0:
-                        Columns[0].Width = _headerColumnWidth;
+                        Columns[0].Width = HeaderColumnWidth;
                         break;
-//                     case UniqueIDColumnIndex:
-//                         Columns[index].Width = UniqueIDColumnWidth;
-//                         cell.Value = "Unique ID";
-//                         break;
+                    case PitCodeColumnIndex:
+                        Columns[index].Width = PitCodeColumnWidth;
+                        cell.Value = "PIT Code";
+                        break;
+                    case SetOnColumnIndex:
+                        Columns[index].Width = SetOnColumnWidth;
+                        cell.Value = "Added On";
+                        break;
                     case PalletIDColumnIndex:
                         Columns[index].Width = PalletIDColumnWidth;
                         cell.Value = "Pallet";
@@ -355,22 +366,22 @@ namespace Mss.Views
                         Columns[index].Width = JobIDColumnWidth;
                         cell.Value = "Job ID";
                         break;
-                    case DestinationOrBuiltOnColumnIndex:
-                        if (_showDestination)
-                        {
-                            Columns[index].Width = DestinationColumnWidth;
-                            cell.Value = "Dest";
-                        }
-                        else
-                        {
-                            Columns[index].Width = DestinationColumnWidth + ReceivedOnColumnWidth;
-                            cell.Value = "Built On";
-                        }
-                        break;
-                    case BuiltOnColumnIndex:
-                        Columns[index].Width = ReceivedOnColumnWidth;
-                        cell.Value = "Built On";
-                        break;
+//                     case DestinationOrBuiltOnColumnIndex:
+//                         if (_showDestination)
+//                         {
+//                             Columns[index].Width = DestinationColumnWidth;
+//                             cell.Value = "Dest";
+//                         }
+//                         else
+//                         {
+//                             Columns[index].Width = DestinationColumnWidth + ReceivedOnColumnWidth;
+//                             cell.Value = "Built On";
+//                         }
+//                         break;
+//                     case BuiltOnColumnIndex:
+//                         Columns[index].Width = ReceivedOnColumnWidth;
+//                         cell.Value = "Built On";
+//                         break;
                 }
                 cell.View = boldHeader;
                 cell.Controller.RemoveController(cell.Controller.FindController(typeof(SourceGrid.Cells.Controllers.SortableHeader)));
@@ -383,31 +394,39 @@ namespace Mss.Views
             int rowNumber = 0;
             foreach (PitItem pitItem in _pitItems)
             {
+                PalletItem palletItem = pitItem.Pallet;
                 rowNumber++;
                 Rows.Insert(rowNumber);
 
                 GridRow row = Rows[rowNumber];
-                row.Height = _dataRowHeight;
+                row.Height = DataRowHeight;
                 row.AutoSizeMode = SourceGrid.AutoSizeMode.None;
 
                 // Row header
-                cell = new Header();
-                cell.View = boldHeader;
+                cell = new Header
+                {
+                    View = boldHeader
+                };
                 cell.Controller.RemoveController(cell.Controller.FindController(typeof(SourceGrid.Cells.Controllers.SortableHeader)));
                 cell.Controller.RemoveController(cell.Controller.FindController(typeof(SourceGrid.Cells.Controllers.Resizable)));
                 this[rowNumber, 0] = cell;
 
                 for (int columnNumber = 1; columnNumber < ColumnsCount; columnNumber++)
                 {
-                    cell = new SourceGrid.Cells.Cell();
-                    cell.View = new SourceGrid.Cells.Views.Cell();
+                    cell = new Cell
+                    {
+                        View = new SourceGrid.Cells.Views.Cell()
+                    };
                     cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
 
                     switch (columnNumber)
                     {
-//                         case UniqueIDColumnIndex:
-//                             cell.Value = palletItem.UniqueID.ToString(Constant.UniqueIDTextFormat);
-//                             break;
+                        case PitCodeColumnIndex:
+                            cell.Value = pitItem.PitCode.ToText();
+                            break;
+                        case SetOnColumnIndex:
+                            cell.Value = pitItem.SetOn.ToString(Constant.DisplayDateTimeFormat12);
+                            break;
                         case StatusColumnIndex:
                             if (_allowPalletEditing)
                             {
@@ -415,6 +434,7 @@ namespace Mss.Views
                                 {
                                     PalletStatus.Invalid,
                                     PalletStatus.OK,
+                                    PalletStatus.Reserved,
                                     PalletStatus.Hold,
                                     PalletStatus.Purge,
                                     PalletStatus.Unknown
@@ -424,62 +444,67 @@ namespace Mss.Views
                                     PalletStatus.Invalid.ToText(),
                                     PalletStatus.OK.ToText(),
                                     PalletStatus.Hold.ToText(),
+                                    PalletStatus.Reserved.ToText(),
                                     PalletStatus.Purge.ToText(),
                                     PalletStatus.Unknown.ToText()
                                 };
                                 SourceGrid.Cells.Editors.ComboBox statusComboBox = new SourceGrid.Cells.Editors.ComboBox(typeof(PalletStatus), statusValues, true);
                                 statusComboBox.Control.FormattingEnabled = true;
-                                DevAge.ComponentModel.Validator.ValueMapping statusValueMapping = new DevAge.ComponentModel.Validator.ValueMapping();
-                                statusValueMapping.DisplayStringList = textValues;
-                                statusValueMapping.ValueList = statusValues;
-                                statusValueMapping.SpecialList = textValues;
-                                statusValueMapping.SpecialType = typeof(string);
+                                DevAge.ComponentModel.Validator.ValueMapping statusValueMapping = new DevAge.ComponentModel.Validator.ValueMapping
+                                {
+                                    DisplayStringList = textValues,
+                                    ValueList = statusValues,
+                                    SpecialList = textValues,
+                                    SpecialType = typeof(string)
+                                };
                                 statusValueMapping.BindValidator(statusComboBox);
-                                cell = new SourceGrid.Cells.Cell(pitItem.Pallet.Status);
+                                cell = new Cell(palletItem.Status);
                                 statusComboBox.Control.DropDownStyle = ComboBoxStyle.DropDownList;
-                                //                             statusComboBox.Control.Validated += _ComboBoxValue_Changed;
+//                             statusComboBox.Control.Validated += _ComboBoxValue_Changed;
                                 cell.Editor = statusComboBox;
                             }
                             else
                             {
-                                //                            cell.Value = XEnum.GetText(palletItem.Status);
-                                cell.Value = pitItem.Pallet.Status.ToText();
+                                cell.Value = palletItem.Status.ToText();
                             }
                             break;
                         case HoldCodeColumnIndex:
-                            if (pitItem.Pallet.Status == PalletStatus.Hold)
+                            if (palletItem.Status == PalletStatus.Hold)
                             {
+                                string holdCodeDescription = _holdCodesProxy.TryGetItem(palletItem.HoldCode, out HoldCodeItem holdCodeItem)
+                                    ? holdCodeItem.Description
+                                    : $"Hold Code {palletItem.HoldCode} not found!";
                                 if (_allowPalletEditing)
                                 {
-
                                     int[] holdCodeValues = _holdCodesProxy.Values.Select(h => h.HoldCode).ToArray();
-                                    if (holdCodeValues.Count() > 0 && _holdCodesProxy.Keys.Contains(pitItem.Pallet.HoldCode))
+                                    if (holdCodeValues.Count() > 0 && _holdCodesProxy.Keys.Contains(palletItem.HoldCode))
                                     {
                                         string[] textValues = _holdCodesProxy.Values.Select(h => h.Description).ToArray();
                                         SourceGrid.Cells.Editors.ComboBox holdCodeComboBox = new SourceGrid.Cells.Editors.ComboBox(typeof(int), holdCodeValues, true);
                                         holdCodeComboBox.Control.FormattingEnabled = true;
-                                        DevAge.ComponentModel.Validator.ValueMapping holdCodeValueMapping = new DevAge.ComponentModel.Validator.ValueMapping();
-                                        holdCodeValueMapping.DisplayStringList = textValues;
-                                        holdCodeValueMapping.ValueList = holdCodeValues;
-                                        holdCodeValueMapping.SpecialList = textValues;
-                                        holdCodeValueMapping.SpecialType = typeof(string);
+                                        DevAge.ComponentModel.Validator.ValueMapping holdCodeValueMapping = new DevAge.ComponentModel.Validator.ValueMapping
+                                        {
+                                            DisplayStringList = textValues,
+                                            ValueList = holdCodeValues,
+                                            SpecialList = textValues,
+                                            SpecialType = typeof(string)
+                                        };
                                         holdCodeValueMapping.BindValidator(holdCodeComboBox);
-                                        cell = new SourceGrid.Cells.Cell(pitItem.Pallet.HoldCode);
+                                        cell = new Cell(palletItem.HoldCode);
                                         holdCodeComboBox.Control.DropDownStyle = ComboBoxStyle.DropDownList;
-                                        //                             statusComboBox.Control.Validated += _ComboBoxValue_Changed;
+//                             statusComboBox.Control.Validated += _ComboBoxValue_Changed;
                                         cell.Editor = holdCodeComboBox;
                                         cell.AddController(_toolTipController);
                                         cell.ToolTipText = _holdCodesProxy[(int)cell.Value].Description;
                                     }
                                     else
                                     {
-                                        cell.Value = pitItem.Pallet.HoldCode.ToText();
+                                        cell.Value = holdCodeDescription;
                                     }
                                 }
                                 else
                                 {
-                                    //                            cell.Value = XEnum.GetText(palletItem.Status);
-                                    cell.Value = pitItem.Pallet.HoldCode.ToText();
+                                    cell.Value = holdCodeDescription;
                                 }
                             }
                             else
@@ -488,30 +513,30 @@ namespace Mss.Views
                             }
                             break;
                         case PalletIDColumnIndex:
-                            cell.Value = pitItem.Pallet.PalletID;
+                            cell.Value = palletItem.PalletID;
                             break;
                         case SkuColumnIndex:
-                            cell.Value = pitItem.Pallet.Sku;
+                            cell.Value = palletItem.Sku;
                             break;
                         case JobIDColumnIndex:
-                            cell.Value = pitItem.Pallet.JobID;
+                            cell.Value = palletItem.JobID;
                             break;
-                        case DestinationOrBuiltOnColumnIndex:
-                            if (_showDestination)
-                            {
-                                cell.Value = pitItem.AssignedCrane == CraneNumber.None
-                                    ? string.Empty
-                                    : pitItem.AssignedCrane.ToText();
-                            }
-                            else
-                            {
-                                cell.Value = pitItem.Pallet.BuiltOn.ToString(Constant.DateTimeFormat);
-                            }
-
-                            break;
-                        case BuiltOnColumnIndex:
-                            cell.Value = pitItem.Pallet.BuiltOn.ToString(Constant.DateTimeFormat);
-                            break;
+//                         case DestinationOrBuiltOnColumnIndex:
+//                             if (_showDestination)
+//                             {
+//                                 cell.Value = pitItem.AssignedCrane == CraneNumber.None
+//                                     ? string.Empty
+//                                     : pitItem.AssignedCrane.ToText();
+//                             }
+//                             else
+//                             {
+//                                 cell.Value = pitItem.Pallet.BuiltOn.ToString(Constant.LongDateTimeFormat24);
+//                             }
+// 
+//                             break;
+//                         case BuiltOnColumnIndex:
+//                             cell.Value = pitItem.Pallet.BuiltOn.ToString(Constant.LongDateTimeFormat24);
+//                             break;
                     }
                     this[rowNumber, columnNumber] = cell;
                 }
@@ -557,8 +582,6 @@ namespace Mss.Views
                 _currentPalletID = cell.DisplayText;
             }
         }
-
-
         private void _ContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
         }

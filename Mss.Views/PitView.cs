@@ -77,8 +77,7 @@ namespace Mss.Views
 
         private void _NavigatorBtnAddItem_Click(object sender, EventArgs e)
         {
-//             palletGrid.Add();
-            XMessageBox.Show(
+            _ = XMessageBox.Show(
                 this,
                 "NOT IMPLEMENTED!",
                 "Error",

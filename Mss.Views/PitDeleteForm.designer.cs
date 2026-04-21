@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PitDeleteForm));
             this._lblMessage = new System.Windows.Forms.Label();
             this.btnNo = new System.Windows.Forms.Button();
             this.btnYes = new System.Windows.Forms.Button();
@@ -44,7 +45,7 @@
             this._lblMessage.Name = "_lblMessage";
             this._lblMessage.Size = new System.Drawing.Size(304, 48);
             this._lblMessage.TabIndex = 10;
-            this._lblMessage.Text = "Do you want to Delete Pallet 0000000 from the Inbound PIT?";
+            this._lblMessage.Text = "Do you want to Delete Pallet 9999 from the Xxxxxxxxxx PIT?";
             this._lblMessage.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // btnNo
@@ -57,7 +58,7 @@
             this.btnNo.TabIndex = 12;
             this.btnNo.Text = "No";
             this.btnNo.UseVisualStyleBackColor = true;
-            this.btnNo.Click += new System.EventHandler(this.btnNo_Click);
+            this.btnNo.Click += new System.EventHandler(this._BtnNo_Click);
             // 
             // btnYes
             // 
@@ -68,11 +69,12 @@
             this.btnYes.TabIndex = 11;
             this.btnYes.Text = "Yes";
             this.btnYes.UseVisualStyleBackColor = true;
-            this.btnYes.Click += new System.EventHandler(this.btnYes_Click);
+            this.btnYes.Click += new System.EventHandler(this._BtnYes_Click);
             // 
             // pictureBox1
             // 
-//             this.pictureBox1.Image = global::Mss.Views.Properties.Resources.RedMinus48;
+            this.pictureBox1.ErrorImage = null;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(12, 12);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(48, 48);
@@ -80,7 +82,7 @@
             this.pictureBox1.TabIndex = 13;
             this.pictureBox1.TabStop = false;
             // 
-            // InboundPitDeleteDlg
+            // PitDeleteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -91,9 +93,9 @@
             this.Controls.Add(this.btnNo);
             this.Controls.Add(this.btnYes);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Name = "InboundPitDeleteDlg";
+            this.Name = "PitDeleteForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Confirm Delete";
+            this.Text = "Confirm Delete PIT Pallet";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 

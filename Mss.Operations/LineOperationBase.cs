@@ -102,16 +102,14 @@ namespace Mss.Operations
 
         protected bool QueryMesPallet(
             string palletID,
-            bool requestDestination,
-            out PalletDestination destination,
+            out bool sendToConsoleArea,
             out PalletItem palletItem,
             out string fault)
         {
-            return MesInterface.TryFetchPalletItem(
+            return MesInterface.TryFetchPalletItemAtAS1andAS2(
                 OperationCode,
                 palletID,
-                requestDestination,
-                out destination,
+                out sendToConsoleArea,
                 out palletItem,
                 out fault);
         }

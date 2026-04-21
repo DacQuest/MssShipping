@@ -46,8 +46,8 @@ namespace Mss.Views
         private PalletStatus _newStatus = PalletStatus.Invalid;
         private int _newHoldCode = 0;
         private string _newComment = string.Empty;
-        private bool _unmarkAudits = false;
-        private bool _markAudits = false;
+        private bool _unmarkBulkAudits = false;
+        private bool _markBulkAudits = false;
 
         private Search _lastSearch = new Search();
 
@@ -93,7 +93,8 @@ namespace Mss.Views
 //             _cmbPalletStatus.AddEnumItem(PalletStatus.Stack);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Unknown);
 
-            _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+//             _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+            _PopulateHoldCodeComboBox(_cmbHoldCode);
 
             _initializingControl = false;
 
@@ -123,12 +124,15 @@ namespace Mss.Views
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Hold);
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Reserved);
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Purge);
-//             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Stack);
+            //             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Stack);
+
+            _cmbNewHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+            _PopulateHoldCodeComboBox(_cmbNewHoldCode);
 
             _lblNewStatus.Visible = _allowBulkEditing;
             //lblNewHoldCode.Visible = _allowBulkEditing;
             _chkBulkMarkAudit.Visible = _allowBulkEditing;
-            _chkUnmarkAudit.Visible = _allowBinEditing;
+            _chkBulkUnmarkAudit.Visible = _allowBinEditing;
             //cmbNewHoldCode.Visible = _allowBulkEditing;
             _cmbNewStatus.Visible = _allowBulkEditing;
             //lblNewComment.Visible = _allowBulkEditing;
@@ -138,12 +142,12 @@ namespace Mss.Views
             //lblRemainingCharacters.Visible = _allowBulkEditing;
             //chkOverwriteComments.Visible = _allowBulkEditing;
 
-            _markAudits = false;
-            _unmarkAudits = false;
+            _markBulkAudits = false;
+            _unmarkBulkAudits = false;
             _chkBulkMarkAudit.Checked = false;
-            _chkUnmarkAudit.Checked = false;
+            _chkBulkUnmarkAudit.Checked = false;
             _chkBulkMarkAudit.Visible = false;
-            _chkUnmarkAudit.Visible = false;
+            _chkBulkUnmarkAudit.Visible = false;
 //             grpBulkAudits.Enabled = false;
 //             grpBulkAudits.Visible = false;
 //             grpNewStatus.Enabled = true;
@@ -243,11 +247,11 @@ namespace Mss.Views
             switch (status)
             {
                 case PalletStatus.Hold:
-                    needComment = string.IsNullOrWhiteSpace(palletItem.Comment);
+                    needComment = palletItem.Comment.IsNullOrWhiteSpace();
                     needHoldCode = palletItem.HoldCode == 0;
                     break;
                 case PalletStatus.Purge:
-                    needComment = string.IsNullOrWhiteSpace(palletItem.Comment);
+                    needComment = palletItem.Comment.IsNullOrWhiteSpace();
                     break;
             }
             string message = null;
@@ -408,15 +412,19 @@ namespace Mss.Views
 
         private void _HoldCodesProxy_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
-            _cmbHoldCode.Items.Clear();
-            _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+//             _cmbHoldCode.Items.Clear();
+//             _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+            _PopulateHoldCodeComboBox(_cmbHoldCode);
+            _PopulateHoldCodeComboBox(_cmbNewHoldCode);
             _PopulateControls(_workingBinItem);
         }
 
         private void _HoldCodesProxy_CollectionRefreshed(Object sender, EventArgs e)
         {
-            _cmbHoldCode.Items.Clear();
-            _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+//             _cmbHoldCode.Items.Clear();
+//             _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+            _PopulateHoldCodeComboBox(_cmbHoldCode);
+            _PopulateHoldCodeComboBox(_cmbNewHoldCode);
             _PopulateControls(_workingBinItem);
         }
 
@@ -637,7 +645,7 @@ namespace Mss.Views
             List<string> skus = _storageProxy.GetAllSkusInStorage();
             SelectSkuForm form = new SelectSkuForm(skus);
             if (form.ShowDialog(this) != DialogResult.OK
-                || string.IsNullOrWhiteSpace(form.Sku))
+                || form.Sku.IsNullOrWhiteSpace())
             {
                 return;
             }
@@ -657,6 +665,12 @@ namespace Mss.Views
             _ShowSearchResults(searchResults);
         }
 
+        private void _PopulateHoldCodeComboBox(ComboBox combobox)
+        {
+            combobox.Items.Clear();
+            combobox.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+        }
+
         private void _PopulateControls(BinItem originalBinItem)
         {
             _workingBinItem.Copy(originalBinItem);
@@ -672,7 +686,7 @@ namespace Mss.Views
             _cmbBinStatus.SelectEnumItem(_workingBinItem.BinStatus);
             if (_workingBinItem.StoredOn > Constant.BeginningOfTime)
             {
-                _lblStoredOn.Text = _workingBinItem.StoredOn.ToString(Constant.DateTimeFormat);
+                _lblStoredOn.Text = _workingBinItem.StoredOn.ToString(Constant.DisplayDateTimeFormat12);
                 TimeSpan age = DateTime.Now - _workingBinItem.StoredOn;
                 _lblAge.Text = age.TotalHours < 1
                     ? "<1 Hour"
@@ -685,20 +699,20 @@ namespace Mss.Views
                 _lblStoredOn.Text = string.Empty;
                 _lblAge.Text = string.Empty;
             }
-            //             if (_workingBinItem.OfflineReason == BinOfflineReason.None)
-            //             {
-            //                 lblOfflineReason.Text = string.Empty;
-            //             }
-            //             else
-            //             {
-            //                 lblOfflineReason.Text = _workingBinItem.OfflineReason.ToText();
-            //             }
+//             if (_workingBinItem.OfflineReason == BinOfflineReason.None)
+//             {
+//                 lblOfflineReason.Text = string.Empty;
+//             }
+//             else
+//             {
+//                 lblOfflineReason.Text = _workingBinItem.OfflineReason.ToText();
+//             }
 
             _chkPickOnly.Checked = _workingBinItem.PickOnly;
             _chkDisabled.Checked = _workingBinItem.Disabled;
             // Pallet Data
             PalletItem palletItem = _workingBinItem.Pallet;
-            if (palletItem.PalletID != Constant.NoPalletID)
+            if (!palletItem.PalletID.ValidPalletID())
             {
 
 //                 if (palletItem.PalletID == Constant.NoReadPalletID)
@@ -738,15 +752,16 @@ namespace Mss.Views
                     }
                 }
                 _lblSku.Text = palletItem.Sku;
-                _lblBuiltOn.Text = palletItem.BuiltOn.ToText();
+                _lblJobID.Text = palletItem.JobID;
+                _lblBuiltOn.Text = palletItem.BuiltOn.ToString(Constant.DisplayDateTimeFormat12);
                 _txtComment.Text = palletItem.Comment;
                 _lblComment.Text = palletItem.Comment;
-                _lblCommentLength.Text = $"{Constant.CommentLength - palletItem.Comment.Length}";
+                _lblCommentRemainingCharacters.Text = $"{Constant.CommentLength - palletItem.Comment.Length}";
             }
             else
             {
                 _lblPalletID.Text = string.Empty;
-                _lblPalletID.BackColor = SystemColors.Window;
+//                 _lblPalletID.BackColor = SystemColors.Window;
                 _lblVehicleRow.Text = string.Empty;
                 _cmbPalletStatus.SelectedIndex = -1;
                 _lblPalletStatus.Text = string.Empty;
@@ -754,9 +769,10 @@ namespace Mss.Views
                 _lblHoldCode.Text = string.Empty;
                 _lblBuiltOn.Text = string.Empty;
                 _lblSku.Text = string.Empty;
+                _lblJobID.Text = string.Empty;
                 _txtComment.Text = string.Empty;
                 _txtComment.Enabled = false;
-                _lblCommentLength.Text = string.Empty;
+                _lblCommentRemainingCharacters.Text = string.Empty;
             }
 
             bool allowEditing = !_workingBinItem.NotUsable && _allowBinEditing;
@@ -785,7 +801,7 @@ namespace Mss.Views
 //                     || palletItem.PalletID == Constant.NoPalletID);
             _navigatorBtnFillBin.Enabled = !_workingBinItem.NotUsable
                 && (_workingBinItem.BinStatus == BinStatus.Empty
-                    || palletItem.PalletID.IsNullOrWhiteSpace());
+                    || !palletItem.PalletID.ValidPalletID());
         }
 
         private void _ByDateTimeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1016,32 +1032,35 @@ namespace Mss.Views
 
         private void _NavigatorBtnFillBin_Click(object sender, EventArgs e)
         {
-            QuickBinFillForm form = new QuickBinFillForm("Fill Bin");
-            if (form.ShowDialog(this) == DialogResult.OK)
+            using (QuickBinFillForm form = new QuickBinFillForm(
+                "Fill Bin",
+                _originalBinItem.BinSize == BinSize.Small))
             {
-                if (!MesInterface.TryFetchPalletItem(
-                    OperationCode.Unknown,
-                    form.PalletID,
-                    out PalletItem palletItem,
-                    out string fault))
+                if (form.ShowDialog(this) == DialogResult.OK)
                 {
-                    _ = XMessageBox.Show(
-                        this,
-                        fault,
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                    return;
+                    if (!MesInterface.TryFetchPalletItem(
+                        OperationCode.Unknown,
+                        form.PalletID,
+                        out PalletItem palletItem,
+                        out string fault))
+                    {
+                        _ = XMessageBox.Show(
+                            this,
+                            fault,
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        return;
+                    }
+                    _originalBinItem.BinStatus = BinStatus.Pickable;
+                    _originalBinItem.StoredOn = DateTime.Now;
+                    _originalBinItem.Pallet = palletItem;
+                    _ = _storageProxy.SetAt(_originalBinItem.NodeIndex, _originalBinItem);
+                    _ = _upperPitProxy.Remove(palletItem.PalletID);
+                    _ = _lowerPitProxy.Remove(palletItem.PalletID);
+                    _PopulateControls(_originalBinItem);
                 }
-                _originalBinItem.BinStatus = BinStatus.Pickable;
-                _originalBinItem.StoredOn = DateTime.Now;
-                _originalBinItem.Pallet = palletItem;
-                _ = _storageProxy.SetAt(_originalBinItem.NodeIndex, _originalBinItem);
-                _ = _upperPitProxy.Remove(palletItem.PalletID);
-                _ = _lowerPitProxy.Remove(palletItem.PalletID);
-                _PopulateControls(_originalBinItem);
             }
-            form.Dispose();
         }
 
         private void _TxtComment_TextChanged(object sender, EventArgs e)
@@ -1049,7 +1068,7 @@ namespace Mss.Views
             PalletItem palletItem = _workingBinItem.Pallet;
             palletItem.Comment = _txtComment.Text;
             _workingBinItem.Pallet = palletItem;
-            _lblCommentLength.Text = $"{Constant.CommentLength - _txtComment.Text.Length}";
+            _lblCommentRemainingCharacters.Text = $"{Constant.CommentLength - _txtComment.Text.Length}";
         }
 
         private void _BtnPickSku_Click(object sender, EventArgs e)
@@ -1278,8 +1297,8 @@ namespace Mss.Views
                         _newHoldCode,
                         _newComment,
                         false))
-                    || _markAudits
-                    || _unmarkAudits);
+                    || _markBulkAudits
+                    || _unmarkBulkAudits);
 
             _btnConvert.Enabled = enabled;
             _btnConvertAll.Enabled = enabled;
@@ -1334,10 +1353,10 @@ namespace Mss.Views
                     isStatusConversion = true;
 
                 }
-                else if (_markAudits || _unmarkAudits)
+                else if (_markBulkAudits || _unmarkBulkAudits)
                 {
                     isStatusConversion = false;
-                    string auditString = _markAudits ? "mark" : "unmark";
+                    string auditString = _markBulkAudits ? "mark" : "unmark";
                     message = $"Do you want to {auditString} Bin {searchResult.LocationText} for Audit?";
                 }
                 form.SetMessage(message);
@@ -1355,7 +1374,7 @@ namespace Mss.Views
                     }
                     else
                     {
-                        string auditString = _markAudits ? "mark" : "unmark";
+                        string auditString = _markBulkAudits ? "mark" : "unmark";
                         messageBoxString = $"Do you want to " + auditString + $" all {searchResults.Count} pallets Audit?";
                     }
                     if (XMessageBox.Show(
@@ -1374,8 +1393,8 @@ namespace Mss.Views
                                 _newHoldCode,
                                 _newComment,
                                 _chkOverwriteComments.Checked,
-                                _markAudits,
-                                _unmarkAudits);
+                                _markBulkAudits,
+                                _unmarkBulkAudits);
                             if (!XMessaging.SyncPublish(
                                 out BulkPalletStatusConversionMessageData responseMessageData,
                                 15000,
@@ -1453,26 +1472,21 @@ namespace Mss.Views
                             BinItem newBinItem = XDataItem.Clone(originalBinItem);
                             PalletItem pallet = newBinItem.Pallet;
                             pallet.Status = _newStatus;
-//                         if (!String.IsNullOrWhiteSpace(_newComment)
-//                             && chkOverwriteComments.Checked)
-//                         {
-//                             pallet.Comment = _newComment;
-//                         }
                             if (_newStatus == PalletStatus.Invalid)
                             {
                                 pallet.Status = originalBinItem.Pallet.Status;
                             }
-                            if (!string.IsNullOrWhiteSpace(_newComment)
+                            if (!_newComment.IsNullOrWhiteSpace()
                                 && (_chkOverwriteComments.Checked
-                                    || string.IsNullOrWhiteSpace(pallet.Comment)))
+                                    || pallet.Comment.IsNullOrWhiteSpace()))
                             {
                                 pallet.Comment = _newComment;
                             }
-                            if (_markAudits)
+                            if (_markBulkAudits)
                             {
                                 newBinItem.Audit = true;
                             }
-                            else if (_unmarkAudits)
+                            else if (_unmarkBulkAudits)
                             {
                                 newBinItem.Audit = false;
                             }
@@ -1539,12 +1553,12 @@ namespace Mss.Views
             switch (palletStatus)
             {
                 case PalletStatus.Hold:
-                    needComment = string.IsNullOrWhiteSpace(comment);
-                    needHoldCode = holdCode == 0;
+                    needComment = comment.IsNullOrWhiteSpace();
+                    needHoldCode = holdCode <= 0;
                     break;
                 case PalletStatus.Unknown:
                 case PalletStatus.Purge:
-                    needComment = string.IsNullOrWhiteSpace(comment);
+                    needComment = comment.IsNullOrWhiteSpace();
                     break;
             }
             string message = null;
@@ -1596,9 +1610,9 @@ namespace Mss.Views
                     searchPallet.Status.ToText(),
                     _newStatus.ToText());
             }
-            else if (_markAudits || _unmarkAudits)
+            else if (_markBulkAudits || _unmarkBulkAudits)
             {
-                string auditString = _markAudits ? "mark" : "unmark";
+                string auditString = _markBulkAudits ? "mark" : "unmark";
                 message = $"Do you want to " + auditString + $" Pallet {searchPallet.PalletID} Audit?";
             }
             if (XMessageBox.Show(
@@ -1613,11 +1627,6 @@ namespace Mss.Views
                 BinItem newBinItem = XDataItem.Clone(originalBinItem);
                 PalletItem pallet = newBinItem.Pallet;
                 pallet.Status = _newStatus;
-//                 if (!_newComment.IsNullOrWhiteSpace()
-//                     && _chkOverwriteComments.Checked)
-//                 {
-//                     pallet.Comment = _newComment;
-//                 }
                 if (_newStatus == PalletStatus.Invalid)
                 {
                     pallet.Status = originalBinItem.Pallet.Status;
@@ -1628,11 +1637,11 @@ namespace Mss.Views
                 {
                     pallet.Comment = _newComment;
                 }
-                if (_markAudits)
+                if (_markBulkAudits)
                 {
                     newBinItem.Audit = true;
                 }
-                else if (_unmarkAudits)
+                else if (_unmarkBulkAudits)
                 {
                     newBinItem.Audit = false;
                 }
@@ -1745,55 +1754,56 @@ namespace Mss.Views
         {
             if (_cmbNewStatus.SelectedIndex > -1)
             {
-                _newStatus = _cmbNewStatus.GetSelectedEnumItem<PalletStatus>();
+                PalletStatus selectedStatus = _cmbNewStatus.GetSelectedEnumItem<PalletStatus>();
+                if (selectedStatus == _newStatus)
+                {
+                    return;
+                }
+                _newStatus = selectedStatus;
                 switch (_newStatus)
                 {
                     case PalletStatus.Invalid:
                         _lblNewComment.Visible = true;
                         _lblRemainingCharacters.Visible = true;
-                        _markAudits = false;
-                        _unmarkAudits = false;
+                        _markBulkAudits = false;
+                        _unmarkBulkAudits = false;
                         _chkBulkMarkAudit.Checked = false;
-                        _chkUnmarkAudit.Checked = false;
+                        _chkBulkUnmarkAudit.Checked = false;
                         _chkBulkMarkAudit.Visible = true;
-                        _chkUnmarkAudit.Visible = true;
+                        _chkBulkUnmarkAudit.Visible = true;
+                        _lblNewHoldCode.Visible = false;
+                        _cmbNewHoldCode.Visible = false;
                         break;
                     case PalletStatus.OK:
-                    case PalletStatus.Hold:
                     case PalletStatus.Purge:
                     case PalletStatus.Reserved:
-//                     case PalletStatus.Stack:
                         _lblNewComment.Visible = true;
                         _lblRemainingCharacters.Visible = true;
-                        _markAudits = false;
-                        _unmarkAudits = false;
+                        _markBulkAudits = false;
+                        _unmarkBulkAudits = false;
                         _chkBulkMarkAudit.Checked = false;
-                        _chkUnmarkAudit.Checked = false;
+                        _chkBulkUnmarkAudit.Checked = false;
                         _chkBulkMarkAudit.Visible = false;
-                        _chkUnmarkAudit.Visible = false;
+                        _chkBulkUnmarkAudit.Visible = false;
+                        _lblNewHoldCode.Visible = false;
+                        _cmbNewHoldCode.Visible = false;
                         break;
-//                     case PalletStatus.Hold:
-//                         _lblNewComment.Visible = true;
-//                         _lblRemainingCharacters.Visible = true;
-//                         _markAudits = false;
-//                         _unmarkAudits = false;
-//                         _chkBulkMarkAudit.Checked = false;
-//                         _chkUnmarkAudit.Checked = false;
-//                         _chkBulkMarkAudit.Visible = false;
-//                         _chkUnmarkAudit.Visible = false;
-//                         break;
-//                     case PalletStatus.QCSort:
-//                         _lblNewComment.Visible = true;
-//                         _lblRemainingCharacters.Visible = true;
-//                         _markAudits = false;
-//                         _unmarkAudits = false;
-//                         _chkBulkMarkAudit.Checked = false;
-//                         _chkUnmarkAudit.Checked = false;
-//                         _chkBulkMarkAudit.Visible = false;
-//                         _chkUnmarkAudit.Visible = false;
-//                         break;
+                    case PalletStatus.Hold:
+                        _lblNewComment.Visible = true;
+                        _lblRemainingCharacters.Visible = true;
+                        _markBulkAudits = false;
+                        _unmarkBulkAudits = false;
+                        _chkBulkMarkAudit.Checked = false;
+                        _chkBulkUnmarkAudit.Checked = false;
+                        _chkBulkMarkAudit.Visible = false;
+                        _chkBulkUnmarkAudit.Visible = false;
+                        _lblNewHoldCode.Visible = true;
+                        _cmbNewHoldCode.Visible = true;
+                        break;
 
                 }
+                _cmbNewHoldCode.SelectedValue = Constant.NoHoldCode;
+                _newHoldCode = 0;
                 _txtNewComment.Clear();
                 _txtNewComment.Visible = true;
                 _chkOverwriteComments.Visible = true;
@@ -1806,13 +1816,12 @@ namespace Mss.Views
                 _lblRemainingCharacters.Visible = false;
                 _txtNewComment.Visible = false;
                 _chkOverwriteComments.Visible = false;
-
-                _markAudits = false;
-                _unmarkAudits = false;
+                _markBulkAudits = false;
+                _unmarkBulkAudits = false;
                 _chkBulkMarkAudit.Checked = false;
-                _chkUnmarkAudit.Checked = false;
+                _chkBulkUnmarkAudit.Checked = false;
                 _chkBulkMarkAudit.Visible = false;
-                _chkUnmarkAudit.Visible = false;
+                _chkBulkUnmarkAudit.Visible = false;
                 _txtNewComment.Clear();
             }
             _EnableConvertButtons();
@@ -1915,55 +1924,73 @@ namespace Mss.Views
         {
             if (_chkBulkMarkAudit.Checked)
             {
-                _chkUnmarkAudit.Checked = false;
-                _unmarkAudits = false;
+                _chkBulkUnmarkAudit.Checked = false;
+                _unmarkBulkAudits = false;
             }
-            _markAudits = _chkBulkMarkAudit.Checked;
+            _markBulkAudits = _chkBulkMarkAudit.Checked;
             _EnableConvertButtons();
         }
 
-        private void _ChkUnmarkAudit_CheckedChanged(object sender, EventArgs e)
+        private void _ChkBulkUnmarkAudit_CheckedChanged(object sender, EventArgs e)
         {
-            if (_chkUnmarkAudit.Checked)
+            if (_chkBulkUnmarkAudit.Checked)
             {
                 _chkBulkMarkAudit.Checked = false;
-                _markAudits = false;
+                _markBulkAudits = false;
             }
-            _unmarkAudits = _chkUnmarkAudit.Checked;
+            _unmarkBulkAudits = _chkBulkUnmarkAudit.Checked;
             _EnableConvertButtons();
         }
 
         private void _lblComment_TextChanged(object sender, EventArgs e)
         {
-            _lblCommentLength.Text = (Constant.CommentLength - _lblComment.Text.Length).ToString();
+            _lblCommentRemainingCharacters.Text = (Constant.CommentLength - _lblComment.Text.Length).ToString();
         }
 
-        //private void chkApplyBulkAudits_CheckedChanged(object sender, EventArgs e)
-        //{
-        //    if (chkApplyBulkAudits.Checked)
-        //    {
-        //        grpBulkAudits.Enabled = true;
-        //        grpBulkAudits.Visible = true;
+        private void _CmbHoldCode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_cmbHoldCode.SelectedItem != null)
+            {
+                PalletItem palletItem = _workingBinItem.Pallet;
+                palletItem.HoldCode = (int)_cmbHoldCode.SelectedValue;
+                _workingBinItem.Pallet = palletItem;
+            }
+        }
 
-        //        grpNewStatus.Enabled = false;
-        //        _newStatus = PalletStatus.Invalid;
-        //        _newHoldCode = 0;
-        //        _newComment = string.Empty;
-        //        cmbNewHoldCode.SelectedIndex = -1;
-        //        cmbNewStatus.SelectedIndex = -1;
-        //        txtNewComment.Text = string.Empty;
-        //    }
-        //    else
-        //    {
-        //        grpBulkAudits.Enabled = false;
-        //        grpBulkAudits.Visible = false;
-        //        _markAudits = false;
-        //        _unmarkAudits = false;
-        //        chkBulkMarkAudit.Checked = false;
-        //        chkUnmarkAudit.Checked = false;
-        //        grpNewStatus.Enabled = true;
-        //    }
-        //    _EnableConvertButtons();
-        //}
+        private void _CmbNewHoldCode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_cmbNewHoldCode.SelectedItem != null)
+            {
+                _newHoldCode = (int)_cmbNewHoldCode.SelectedValue;
+                _EnableConvertButtons();
+            }
+        }
+
+//         private void chkApplyBulkAudits_CheckedChanged(object sender, EventArgs e)
+//         {
+//             if (chkApplyBulkAudits.Checked)
+//             {
+//                 grpBulkAudits.Enabled = true;
+//                 grpBulkAudits.Visible = true;
+//                 grpNewStatus.Enabled = false;
+//                 _newStatus = PalletStatus.Invalid;
+//                 _newHoldCode = 0;
+//                 _newComment = string.Empty;
+//                 cmbNewHoldCode.SelectedIndex = -1;
+//                 cmbNewStatus.SelectedIndex = -1;
+//                 txtNewComment.Text = string.Empty;
+//             }
+//             else
+//             {
+//                 grpBulkAudits.Enabled = false;
+//                 grpBulkAudits.Visible = false;
+//                 _markAudits = false;
+//                 _unmarkAudits = false;
+//                 chkBulkMarkAudit.Checked = false;
+//                 chkUnmarkAudit.Checked = false;
+//                 grpNewStatus.Enabled = true;
+//             }
+//             _EnableConvertButtons();
+//         }
     }
 }

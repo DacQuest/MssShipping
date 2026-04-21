@@ -2,10 +2,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Dapper.Contrib.Extensions;
 using MicroOrm.Dapper.Repositories.Attributes;
+using System;
 
 namespace Mss.Data.Pocos
 {
-    [Dapper.Contrib.Extensions.Table("SHIP_BroadcastDtl")]
+    [Dapper.Contrib.Extensions.Table("SHIP_BroadcastDetail")]
     public class BroadcastDetail
     {
         [Key]
@@ -24,5 +25,16 @@ namespace Mss.Data.Pocos
 
         [Column("PickModeValue")]
         public string PickModeKey { get; set; }
+
+//         [Column("EventDTTM")]
+//         public DateTime? EventTimestamp { get; set; }
+// 
+//         [Column("ProdDate")]
+//         public DateTime? ProductionTimestamp { get; set; }
+// 
+//         public string Shift { get; set; }
+// 
+//         public int? Period { get; set; }
+
     }
 }

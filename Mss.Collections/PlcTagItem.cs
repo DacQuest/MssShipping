@@ -97,7 +97,7 @@ namespace Mss.Collections
                 string text = "Unknown";
                 if (LastUpdatedOn > Constant.BeginningOfTime)
                 {
-                    text = LastUpdatedOn.ToString(Constant.DateTimeFormat);
+                    text = LastUpdatedOn.ToString(Constant.LongDateTimeFormat24);
                 }
                 return text;
             }

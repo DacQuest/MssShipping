@@ -158,7 +158,7 @@ namespace Mss.Operations
                     string sql = string.Format(
                         @"INSERT INTO [PalletEventTracker] ([OccurredOn],[PalletID],[Sku],[JobID],[PalletStatus],[PalletStatusText],[OperationCode],[OperationCodeText],[PalletEvent],[PalletEventText],[MoveCommand],[Comment])
                                                     VALUES ('{0}',       '{1}',     '{2}','{3}'   {4},           '{5}',             {6},            '{7}',              {8},          '{9}',            {10},         '{11}');",
-                        DateTime.Now.ToString(Constant.DateTimeFormat),
+                        DateTime.Now.ToString(Constant.LongDateTimeFormat24),
                         palletID,
                         sku,
                         jobID,

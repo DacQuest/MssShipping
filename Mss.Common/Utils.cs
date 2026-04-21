@@ -13,11 +13,19 @@ namespace Mss.Common
     {
 
         public const string PalletIDValidatorName = "PalletIDValidator";
+        public const string FrontPalletIDValidatorName = "Row1PalletIDValidator";
+        public const string RearPalletIDValidatorName = "Row2PalletIDValidator";
         public static bool ValidPalletID(this string palletID)
             => XValueValidator.Validate(PalletIDValidatorName, palletID);
 
-//         public static bool ValidJobID(this string jobID)
-//             => !jobID.IsNullOrWhiteSpace();
+        public static bool ValidFrontPalletID(this string palletID)
+            => XValueValidator.Validate(FrontPalletIDValidatorName, palletID);
+
+        public static bool ValidRearPalletID(this string palletID)
+            => XValueValidator.Validate(RearPalletIDValidatorName, palletID);
+
+        //         public static bool ValidJobID(this string jobID)
+        //             => !jobID.IsNullOrWhiteSpace();
 
         public static bool ValidSku(this string sku) //??? USE XValueValidator?
             => !sku.IsNullOrWhiteSpace();

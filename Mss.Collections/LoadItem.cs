@@ -232,7 +232,7 @@ namespace Mss.Collections
         //        }
 
         public string PickedOnText => PickedOn > Constant.BeginningOfTime
-            ? PickedOn.ToString(Constant.DateTimeFormat)
+            ? PickedOn.ToString(Constant.LongDateTimeFormat24)
             : string.Empty;
 
         public string GetStateDetails(int leadingSpaceCount)

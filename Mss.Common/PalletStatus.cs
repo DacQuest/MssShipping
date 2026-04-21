@@ -9,7 +9,7 @@ namespace Mss.Common
     [Flags]
     public enum PalletStatus
     {
-        Invalid  = 0x00,  //!!! Dave wants -1
+        Invalid  = 0x00,
         OK       = 0x01,
         Hold     = 0x02,
         Reserved = 0x04,

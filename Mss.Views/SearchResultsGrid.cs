@@ -330,7 +330,7 @@ namespace Mss.Views
                         case BuiltOnColumnIndex:
                             if (palletItem.BuiltOn > Constant.BeginningOfTime)
                             {
-                                cell.Value = palletItem.BuiltOn.ToString(Constant.DateTimeFormat);
+                                cell.Value = palletItem.BuiltOn.ToString(Constant.LongDateTimeFormat24);
                             }
                             else
                             {

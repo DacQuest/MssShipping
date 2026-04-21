@@ -22,12 +22,12 @@ namespace Mss.Views
             _lblMessage.Text = $"Do you want to Delete Pallet {palletID} from the {pitName} PIT?";
         }
 
-        private void btnYes_Click(object sender, EventArgs e)
+        private void _BtnYes_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
         }
 
-        private void btnNo_Click(object sender, EventArgs e)
+        private void _BtnNo_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
         }

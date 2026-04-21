@@ -23,7 +23,7 @@ namespace Mss.Operations
                     @"INSERT INTO {0} (PurgedOn,PalletID,Sku,  JobID, HoldCode,BuiltOn, Comment,)
                       VALUES          ('{1}',   '{2}',   '{3}','{4}', {5},     {6},     '{7}');",
                     Constant.PurgePalletsTableName,
-                    DateTime.Now.ToString(Constant.DateTimeFormat),
+                    DateTime.Now.ToString(Constant.LongDateTimeFormat24),
                     palletItem.PalletID,
                     palletItem.Sku,
                     palletItem.JobID,

@@ -70,7 +70,6 @@
     <Compile Include="LoadTrailerMessageData.cs" />
     <Compile Include="OperationCode.cs" />
     <Compile Include="Out.cs" />
-    <Compile Include="PalletDestination.cs" />
     <Compile Include="PalletStatus.cs" />
     <Compile Include="PickMode.cs" />
     <Compile Include="PitCode.cs" />

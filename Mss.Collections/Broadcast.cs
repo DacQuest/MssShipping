@@ -239,7 +239,7 @@ namespace Mss.Collections
             try
             {
                 int activeCount = this.Where(b => b.Value.Active).Count();
-                if (activeCount >= (int)(ItemCount * 0.95F))
+                if (activeCount >= (int)(ItemCount * 0.94F)) // allows for at least 108 records
                 {
                     int countToPurge = activeCount - (int)(ItemCount * 0.8F);
                     IEnumerable<BroadcastItem> listToPurge = Values

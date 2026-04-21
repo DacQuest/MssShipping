@@ -4,8 +4,12 @@ using DacQuest.DFX.Core.DataItems;
 using DacQuest.DFX.Core.DataItems.Collections;
 using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Core.SystemEvents;
+using DevExpress.CodeParser;
+using DevExpress.XtraCharts.Native;
+using DevExpress.XtraReports.UI;
 using Mss.Collections;
 using Mss.Common;
+using Mss.Data.Pocos;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -192,15 +196,16 @@ namespace Mss.Data
 
         public void ReceiveBroadcast(List<BroadcastItem> broadcastItems)
         {
+            if (broadcastItems.Count() == 0)
+            {
+                return;
+            }
+
             _LockAll();
             int largestRotationReceived = _systemSettings.LargestRotationReceived;
             bool touch = false;
             try
             {
-                if (broadcastItems.Count() == 0)
-                {
-                    return;
-                }
                 _broadcast.PurgeOldBroadcast();
                 foreach (BroadcastItem broadcastItem in broadcastItems)
                 {
@@ -281,6 +286,24 @@ namespace Mss.Data
                 availableLevel = preferredLevel;
             }
             return availableLevel != Levels.None;
+        }
+
+        public bool TryFindAssignmentPitPalletByJobID(
+            string jobID,
+            out PitItem pitItem)
+        {
+            _LockAll();
+            try
+            {
+                pitItem = _assignmentPit
+                    .Values
+                    .FirstOrDefault(p => p.Pallet.JobID == jobID);
+                return pitItem != null;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
         }
 
         private int _GetAssignmentPitCodeCount(PitCode pitCode)
@@ -373,6 +396,35 @@ namespace Mss.Data
                 return (level == Levels.Upper)
                     ? _upperPit.TryGetItem(palletID, out pitItem)
                     : _lowerPit.TryGetItem(palletID, out pitItem);
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        public bool TryFindPitPalletByJobID(
+            Levels level,
+            string jobID,
+            out PitItem pitItem)
+        {
+            XArgumentChecker.ThrowIfNotContainedIn(
+                level,
+                nameof (level),
+                new Levels[] { Levels.Lower, Levels.Upper });
+
+            _LockAll();
+            try
+            {
+                Pit pit = level == Levels.Upper
+                    ? _upperPit
+                    : (Pit)_lowerPit;
+
+
+                pitItem = pit
+                    .Values
+                    .FirstOrDefault(p => p.Pallet.JobID == jobID);
+                return pitItem != null;
             }
             finally
             {
@@ -914,11 +966,10 @@ namespace Mss.Data
             moveCommand = Constant.NoMoveCommand;
             extendedState = string.Empty;
 
-            if (!MesInterface.TryFetchPalletItem(
+            if (!MesInterface.TryFetchPalletItemAtAS1andAS2(
                 operationCode,
                 palletID,
-                true,
-                out PalletDestination destination,
+                out bool sendToConsoleArea,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -1010,11 +1061,10 @@ namespace Mss.Data
             moveCommand = Constant.NoMoveCommand;
             extendedState = string.Empty;
 
-            if (!MesInterface.TryFetchPalletItem(
+            if (!MesInterface.TryFetchPalletItemAtAS1andAS2(
                 operationCode,
                 palletID,
-                true,
-                out PalletDestination destination,
+                out bool sendToConsoleArea,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -1047,8 +1097,6 @@ namespace Mss.Data
             if (!MesInterface.TryFetchPalletItem(
                 operationCode,
                 palletID,
-                true,
-                out PalletDestination destination,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -1087,8 +1135,6 @@ namespace Mss.Data
             if (!MesInterface.TryFetchPalletItem(
                 operationCode,
                 palletID,
-                true,
-                out PalletDestination destination,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -2360,8 +2406,6 @@ namespace Mss.Data
             if (!MesInterface.TryFetchPalletItem(
                 operationCode,
                 palletID,
-                true,
-                out PalletDestination destination,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -2453,8 +2497,6 @@ namespace Mss.Data
             if (!MesInterface.TryFetchPalletItem(
                 operationCode,
                 palletID,
-                true,
-                out PalletDestination destination,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -2552,8 +2594,6 @@ namespace Mss.Data
             if (!MesInterface.TryFetchPalletItem(
                 operationCode,
                 palletID,
-                true,
-                out PalletDestination destination,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -2873,7 +2913,7 @@ namespace Mss.Data
                     @"INSERT INTO SHIP_ManifestHdr (ManifestID, Trailer_Nbr, Ship_DT) VALUES ('{0}','{1}','{2}'); SELECT Convert(BigInt, SCOPE_IDENTITY());",
                     loadNumber,
                     trailerID,
-                    now.ToString(Constant.DateTimeFormat));
+                    now.ToString(Constant.LongDateTimeFormat24));
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
@@ -3304,7 +3344,7 @@ namespace Mss.Data
                 }
                 else
                 {
-                    if (string.IsNullOrWhiteSpace(error))
+                    if (error.IsNullOrWhiteSpace())
                     {
                         XSystemEvent.Publish(
                             "ReleaseBroadcast",
@@ -3637,9 +3677,9 @@ namespace Mss.Data
                     {
                         newBinItem.Audit = false;
                     }
-                    if (!string.IsNullOrWhiteSpace(newComment)
+                    if (!newComment.IsNullOrWhiteSpace()
                         && (messageData.OverwriteComment
-                            || string.IsNullOrWhiteSpace(palletItem.Comment)))
+                            || palletItem.Comment.IsNullOrWhiteSpace()))
                     {
                         palletItem.Comment = newComment;
                     }
@@ -3659,13 +3699,317 @@ namespace Mss.Data
 
         #endregion
 
+        #region MesInterface and Service
 
+        public void ProcessStatusChangeRequests(
+            IEnumerable<StatusChangeQueue> palletStatusChangeQueueEntries)
+        {
+            _LockAll();
+            try
+            {
+                foreach (StatusChangeQueue entry in palletStatusChangeQueueEntries)
+                {
+                    StatusChange statusChange = entry.StatusChange;
+                    if (_ChangeStoragePalletStatus(statusChange, out string error)
+                        || _ChangePitPalletStatus(Levels.Upper, statusChange, out error)
+                        || _ChangePitPalletStatus(Levels.Lower, statusChange, out error)
+                        || _ChangeAssignmentPitPalletStatus(statusChange, out error))
+                    {
+                        entry.Error = null;
+                        entry.Processed = true;
+                        entry.ProcessedOn = DateTime.Now;
+                    }
+                    else
+                    {
+                        if (error != null)
+                        {
+                            XSystemEvent.Publish(
+                                Constant.PalletStatusChangeEventContext,
+                                XSystemEventLevel.Error,
+                                error + $" Status Change ChangeID {statusChange.ChangeID}.");
+                        }
+                        else
+                        {
+                            error = $"Pallet for StatusChangeQueue Entry QueueID {entry.QueueID} was not found in Storage or PIT. Queue Entry not processed.";
+                            XSystemEvent.Publish(
+                                Constant.PalletStatusChangeEventContext,
+                                XSystemEventLevel.Error,
+                                error);
+                            error = $"Pallet was not found in Storage or PIT. Queue Entry not processed.";
+                        }
+                        entry.Processed = false;
+                        entry.ProcessedOn = DateTime.Now;
+                        entry.Error = error;
+                    }
+                }
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
 
+        private bool _ChangeStoragePalletStatus(
+            StatusChange statusChange,
+            out string error)
+        {
+            error = null; // has to default to null for db access reasons
 
+            if ((!statusChange.JobID.IsNullOrWhiteSpace()
+                    && _storage.TryFindBinByJobID(statusChange.JobID, out BinItem binItem))
+                || (!statusChange.PalletID.IsNullOrWhiteSpace()
+                    && _storage.TryFindBinByPalletID(statusChange.PalletID, out binItem)))
+            {
+                // binItem != null is guaranteed here
+                PalletItem palletItem = binItem.Pallet;
 
+                if (statusChange.PalletStatus == PalletStatus.Invalid
+                    || statusChange.PalletStatus == PalletStatus.Unknown)
+                {
+                    error = $"Cannot set Status of Storage Pallet {palletItem.PalletID} to {statusChange.PalletStatus.ToText()}";
+                    return false;
+                }
 
+                if (palletItem.IsStack)
+                {
+                    error = $"StatusChange Change ID {statusChange.ChangeID}. Cannot change the Pallet Status of a Stack.";
+                    return false;
+                }
+                if (statusChange.PalletStatus == PalletStatus.Hold)
+                {
+                    if (statusChange.HoldCode <= Constant.NoHoldCode)
+                    {
+                        error = $"StatusChange HeaderID {statusChange.ChangeID}. HoldCode not valid for Hold Status.";
+                        return false;
+                    }
+                    else
+                    {
+                        palletItem.HoldCode = statusChange.HoldCode;
+                    }
+                }
+                palletItem.Status = statusChange.PalletStatus;
+                if (!statusChange.Comment.IsNullOrWhiteSpace())
+                {
+                    palletItem.Comment = statusChange.Comment;
+                }
+                binItem.Pallet = palletItem;
+                _storage[binItem.NodeIndex] = binItem;
+                return true;
+            }
+            error = null;
+            return false;
+        }
 
+        private bool _ChangePitPalletStatus(
+            Levels level,
+            StatusChange statusChange,
+            out string error)
+        {
+            error = null; // has to default to null for db access reasons
 
+            Pit pit = level == Levels.Upper
+                ? _upperPit
+                : (Pit)_lowerPit;
+
+            if ((!statusChange.JobID.IsNullOrWhiteSpace()
+                    && TryFindPitPalletByJobID(level, statusChange.JobID, out PitItem pitItem))
+                || (!statusChange.PalletID.IsNullOrWhiteSpace()
+                    && pit.TryGetItem(statusChange.PalletID, out pitItem)))
+            {
+                // pitItem != null is guaranteed here
+                PalletItem palletItem = pitItem.Pallet;
+                if (palletItem.IsStack)
+                {
+                    error = $"Cannot change the Pallet Status of PIT Stack {palletItem.PalletID}.";
+                    return false;
+                }
+                PalletStatus newStatus = statusChange.PalletStatus;
+                if (newStatus == PalletStatus.Invalid
+                    || newStatus == PalletStatus.Unknown)
+                {
+                    error = $"Cannot set Status of {level.ToText()} PIT Pallet {palletItem.PalletID} to {newStatus.ToText()}";
+                    return false;
+                }
+                switch (pitItem.PitCode)
+                {
+                    case PitCode.Assigned1:
+                    case PitCode.Assigned2:
+                    case PitCode.Assigned3:
+                    case PitCode.Assigned4:
+                        if (newStatus == PalletStatus.Purge)
+                        {
+                            palletItem.Status = newStatus;
+                            palletItem.HoldCode = Constant.NoHoldCode;
+                            if (!statusChange.Comment.IsNullOrWhiteSpace())
+                            {
+                                palletItem.Comment = statusChange.Comment;
+                            }
+                            pit.Set(level, palletItem, PitCode.Purge);
+                            return true;
+                        }
+                        else if (newStatus == PalletStatus.Hold)
+                        {
+                            if (statusChange.HoldCode <= Constant.NoHoldCode)
+                            {
+                                error = $"Cannot set Status to Hold with invalid Hold Code value {statusChange.HoldCode}.";
+                                return false;
+                            }
+                            else
+                            {
+                                palletItem.Status = newStatus;
+                                palletItem.HoldCode = statusChange.HoldCode;
+                                if (!statusChange.Comment.IsNullOrWhiteSpace())
+                                {
+                                    palletItem.Comment = statusChange.Comment;
+                                }
+                                pit.Set(level, palletItem, pitItem.PitCode);
+                                return true;
+                            }
+                        }
+                        else if (newStatus == PalletStatus.OK || newStatus == PalletStatus.Reserved)
+                        {
+                            palletItem.Status = newStatus;
+                            palletItem.HoldCode = Constant.NoHoldCode;
+                            if (!statusChange.Comment.IsNullOrWhiteSpace())
+                            {
+                                palletItem.Comment = statusChange.Comment;
+                            }
+                            pit.Set(level, palletItem, pitItem.PitCode);
+                            return true;
+                        }
+                        break;
+                    case PitCode.Stack:
+                        error = $"Cannot change the Pallet Status of PIT Stack {palletItem.PalletID}.";
+                        return false;
+                    case PitCode.Purge:
+                        if (newStatus == PalletStatus.Purge)
+                        {
+                            palletItem.Status = newStatus;
+                            palletItem.HoldCode = Constant.NoHoldCode;
+                            if (!statusChange.Comment.IsNullOrWhiteSpace())
+                            {
+                                palletItem.Comment = statusChange.Comment;
+                            }
+                            pit.Set(level, palletItem, PitCode.Purge);
+                            return true;
+                        }
+                        error = $"Cannot change the Pallet Status of PIT Purge Pallet {palletItem.PalletID}.";
+                        return false;
+                    case PitCode.Upper:
+                    case PitCode.Lower:
+                    case PitCode.Console:
+                    case PitCode.Unknown:
+                    default:
+                        palletItem.Status = PalletStatus.Purge;
+                        palletItem.HoldCode = Constant.NoHoldCode;
+                        if (!statusChange.Comment.IsNullOrWhiteSpace())
+                        {
+                            palletItem.Comment = statusChange.Comment;
+                        }
+                        pit.Set(level, palletItem, PitCode.Purge);
+                        error = $"Pallet {palletItem.PalletID} with invalid PIT Code found in {level.ToText()} PIT.";
+                        return false;
+                }
+            }
+            error = null;
+            return false;
+        }
+
+        private bool _ChangeAssignmentPitPalletStatus(
+            StatusChange statusChange,
+            out string error)
+        {
+            error = null; // has to default to null for db access reasons
+
+            if ((!statusChange.JobID.IsNullOrWhiteSpace()
+                    && TryFindAssignmentPitPalletByJobID(statusChange.JobID, out PitItem pitItem))
+                || (!statusChange.PalletID.IsNullOrWhiteSpace()
+                    && _assignmentPit.TryGetItem(statusChange.PalletID, out pitItem)))
+            {
+                // pitItem != null is guaranteed here
+                PalletItem palletItem = pitItem.Pallet;
+                if (palletItem.IsStack)
+                {
+                    error = $"Cannot change the Pallet Status of Assignment PIT Stack {palletItem.PalletID}.";
+                    return false;
+                }
+                PalletStatus newStatus = statusChange.PalletStatus;
+                if (newStatus == PalletStatus.Invalid
+                    || newStatus == PalletStatus.Unknown)
+                {
+                    error = $"Cannot set Status of Assignment PIT Pallet {palletItem.PalletID} to {newStatus.ToText()}";
+                    return false;
+                }
+                switch (pitItem.PitCode)
+                {
+                    case PitCode.Upper:
+                    case PitCode.Lower:
+                    case PitCode.Console:
+                        if (newStatus == PalletStatus.Purge)
+                        {
+                            palletItem.Status = newStatus;
+                            palletItem.HoldCode = Constant.NoHoldCode;
+                            if (!statusChange.Comment.IsNullOrWhiteSpace())
+                            {
+                                palletItem.Comment = statusChange.Comment;
+                            }
+                            _assignmentPit.Set(Levels.None, palletItem, pitItem.PitCode);
+                            return true;
+                        }
+                        else if (newStatus == PalletStatus.Hold)
+                        {
+                            if (statusChange.HoldCode <= Constant.NoHoldCode)
+                            {
+                                error = $"Cannot set Status to Hold with invalid Hold Code value {statusChange.HoldCode}.";
+                                return false;
+                            }
+                            else
+                            {
+                                palletItem.Status = newStatus;
+                                palletItem.HoldCode = statusChange.HoldCode;
+                                if (!statusChange.Comment.IsNullOrWhiteSpace())
+                                {
+                                    palletItem.Comment = statusChange.Comment;
+                                }
+                                _assignmentPit.Set(Levels.None, palletItem, pitItem.PitCode);
+                                return true;
+                            }
+                        }
+                        else if (newStatus == PalletStatus.OK || newStatus == PalletStatus.Reserved)
+                        {
+                            palletItem.Status = newStatus;
+                            palletItem.HoldCode = Constant.NoHoldCode;
+                            if (!statusChange.Comment.IsNullOrWhiteSpace())
+                            {
+                                palletItem.Comment = statusChange.Comment;
+                            }
+                            _assignmentPit.Set(Levels.None, palletItem, pitItem.PitCode);
+                            return true;
+                        }
+                        break;
+                    case PitCode.Assigned1:
+                    case PitCode.Assigned2:
+                    case PitCode.Assigned3:
+                    case PitCode.Assigned4:
+                    case PitCode.Unknown:
+                    default:
+                        palletItem.Status = PalletStatus.Purge;
+                        palletItem.HoldCode = Constant.NoHoldCode;
+                        if (!statusChange.Comment.IsNullOrWhiteSpace())
+                        {
+                            palletItem.Comment = statusChange.Comment;
+                        }
+                        RemovePitPallet(palletItem.PalletID);
+                        _assignmentPit.Set(Levels.None, palletItem, PitCode.Lower);
+                        error = $"Pallet {palletItem.PalletID} with invalid PIT Code found in Assignment PIT.";
+                        return false;
+                }
+            }
+            error = null;
+            return false;
+        }
+
+        #endregion
 
     }
 }

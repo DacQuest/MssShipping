@@ -336,6 +336,20 @@ namespace Mss.Collections
             }
         }
 
+        public bool TryFindBinByJobID(string jobID, out BinItem binItem)
+        {
+            _ = Lock();
+            try
+            {
+                binItem = this.FirstOrDefault(b => b.Pallet.JobID == jobID);
+                return binItem != null;
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
         public bool TryFindEmptyBin(
             CraneNumber craneNumber,
             BinSize binSize,

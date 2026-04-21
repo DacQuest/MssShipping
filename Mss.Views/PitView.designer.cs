@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             this.navigator = new System.Windows.Forms.ToolStrip();
-            this.lblCollectionName = new System.Windows.Forms.Label();
-            this._pitGrid = new Mss.Views.PitGrid();
             this.navigatorBtnRefreshItem = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnAddItem = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnQuickAdd = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnAddSingleEmpty = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnDelete = new System.Windows.Forms.ToolStripButton();
+            this.lblCollectionName = new System.Windows.Forms.Label();
+            this._pitGrid = new Mss.Views.PitGrid();
             this.navigator.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,33 +53,8 @@
             this.navigator.Location = new System.Drawing.Point(0, 0);
             this.navigator.Name = "navigator";
             this.navigator.Padding = new System.Windows.Forms.Padding(5, 2, 5, 2);
-            this.navigator.Size = new System.Drawing.Size(861, 35);
+            this.navigator.Size = new System.Drawing.Size(1459, 35);
             this.navigator.TabIndex = 0;
-            // 
-            // lblCollectionName
-            // 
-            this.lblCollectionName.AutoSize = true;
-            this.lblCollectionName.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
-            this.lblCollectionName.Location = new System.Drawing.Point(16, 46);
-            this.lblCollectionName.Name = "lblCollectionName";
-            this.lblCollectionName.Size = new System.Drawing.Size(134, 19);
-            this.lblCollectionName.TabIndex = 1;
-            this.lblCollectionName.Text = "Collection Name";
-            // 
-            // _pitGrid
-            // 
-            this._pitGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this._pitGrid.EnableSort = false;
-            this._pitGrid.Location = new System.Drawing.Point(19, 65);
-            this._pitGrid.Name = "_pitGrid";
-            this._pitGrid.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
-            this._pitGrid.SelectionMode = SourceGrid.GridSelectionMode.Row;
-            this._pitGrid.Size = new System.Drawing.Size(826, 372);
-            this._pitGrid.TabIndex = 2;
-            this._pitGrid.TabStop = true;
-            this._pitGrid.Text = "PalletGrid";
-            this._pitGrid.ToolTipText = "";
             // 
             // navigatorBtnRefreshItem
             // 
@@ -102,10 +77,9 @@
             // 
             // navigatorBtnQuickAdd
             // 
-//             this.navigatorBtnQuickAdd.Image = global::Mss.Views.Properties.Resources.QuickGreenPlus24;
             this.navigatorBtnQuickAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.navigatorBtnQuickAdd.Name = "navigatorBtnQuickAdd";
-            this.navigatorBtnQuickAdd.Size = new System.Drawing.Size(89, 28);
+            this.navigatorBtnQuickAdd.Size = new System.Drawing.Size(65, 28);
             this.navigatorBtnQuickAdd.Text = "Add Pallet";
             this.navigatorBtnQuickAdd.Visible = false;
             this.navigatorBtnQuickAdd.Click += new System.EventHandler(this._NavigatorBtnQuickAdd_Click);
@@ -130,6 +104,31 @@
             this.navigatorBtnDelete.Visible = false;
             this.navigatorBtnDelete.Click += new System.EventHandler(this._NavigatorBtnDelete_Click);
             // 
+            // lblCollectionName
+            // 
+            this.lblCollectionName.AutoSize = true;
+            this.lblCollectionName.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
+            this.lblCollectionName.Location = new System.Drawing.Point(16, 46);
+            this.lblCollectionName.Name = "lblCollectionName";
+            this.lblCollectionName.Size = new System.Drawing.Size(134, 19);
+            this.lblCollectionName.TabIndex = 1;
+            this.lblCollectionName.Text = "Collection Name";
+            // 
+            // _pitGrid
+            // 
+            this._pitGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this._pitGrid.EnableSort = false;
+            this._pitGrid.Location = new System.Drawing.Point(19, 65);
+            this._pitGrid.Name = "_pitGrid";
+            this._pitGrid.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
+            this._pitGrid.SelectionMode = SourceGrid.GridSelectionMode.Row;
+            this._pitGrid.Size = new System.Drawing.Size(1422, 356);
+            this._pitGrid.TabIndex = 2;
+            this._pitGrid.TabStop = true;
+            this._pitGrid.Text = "PalletGrid";
+            this._pitGrid.ToolTipText = "";
+            // 
             // PitView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -138,7 +137,7 @@
             this.Controls.Add(this.navigator);
             this.Controls.Add(this._pitGrid);
             this.Name = "PitView";
-            this.Size = new System.Drawing.Size(861, 455);
+            this.Size = new System.Drawing.Size(1459, 439);
             this.navigator.ResumeLayout(false);
             this.navigator.PerformLayout();
             this.ResumeLayout(false);

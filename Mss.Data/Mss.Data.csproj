@@ -248,8 +248,12 @@
     <Compile Include="LoadArchive\ShipperReport.Designer.cs">
       <DependentUpon>ShipperReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Pocos\LoadDetail.cs" />
+    <Compile Include="Pocos\StatusChangeQueue.cs" />
     <Compile Include="Pocos\LoadHeader.cs" />
-    <Compile Include="Pocos\PalletStatusChange.cs" />
+    <Compile Include="Pocos\StatusChange.cs" />
+    <Compile Include="Repositories\BroadcastQueueRepository.cs" />
+    <Compile Include="Repositories\StatusChangeQueueRepository.cs" />
     <Compile Include="SlugManager.cs" />
     <Compile Include="MesInterface.cs" />
     <Compile Include="Pocos\BroadcastDetail.cs" />
@@ -257,7 +261,7 @@
     <Compile Include="Pocos\BroadcastQueue.cs" />
     <Compile Include="Pocos\HoldCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\BroadcastRepository.cs" />
+    <Compile Include="Repositories\BroadcastHeaderRepository.cs" />
     <Compile Include="Repositories\HoldCodesRepository.cs" />
     <Compile Include="Search.cs" />
     <Compile Include="Searches.cs" />

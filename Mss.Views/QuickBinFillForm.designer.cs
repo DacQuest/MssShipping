@@ -50,7 +50,7 @@
             // 
             this.txtPalletID.Location = new System.Drawing.Point(79, 6);
             this.txtPalletID.Name = "txtPalletID";
-            this.txtPalletID.Size = new System.Drawing.Size(100, 20);
+            this.txtPalletID.Size = new System.Drawing.Size(102, 20);
             this.txtPalletID.TabIndex = 1;
             this.txtPalletID.TextChanged += new System.EventHandler(this._TxtPalletID_TextChanged);
             // 
@@ -65,6 +65,7 @@
             this.btnOK.TabIndex = 10;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
+            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
             // btnCancel
             // 

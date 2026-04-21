@@ -8,6 +8,7 @@ using DacQuest.DFX.Core.SystemEvents;
 using Mss.Collections;
 using Mss.Common;
 using Mss.Data;
+using Mss.Data.Pocos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -177,7 +178,7 @@ namespace Mss.Services
                 {
                     XSystemEvent.Publish(
                         $"{ConfigurationItem.Name}.{nameof(_FetchBroadcast)}",
-                        XSystemEventLevel.Warning,
+                        XSystemEventLevel.Error,
                         "Failed to fetch Broadcast from MES");
                 }
                 DataLayer.ReceiveBroadcast(broadcastItems);
@@ -263,11 +264,12 @@ namespace Mss.Services
 
         private void _ProcessPalletStatusChanges()
         {
-            // TODO
-//             if (MesInterface.FetchPalletStatusChanges(out List<PalletStatusChanges> palletStatusChanges))
-//             {
-// 
-//             }
+            if (MesInterface.TryFetchPendingStatusChangeRequests(
+                out IEnumerable<StatusChangeQueue> pendingRequests))
+            {
+                DataLayer.ProcessStatusChangeRequests(pendingRequests);
+                MesInterface.UpdateProcessedStatusChangeRequests(pendingRequests);
+            }
         }
 
 

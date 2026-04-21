@@ -698,6 +698,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Magna.ico" />
+    <None Include="Resources\RedMinus48.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -46,9 +46,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mss.LoadDirectorClient", "M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MesInterfaceSqlScripts", "MesInterfaceSqlScripts", "{9CD45BA6-07F6-4B3D-8CCD-4EE03F77DD5F}"
 	ProjectSection(SolutionItems) = preProject
-		MesInterfaceSqlScripts\CreateBroadcastTables.sql = MesInterfaceSqlScripts\CreateBroadcastTables.sql
-		MesInterfaceSqlScripts\CreateHoldCodesTable.sql = MesInterfaceSqlScripts\CreateHoldCodesTable.sql
-		MesInterfaceSqlScripts\CreateLoadTables.sql = MesInterfaceSqlScripts\CreateLoadTables.sql
+		MesInterfaceSqlScripts\CreateMesLoadTables.sql = MesInterfaceSqlScripts\CreateMesLoadTables.sql
+		MesInterfaceSqlScripts\CreateMesHoldCodesTable.sql = MesInterfaceSqlScripts\CreateMesHoldCodesTable.sql
+		MesInterfaceSqlScripts\CreateMesBroadcastTables.sql = MesInterfaceSqlScripts\CreateMesBroadcastTables.sql
+		MesInterfaceSqlScripts\CreateMesStatusChangeTables.sql = MesInterfaceSqlScripts\CreateMesStatusChangeTables.sql
 	EndProjectSection
 EndProject
 Global
