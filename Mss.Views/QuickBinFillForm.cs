@@ -31,13 +31,9 @@ namespace Mss.Views
         private void _TxtPalletID_TextChanged(object sender, EventArgs e)
         {
             PalletID = txtPalletID.Text;
-//             btnOK.Enabled = !PalletID.IsNullOrWhiteSpace();
-            btnOK.Enabled = PalletID.ValidPalletID;
+            btnOK.Enabled = (!MustBeRearPalletID && PalletID.ValidPalletID())
+                || (MustBeRearPalletID && PalletID.ValidRearPalletID());
         }
 
-        private void btnOK_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
