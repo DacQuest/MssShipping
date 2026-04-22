@@ -42,6 +42,12 @@ namespace Mss.Views
         //    _EnableOKButton();
         //}
 
+        private void _ChkPurge_CheckedChanged(object sender, EventArgs e)
+        {
+            _ApplyStatus(_chkPurge.Checked, PalletStatus.Purge);
+            _EnableOKButton();
+        }
+
         private void _ChkUnknown_CheckedChanged(object sender, EventArgs e)
         {
             _ApplyStatus(_chkUnknown.Checked, PalletStatus.Unknown);
