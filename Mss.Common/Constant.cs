@@ -62,7 +62,7 @@ namespace Mss.Common
         public const string StackSku1 = "STACK1";
         public const string StackSku2 = "STACK2";
         public const int MaxCranes = 4;
-        public const int MaxHorizontal = 22;
+        public const int MaxHorizontal = 23;
         public const int MaxVertical = 6;
         public const int CraneSides = 2;
         public const int StoragePerCrane = MaxHorizontal * MaxVertical * CraneSides;

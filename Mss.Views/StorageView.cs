@@ -712,7 +712,7 @@ namespace Mss.Views
             _chkDisabled.Checked = _workingBinItem.Disabled;
             // Pallet Data
             PalletItem palletItem = _workingBinItem.Pallet;
-            if (!palletItem.PalletID.ValidPalletID())
+            if (palletItem.PalletID.ValidPalletID())
             {
 
 //                 if (palletItem.PalletID == Constant.NoReadPalletID)

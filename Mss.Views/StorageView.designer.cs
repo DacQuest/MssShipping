@@ -220,7 +220,7 @@
             this._spnHorizontal.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._spnHorizontal.Location = new System.Drawing.Point(257, 66);
             this._spnHorizontal.Maximum = new decimal(new int[] {
-            22,
+            23,
             0,
             0,
             0});
@@ -515,7 +515,7 @@
             this._lblJobID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblJobID.Location = new System.Drawing.Point(82, 47);
             this._lblJobID.Name = "_lblJobID";
-            this._lblJobID.Size = new System.Drawing.Size(534, 21);
+            this._lblJobID.Size = new System.Drawing.Size(245, 21);
             this._lblJobID.TabIndex = 47;
             this._lblJobID.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
