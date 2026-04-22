@@ -17,7 +17,7 @@ namespace Mss.Data
 {
     public static class MesInterface
     {
-        public static string FetchPalletStoredProcedureName = "SHIPSP_Pallet_Info";
+        public static string PalletInfoStoredProcedureName = "SHIPSP_Pallet_Info";
 
         public static bool TryFetchPalletItem(
             OperationCode operationCode,
@@ -71,7 +71,7 @@ namespace Mss.Data
 
             using (SqlConnection connection = _Connection)
             {
-                using (SqlCommand command = new SqlCommand(FetchPalletStoredProcedureName, connection))
+                using (SqlCommand command = new SqlCommand(PalletInfoStoredProcedureName, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
@@ -128,10 +128,10 @@ namespace Mss.Data
                     {
                         fault = "Exception thrown by Stored Procedure!";
                         XSystemEvent.Publish(
-                            FetchPalletStoredProcedureName,
+                            PalletInfoStoredProcedureName,
                             XSystemEventLevel.Error,
                             fault);
-                        x.PublishSystemEvent(FetchPalletStoredProcedureName);
+                        x.PublishSystemEvent(PalletInfoStoredProcedureName);
                         return false;
                     }
                 }

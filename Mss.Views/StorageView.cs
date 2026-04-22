@@ -974,18 +974,18 @@ namespace Mss.Views
 
         private void _NavigatorBtnClearBin_Click(object sender, EventArgs e)
         {
-            StorageEmptyBinForm form = new StorageEmptyBinForm();
-            form.ShowDialog();
-            if (form.DialogResult == DialogResult.OK)
+            using (StorageEmptyBinForm form = new StorageEmptyBinForm())
             {
-                _originalBinItem.BinStatus = BinStatus.Empty;
-                _originalBinItem.StoredOn = Constant.BeginningOfTime;
-                _originalBinItem.Audit = false;
-                _originalBinItem.Pallet = new PalletItem();
-                _storageProxy.SetAt(_originalBinItem.NodeIndex, _originalBinItem);
-                _PopulateControls(_originalBinItem);
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    _originalBinItem.BinStatus = BinStatus.Empty;
+                    _originalBinItem.StoredOn = Constant.BeginningOfTime;
+                    _originalBinItem.Audit = false;
+                    _originalBinItem.Pallet = new PalletItem();
+                    _storageProxy.SetAt(_originalBinItem.NodeIndex, _originalBinItem);
+                    _PopulateControls(_originalBinItem);
+                }
             }
-            form.Dispose();
         }
 
         private void _LblBinNumber_DoubleClick(object sender, EventArgs e)

@@ -162,12 +162,12 @@ namespace Mss.Operations
                         palletID,
                         sku,
                         jobID,
-                        palletStatus.ToString(),
                         (int)palletStatus,
-                        operationCode.ToText(),
+                        palletStatus.ToString(),
                         (int)operationCode,
-                        palletEvent.ToText(),
+                        operationCode.ToText(),
                         (int)palletEvent,
+                        palletEvent.ToText(),
                         moveCommand,
                         comment);
 
