@@ -1755,10 +1755,10 @@ namespace Mss.Views
             if (_cmbNewStatus.SelectedIndex > -1)
             {
                 PalletStatus selectedStatus = _cmbNewStatus.GetSelectedEnumItem<PalletStatus>();
-                if (selectedStatus == _newStatus)
-                {
-                    return;
-                }
+                //if (selectedStatus == _newStatus)
+                //{
+                //    return;
+                //}
                 _newStatus = selectedStatus;
                 switch (_newStatus)
                 {

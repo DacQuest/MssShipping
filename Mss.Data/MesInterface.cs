@@ -108,15 +108,19 @@ namespace Mss.Data
                     {
                         connection.Open();
                         _ = command.ExecuteNonQuery();
-                        PalletStatus status = (int)statusParam.Value == -1
+                        string sku = (string)skuParam.Value;
+                        PalletStatus status = (PalletStatus)statusParam.Value;
+                        status = (int)status == -1
                             ? PalletStatus.Invalid
-                            : (PalletStatus)statusParam.Value;
+                            : (sku.IsStackSku() && status == PalletStatus.Unknown)
+                                ? PalletStatus.OK
+                                : status;
                         palletItem = new PalletItem
                         {
                             PalletID = palletID,
                             Status = status,
                             JobID = (string)jobIDParam.Value,
-                            Sku = (string)skuParam.Value,
+                            Sku = sku,
                             HoldCode = (int)holdCodeParam.Value,
                             BuiltOn = (DateTime)builtOnParam.Value,
                             Comment = (string)commentParam.Value
