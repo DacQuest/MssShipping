@@ -122,6 +122,18 @@ namespace Mss.Collections
             set => SetItemProperty(nameof(SystemSettingsItem.SlugBLoadCompletedOn), value);
         }
 
+        public bool UpperLevelInboundEnabled
+        {
+            get => GetItemProperty<bool>(nameof(SystemSettingsItem.UpperLevelInboundEnabled));
+            set => SetItemProperty(nameof(SystemSettingsItem.UpperLevelInboundEnabled), value);
+        }
+
+        public bool LowerLevelInboundEnabled
+        {
+            get => GetItemProperty<bool>(nameof(SystemSettingsItem.LowerLevelInboundEnabled));
+            set => SetItemProperty(nameof(SystemSettingsItem.LowerLevelInboundEnabled), value);
+        }
+
         // Lower Inbounds
         public bool MasterLowerInboundsEnabled
         {

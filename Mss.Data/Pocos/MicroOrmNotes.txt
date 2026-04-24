@@ -1,0 +1,41 @@
+﻿
+POCO Attribute Aliases and Usage
+--------------------------------------------
+
+[Table("ActualTableName")]
+using MicroOrmTable = System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+[MicroOrmTable("ActualTableName")]
+
+[Key]
+using MicroOrmKey = System.ComponentModel.DataAnnotations.KeyAttribute;
+[MicroOrmKey]
+
+[Identity]
+using MicroOrmIdentity = MicroOrm.Dapper.Repositories.Attributes.IdentityAttribute;
+[MicroOrmIdentity]
+
+[Column("ActualColumnName")]
+using MicroOrmColumn = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+[MicroOrmColumn("ActualColumnName")]
+
+[LeftJoin("JoinedTable", "ThisTableKey", "ForeignKey")]
+using MicroOrmLeftJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.LeftJoinAttribute;
+[MicroOrmLeftJoin("JoinedTable", "ThisTableKey", "ForeignKey")]
+
+[InnerJoin("JoinedTable", "ThisTableKey", "ForeignKey")]
+using MicroOrmInnerJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.InnerJoinAttribute;
+[MicroOrmInnerJoin("JoinedTable", "ThisTableKey", "ForeignKey")]
+
+[RightJoin("JoinedTable", "ThisTableKey", "ForeignKey")]
+using MicroOrmRightJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.RightJoinAttribute;
+[MicroOrmRightJoin("JoinedTable", "ThisTableKey", "ForeignKey")]
+
+[CrossJoin("JoinedTable", "ThisTableKey", "ForeignKey")]
+using MicroOrmCrossJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.CrossJoinAttribute;
+[MicroOrmCrossJoin("JoinedTable", "ThisTableKey", "ForeignKey")]
+
+[NotMapped]
+using MicroOrmNotMapped = System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute;
+[NotMapped]
+
+

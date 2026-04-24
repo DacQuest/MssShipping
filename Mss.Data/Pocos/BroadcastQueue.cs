@@ -1,29 +1,34 @@
-﻿using MicroOrm.Dapper.Repositories.Attributes.Joins;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using Dapper.Contrib.Extensions;
-using MicroOrm.Dapper.Repositories.Attributes;
+﻿using System;
+using MicroOrmTable = System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+using MicroOrmKey = System.ComponentModel.DataAnnotations.KeyAttribute;
+using MicroOrmIdentity = MicroOrm.Dapper.Repositories.Attributes.IdentityAttribute;
+using MicroOrmColumn = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+using MicroOrmLeftJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.LeftJoinAttribute;
+using MicroOrmInnerJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.InnerJoinAttribute;
+using MicroOrmRightJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.RightJoinAttribute;
+using MicroOrmCrossJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.CrossJoinAttribute;
+using MicroOrmNotMapped = System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute;
 
 namespace Mss.Data.Pocos
 {
-    [System.ComponentModel.DataAnnotations.Schema.Table("SHIP_BroadcastQueue")]
+    [MicroOrmTable("SHIP_BroadcastQueue")]
     public class BroadcastQueue
     {
-        [System.ComponentModel.DataAnnotations.Key]
-        [Identity]
+        [MicroOrmKey]
+        [MicroOrmIdentity]
         public int QueueID { get; set; }
 
         public int HeaderID { get; set; }
 
         public bool Processed { get; set; }
 
-        [Column("ProcessedDTTM")]
+        [MicroOrmColumn("ProcessedDTTM")]
         public DateTime? ProcessedOn { get; set; }
 
-//         [Column("EventDTTM")]
+//         [MicroOrmColumn("EventDTTM")]
 //         public DateTime? EventTimestamp { get; set; }
 // 
-//         [Column("ProdDate")]
+//         [MicroOrmColumn("ProdDate")]
 //         public DateTime? ProductionTimestamp { get; set; }
 // 
 //         public string Shift { get; set; }
@@ -31,7 +36,7 @@ namespace Mss.Data.Pocos
 //         public short? Period { get; set; }
 
         // HeaderID in SHIP_BroadcastQueue -> HeaderID in SHIP_BroadcastHeader
-        [LeftJoin("SHIP_BroadcastHeader", "HeaderID", "HeaderID")]
+        [MicroOrmLeftJoin("SHIP_BroadcastHeader", "HeaderID", "HeaderID")]
         public BroadcastHeader BroadcastHeader { get; set; }
     }
 }

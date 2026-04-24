@@ -121,10 +121,13 @@ namespace Mss.Views
         {
             SystemSettingsItem item = _systemSettingsProxy.Item;
 
+            _UpdateBooleanControls(item.UpperLevelInboundEnabled, _lblUpperLevelInboundEnabled, _btnUpperLevelInboundEnabled);
+            _UpdateBooleanControls(item.LowerLevelInboundEnabled, _lblLowerLevelInboundEnabled, _btnLowerLevelInboundEnabled);
+
             _UpdateBooleanControls(item.SlugAEnabled, _lblLoadAEnabled, _btnLoadAEnabled);
             _UpdateBooleanControls(item.SlugBEnabled, _lblLoadBEnabled, _btnLoadBEnabled);
 
-//             _UpdateBooleanControls(item.AutoReleaseLoadsEnabled, _lblAutoReleasLoadsEnabled, _btnAutoReleaseLoadsEnabled);
+            //             _UpdateBooleanControls(item.AutoReleaseLoadsEnabled, _lblAutoReleasLoadsEnabled, _btnAutoReleaseLoadsEnabled);
             _UpdateBooleanControls(item.AutoAcceptLoadsEnabled, _lblAutoAcceptLoads, _btnAutoAcceptLoads);
 
 //             _cmbMaxAuditAttempts.SelectedIndex = item.MaxAuditAttempts;
@@ -453,6 +456,30 @@ namespace Mss.Views
                 {
                     _cmbSlugPickPriority.SelectEnumItem(currentPriority);
                 }
+            }
+        }
+
+        private void _BtnUpperLevelInboundEnabled_Click(object sender, EventArgs e)
+        {
+            _systemSettingsProxy.Refresh();
+            if (_ConfirmChange(nameof(SystemSettingsItem.UpperLevelInboundEnabled)))
+            {
+
+                _systemSettingsProxy.SetItemProperty(
+                    nameof(SystemSettingsItem.UpperLevelInboundEnabled),
+                    !_systemSettingsProxy.Item.UpperLevelInboundEnabled);
+            }
+        }
+
+        private void _BtnLowerLevelInboundEnabled_Click(object sender, EventArgs e)
+        {
+            _systemSettingsProxy.Refresh();
+            if (_ConfirmChange(nameof(SystemSettingsItem.LowerLevelInboundEnabled)))
+            {
+
+                _systemSettingsProxy.SetItemProperty(
+                    nameof(SystemSettingsItem.LowerLevelInboundEnabled),
+                    !_systemSettingsProxy.Item.LowerLevelInboundEnabled);
             }
         }
 

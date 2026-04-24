@@ -208,7 +208,7 @@ namespace Mss.Data
                         List<BroadcastDetail> details = header.BroadcastDetails;
                         if (details == null
                             || details.Count == 0
-                            || details.Count != header.PalletCount)
+                            || details.Count != header.DetailCount)
                         {
                             XSystemEvent.Publish(
                                 nameof(MesInterface),
@@ -297,10 +297,10 @@ namespace Mss.Data
                                 PickMode = detail.PickMode,
                                 PickModeKey = detail.PickModeKey,
                                 ReceivedOn = DateTime.Now,
-                                VehicleRowCount = header.PalletCount
+                                VehicleRowCount = header.DetailCount
                             };
 
-                            if (header.PalletCount == 2)
+                            if (header.DetailCount == 2)
                             {
                                 detail = header.BroadcastDetails.Single(d => d.VehicleRow == VehicleRow.Row2);
                                 if (detail != null)
@@ -315,7 +315,7 @@ namespace Mss.Data
                                         PickMode = detail.PickMode,
                                         PickModeKey = detail.PickModeKey,
                                         ReceivedOn = DateTime.Now,
-                                        VehicleRowCount = header.PalletCount
+                                        VehicleRowCount = header.DetailCount
                                     };
                                     broadcastItems.Add(row2BroadcastItem);
                                 }

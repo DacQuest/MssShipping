@@ -291,6 +291,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Magna.ico" />
+    <None Include="Pocos\MicroOrmNotes.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

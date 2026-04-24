@@ -1,46 +1,47 @@
-﻿using MicroOrm.Dapper.Repositories.Attributes;
-using MicroOrm.Dapper.Repositories.Attributes.Joins;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MicroOrmTable = System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+using MicroOrmKey = System.ComponentModel.DataAnnotations.KeyAttribute;
+using MicroOrmIdentity = MicroOrm.Dapper.Repositories.Attributes.IdentityAttribute;
+using MicroOrmColumn = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+using MicroOrmLeftJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.LeftJoinAttribute;
+using MicroOrmInnerJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.InnerJoinAttribute;
+using MicroOrmRightJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.RightJoinAttribute;
+using MicroOrmCrossJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.CrossJoinAttribute;
+using MicroOrmNotMapped = System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute;
 
 namespace Mss.Data.Pocos
 {
-    [Dapper.Contrib.Extensions.Table("SHIP_LoadHeader")]
+    [MicroOrmTable("SHIP_LoadHeader")]
     public class LoadHeader
     {
-        [Key]
-        [Identity]
+        [MicroOrmKey]
+        [MicroOrmIdentity]
         public int HeaderID { get; set; }
 
-        [Column("LoadNo")]
+        [MicroOrmColumn("LoadNo")]
         public int LoadNumber { get; set; }
 
         public char Slug { get; set; }
 
-        [Column("StartedDTTM")]
+        [MicroOrmColumn("StartedDTTM")]
         public DateTime StartedOn { get; set; }
 
-        [Column("FinishedDTTM")]
+        [MicroOrmColumn("FinishedDTTM")]
         public DateTime CompletedOn { get; set; }
 
         public int PalletCount { get; set; }
 
-        [Column("StartCSN")]
+        [MicroOrmColumn("StartCSN")]
         public string FirstCsn { get; set; }
 
-        [Column("StopCSN")]
+        [MicroOrmColumn("StopCSN")]
         public string LastCsn { get; set; }
 
-        [Column("TrailerNo")]
+        [MicroOrmColumn("TrailerNo")]
         public string TrailerID { get; set; }
 
-        // HeaderID in SHIP_LoadHeader -> HeaderID in SHIP_LoadDetail
-        [LeftJoin("SHIP_LoadDetail", "HeaderID", "HeaderID")]
+        [MicroOrmLeftJoin("SHIP_LoadDetail", "HeaderID", "HeaderID")]
         public List<LoadDetail> LoadDetails { get; set; }
     }
 }

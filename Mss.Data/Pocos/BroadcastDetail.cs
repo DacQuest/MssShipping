@@ -1,35 +1,40 @@
 ﻿using Mss.Common;
-using System.ComponentModel.DataAnnotations.Schema;
-using Dapper.Contrib.Extensions;
-using MicroOrm.Dapper.Repositories.Attributes;
-using System;
+using MicroOrmTable = System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+using MicroOrmKey = System.ComponentModel.DataAnnotations.KeyAttribute;
+using MicroOrmIdentity = MicroOrm.Dapper.Repositories.Attributes.IdentityAttribute;
+using MicroOrmColumn = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+using MicroOrmLeftJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.LeftJoinAttribute;
+using MicroOrmInnerJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.InnerJoinAttribute;
+using MicroOrmRightJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.RightJoinAttribute;
+using MicroOrmCrossJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.CrossJoinAttribute;
+using MicroOrmNotMapped = System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute;
 
 namespace Mss.Data.Pocos
 {
-    [System.ComponentModel.DataAnnotations.Schema.Table("SHIP_BroadcastDetail")]
+    [MicroOrmTable("SHIP_BroadcastDetail")]
     public class BroadcastDetail
     {
-        [System.ComponentModel.DataAnnotations.Key]
-        [Identity]
+        [MicroOrmKey]
+        [MicroOrmIdentity]
         public int DetailID { get; set; }
 
         public int HeaderID { get; set; }
 
         public VehicleRow VehicleRow { get; set; }
 
-        [Column("PalletSKU")]
+        [MicroOrmColumn("PalletSKU")]
         public string Sku { get; set; }
 
-        [Column("PickModeStatus")]
+        [MicroOrmColumn("PickModeStatus")]
         public PickMode PickMode { get; set; }
 
-        [Column("PickModeValue")]
+        [MicroOrmColumn("PickModeValue")]
         public string PickModeKey { get; set; }
 
-//         [Column("EventDTTM")]
+//         [MicroOrmColumn("EventDTTM")]
 //         public DateTime? EventTimestamp { get; set; }
 // 
-//         [Column("ProdDate")]
+//         [MicroOrmColumn("ProdDate")]
 //         public DateTime? ProductionTimestamp { get; set; }
 // 
 //         public string Shift { get; set; }

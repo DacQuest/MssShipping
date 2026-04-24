@@ -1,65 +1,46 @@
-﻿using MicroOrm.Dapper.Repositories.Attributes;
-
-using MicroOrm.Dapper.Repositories.Attributes.Joins;
-
-using System.Collections.Generic;
-
-// using System.ComponentModel.DataAnnotations.Schema;
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using MicroOrmTable = System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+using MicroOrmKey = System.ComponentModel.DataAnnotations.KeyAttribute;
+using MicroOrmIdentity = MicroOrm.Dapper.Repositories.Attributes.IdentityAttribute;
+using MicroOrmColumn = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+using MicroOrmLeftJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.LeftJoinAttribute;
+using MicroOrmInnerJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.InnerJoinAttribute;
+using MicroOrmRightJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.RightJoinAttribute;
+using MicroOrmCrossJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.CrossJoinAttribute;
+using MicroOrmNotMapped = System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute;
 
 namespace Mss.Data.Pocos
-
 {
-
-    [System.ComponentModel.DataAnnotations.Schema.Table("SHIP_BroadcastHeader")]
-
+    [MicroOrmTable("SHIP_BroadcastHeader")]
     public class BroadcastHeader
-
     {
-
-        [Key]
-
-        [Identity]
-
+        [MicroOrmKey]
+        [MicroOrmIdentity]
         public int HeaderID { get; set; }
 
-        [System.ComponentModel.DataAnnotations.Schema.Column("RotationNo")]
-
+        [MicroOrmColumn("RotationNo")]
         public int Rotation { get; set; }
 
-        [System.ComponentModel.DataAnnotations.Schema.Column("VehicleSKU")]
-
+        [MicroOrmColumn("VehicleSKU")]
         public string VehicleSku { get; set; }
 
-        [System.ComponentModel.DataAnnotations.Schema.Column("VIN")]
-
+        [MicroOrmColumn("VIN")]
         public string Vin { get; set; }
 
-        //[System.ComponentModel.DataAnnotations.Schema.Column("PalletCount")]
+        [MicroOrmColumn("PalletCount")]
+        public int DetailCount { get; set; }
 
-        public int PalletCount { get; set; }
+//         [MicroOrmColumn("EventDTTM")]
+//         public DateTime? EventTimestamp { get; set; }
+// 
+//         [MicroOrmColumn("ProdDate")]
+//         public DateTime? ProductionTimestamp { get; set; }
+// 
+//         public string Shift { get; set; }
+// 
+//         public int? Period { get; set; }
 
-        //         [Column("EventDTTM")]
-
-        //         public DateTime? EventTimestamp { get; set; }
-
-        // 
-
-        //         [Column("ProdDate")]
-
-        //         public DateTime? ProductionTimestamp { get; set; }
-
-        // 
-
-        //         public string Shift { get; set; }
-
-        // 
-
-        //         public int? Period { get; set; }
-
-        [LeftJoin("SHIP_BroadcastDetail", "HeaderID", "HeaderID")]
-
+        [MicroOrmLeftJoin("SHIP_BroadcastDetail", "HeaderID", "HeaderID")]
         public List<BroadcastDetail> BroadcastDetails { get; set; }
 
     }

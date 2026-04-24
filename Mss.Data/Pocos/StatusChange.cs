@@ -1,17 +1,21 @@
-﻿using Dapper.Contrib.Extensions;
-using MicroOrm.Dapper.Repositories.Attributes;
-using MicroOrm.Dapper.Repositories.Attributes.Joins;
-using Mss.Common;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Mss.Common;
+using MicroOrmTable = System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+using MicroOrmKey = System.ComponentModel.DataAnnotations.KeyAttribute;
+using MicroOrmIdentity = MicroOrm.Dapper.Repositories.Attributes.IdentityAttribute;
+using MicroOrmColumn = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+using MicroOrmLeftJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.LeftJoinAttribute;
+using MicroOrmInnerJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.InnerJoinAttribute;
+using MicroOrmRightJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.RightJoinAttribute;
+using MicroOrmCrossJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.CrossJoinAttribute;
+using MicroOrmNotMapped = System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute;
 
 namespace Mss.Data.Pocos
 {
-    [Dapper.Contrib.Extensions.Table("SHIP_StatusChange")]
+    [MicroOrmTable("SHIP_StatusChange")]
     public class StatusChange
     {
-        [Key]
-        [Identity]
+        [MicroOrmKey]
+        [MicroOrmIdentity]
         public int ChangeID { get; set; }
 
         public string PalletID { get; set; }
@@ -24,10 +28,10 @@ namespace Mss.Data.Pocos
 
         public string Comment { get; set; }
 
-//         [Column("EventDTTM")]
+//         [MicroOrmColumn("EventDTTM")]
 //         public DateTime? EventTimestamp { get; set; }
 // 
-//         [Column("ProdDate")]
+//         [MicroOrmColumn("ProdDate")]
 //         public DateTime? ProductionTimestamp { get; set; }
 // 
 //         public string Shift { get; set; }

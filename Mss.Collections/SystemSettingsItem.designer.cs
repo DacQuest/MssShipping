@@ -82,16 +82,6 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
-           Comment = "Prioritizes Audit Picks over other crane functions.",
-            ArrayLength = Constant.MaxCranes + 1,
-            MirrorToChildTable = true)]
-        public bool[] PrioritizeAuditPicks
-        {
-            get => GetBooleanArray(nameof(PrioritizeAuditPicks));
-            set => SetBooleanArray(nameof(PrioritizeAuditPicks), value);
-        }
-
-        [XDataItemProperty(
            Comment = ".")]
         public SlugPickPriority SlugPickPriority
         {
@@ -164,6 +154,22 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
+            Comment = "")]
+        public bool UpperLevelInboundEnabled
+        {
+            get => GetBoolean(nameof(UpperLevelInboundEnabled));
+            set => SetBoolean(nameof(UpperLevelInboundEnabled), value);
+        }
+
+        [XDataItemProperty(
+            Comment = "")]
+        public bool LowerLevelInboundEnabled
+        {
+            get => GetBoolean(nameof(LowerLevelInboundEnabled));
+            set => SetBoolean(nameof(LowerLevelInboundEnabled), value);
+        }
+
+        [XDataItemProperty(
             Comment = "Determines whether Crane Lower Inbounds will accept pallets.",
             ArrayLength = Constant.MaxCranes + 1,
             MirrorToChildTable = true)]
@@ -231,6 +237,16 @@ namespace Mss.Collections
         {
             get => GetBooleanArray(nameof(PurgePicksEnabled));
             set => SetBooleanArray(nameof(PurgePicksEnabled), value);
+        }
+
+        [XDataItemProperty(
+           Comment = "Prioritizes Audit Picks over other crane functions.",
+            ArrayLength = Constant.MaxCranes + 1,
+            MirrorToChildTable = true)]
+        public bool[] PrioritizeAuditPicks
+        {
+            get => GetBooleanArray(nameof(PrioritizeAuditPicks));
+            set => SetBooleanArray(nameof(PrioritizeAuditPicks), value);
         }
 
         [XDataItemProperty(

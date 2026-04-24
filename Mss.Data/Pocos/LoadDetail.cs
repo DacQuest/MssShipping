@@ -5,33 +5,36 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Dapper.Contrib.Extensions;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MicroOrmTable = System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+using MicroOrmKey = System.ComponentModel.DataAnnotations.KeyAttribute;
+using MicroOrmIdentity = MicroOrm.Dapper.Repositories.Attributes.IdentityAttribute;
+using MicroOrmColumn = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+using MicroOrmLeftJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.LeftJoinAttribute;
+using MicroOrmInnerJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.InnerJoinAttribute;
+using MicroOrmRightJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.RightJoinAttribute;
+using MicroOrmCrossJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.CrossJoinAttribute;
+using MicroOrmNotMapped = System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute;
 
 namespace Mss.Data.Pocos
 {
-    [Dapper.Contrib.Extensions.Table("SHIP_LoadDetail")]
+    [MicroOrmTable("SHIP_LoadDetail")]
     public class LoadDetail
     {
-        [Key]
-        [Identity]
+        [MicroOrmKey]
+        [MicroOrmIdentity]
         public int DetailID { get; set; }
 
         public int HeaderID { get; set; }
 
-        [Column("VIN")]
+        [MicroOrmColumn("VIN")]
         public string Vin { get; set; }
 
         public VehicleRow VehicleRow { get; set; }
 
-        [Column("PalletSKU")]
+        [MicroOrmColumn("PalletSKU")]
         public string Sku { get; set; }
 
         public string JobID { get; set; }
 
-        // HeaderID in SHIP_LoadDetails -> HeaderID in SHIP_LoadHeader
-//         [LeftJoin("SHIP_LoadHeader", "HeaderID", "HeaderID")]
-//         public LoadHeader Header { get; set; }
     }
 }

@@ -1,22 +1,23 @@
-﻿using Dapper.Contrib.Extensions;
-using MicroOrm.Dapper.Repositories.Attributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MicroOrmTable = System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+using MicroOrmKey = System.ComponentModel.DataAnnotations.KeyAttribute;
+using MicroOrmIdentity = MicroOrm.Dapper.Repositories.Attributes.IdentityAttribute;
+using MicroOrmColumn = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+using MicroOrmLeftJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.LeftJoinAttribute;
+using MicroOrmInnerJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.InnerJoinAttribute;
+using MicroOrmRightJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.RightJoinAttribute;
+using MicroOrmCrossJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.CrossJoinAttribute;
+using MicroOrmNotMapped = System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute;
 
 namespace Mss.Data.Pocos
 {
-    [Dapper.Contrib.Extensions.Table("SHIP_HoldCode")]
+    [MicroOrmTable("SHIP_HoldCode")]
     public class HoldCode
     {
-        [Key]
-        [Identity]
+        [MicroOrmKey]
+        [MicroOrmIdentity]
         public int ID { get; set; }
 
-        [Column("HoldCode")]
+        [MicroOrmColumn("HoldCode")]
         public int Code { get; set; }
 
         public string Description { get; set; }

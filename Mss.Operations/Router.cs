@@ -206,10 +206,11 @@ namespace Mss.Operations
 
         #region AwaitingMoveCompletedState
 
-//         protected override bool DoMoveCompleted()
-//         {
-//             return true;
-//         }
+        protected override bool DoMoveCompleted()
+        {
+            DataLayer.RemoveAssignmentPitPallet(CurrentPallet.PalletID);
+            return true;
+        }
 
         #endregion
 

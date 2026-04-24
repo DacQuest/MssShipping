@@ -1,39 +1,43 @@
-﻿using MicroOrm.Dapper.Repositories.Attributes.Joins;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using Dapper.Contrib.Extensions;
-using MicroOrm.Dapper.Repositories.Attributes;
+﻿using System;
+using MicroOrmTable = System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+using MicroOrmKey = System.ComponentModel.DataAnnotations.KeyAttribute;
+using MicroOrmIdentity = MicroOrm.Dapper.Repositories.Attributes.IdentityAttribute;
+using MicroOrmColumn = System.ComponentModel.DataAnnotations.Schema.ColumnAttribute;
+using MicroOrmLeftJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.LeftJoinAttribute;
+using MicroOrmInnerJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.InnerJoinAttribute;
+using MicroOrmRightJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.RightJoinAttribute;
+using MicroOrmCrossJoin = MicroOrm.Dapper.Repositories.Attributes.Joins.CrossJoinAttribute;
+using MicroOrmNotMapped = System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute;
 
 namespace Mss.Data.Pocos
 {
-    [Dapper.Contrib.Extensions.Table("SHIP_StatusChangeQueue")]
+    [MicroOrmTable("SHIP_StatusChangeQueue")]
     public class StatusChangeQueue
     {
-        [Key]
-        [Identity]
+        [MicroOrmKey]
+        [MicroOrmIdentity]
         public int QueueID { get; set; }
 
         public int ChangeID { get; set; }
 
         public bool Processed { get; set; }
 
-        [Column("ProcessedDTTM")]
+        [MicroOrmColumn("ProcessedDTTM")]
         public DateTime? ProcessedOn { get; set; }
 
         public string Error { get; set; }
 
-//         [Column("EventDTTM")]
+//         [MicroOrmColumn("EventDTTM")]
 //         public DateTime? EventTimestamp { get; set; }
 // 
-//         [Column("ProdDate")]
+//         [MicroOrmColumn("ProdDate")]
 //         public DateTime? ProductionTimestamp { get; set; }
 // 
 //         public string Shift { get; set; }
 // 
 //         public short? Period { get; set; }
 
-        // ChangeID in SHIP_StatusChangeQueue -> ChangeID in SHIP_StatusChange
-        [LeftJoin("SHIP_StatusChange", "ChangeID", "ChangeID")]
+        [MicroOrmLeftJoin("SHIP_StatusChange", "ChangeID", "ChangeID")]
         public StatusChange StatusChange { get; set; }
     }
 }

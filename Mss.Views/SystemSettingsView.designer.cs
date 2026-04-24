@@ -54,6 +54,12 @@
             this._lblSlugPickPriority = new System.Windows.Forms.Label();
             this._cmbSlugPickPriority = new System.Windows.Forms.ComboBox();
             this._craneFunctionGrid = new Mss.Views.CraneFunctionGrid();
+            this._btnLowerLevelInboundEnabled = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this._lblLowerLevelInboundEnabled = new System.Windows.Forms.Label();
+            this._btnUpperLevelInboundEnabled = new System.Windows.Forms.Button();
+            this._lblUpperLevelInboundEnabled = new System.Windows.Forms.Label();
             this.navigator.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,7 +78,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 51);
+            this.label2.Location = new System.Drawing.Point(10, 124);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(98, 13);
             this.label2.TabIndex = 8;
@@ -84,7 +90,7 @@
             this._lblAutoAcceptLoads.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblAutoAcceptLoads.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblAutoAcceptLoads.ForeColor = System.Drawing.Color.White;
-            this._lblAutoAcceptLoads.Location = new System.Drawing.Point(143, 45);
+            this._lblAutoAcceptLoads.Location = new System.Drawing.Point(143, 118);
             this._lblAutoAcceptLoads.Name = "_lblAutoAcceptLoads";
             this._lblAutoAcceptLoads.Size = new System.Drawing.Size(150, 23);
             this._lblAutoAcceptLoads.TabIndex = 29;
@@ -96,7 +102,7 @@
             this._cmbFifoMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._cmbFifoMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._cmbFifoMode.FormattingEnabled = true;
-            this._cmbFifoMode.Location = new System.Drawing.Point(143, 74);
+            this._cmbFifoMode.Location = new System.Drawing.Point(143, 147);
             this._cmbFifoMode.Name = "_cmbFifoMode";
             this._cmbFifoMode.Size = new System.Drawing.Size(150, 23);
             this._cmbFifoMode.TabIndex = 23;
@@ -105,7 +111,7 @@
             // _btnAutoAcceptLoads
             // 
             this._btnAutoAcceptLoads.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnAutoAcceptLoads.Location = new System.Drawing.Point(143, 45);
+            this._btnAutoAcceptLoads.Location = new System.Drawing.Point(143, 118);
             this._btnAutoAcceptLoads.Name = "_btnAutoAcceptLoads";
             this._btnAutoAcceptLoads.Size = new System.Drawing.Size(150, 23);
             this._btnAutoAcceptLoads.TabIndex = 9;
@@ -126,7 +132,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(10, 80);
+            this.label14.Location = new System.Drawing.Point(10, 153);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(60, 13);
             this.label14.TabIndex = 22;
@@ -137,7 +143,7 @@
             this._lblFifoMode.BackColor = System.Drawing.SystemColors.Window;
             this._lblFifoMode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblFifoMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblFifoMode.Location = new System.Drawing.Point(143, 74);
+            this._lblFifoMode.Location = new System.Drawing.Point(143, 147);
             this._lblFifoMode.Name = "_lblFifoMode";
             this._lblFifoMode.Size = new System.Drawing.Size(150, 23);
             this._lblFifoMode.TabIndex = 32;
@@ -194,7 +200,7 @@
             // _btnLoadBEnabled
             // 
             this._btnLoadBEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnLoadBEnabled.Location = new System.Drawing.Point(143, 207);
+            this._btnLoadBEnabled.Location = new System.Drawing.Point(143, 280);
             this._btnLoadBEnabled.Name = "_btnLoadBEnabled";
             this._btnLoadBEnabled.Size = new System.Drawing.Size(150, 23);
             this._btnLoadBEnabled.TabIndex = 39;
@@ -205,7 +211,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 184);
+            this.label4.Location = new System.Drawing.Point(10, 257);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(80, 13);
             this.label4.TabIndex = 36;
@@ -214,7 +220,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(10, 213);
+            this.label5.Location = new System.Drawing.Point(10, 286);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(80, 13);
             this.label5.TabIndex = 38;
@@ -226,7 +232,7 @@
             this._lblLoadBEnabled.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblLoadBEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblLoadBEnabled.ForeColor = System.Drawing.Color.White;
-            this._lblLoadBEnabled.Location = new System.Drawing.Point(143, 207);
+            this._lblLoadBEnabled.Location = new System.Drawing.Point(143, 280);
             this._lblLoadBEnabled.Name = "_lblLoadBEnabled";
             this._lblLoadBEnabled.Size = new System.Drawing.Size(150, 23);
             this._lblLoadBEnabled.TabIndex = 42;
@@ -236,7 +242,7 @@
             // _btnLoadAEnabled
             // 
             this._btnLoadAEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnLoadAEnabled.Location = new System.Drawing.Point(143, 178);
+            this._btnLoadAEnabled.Location = new System.Drawing.Point(143, 251);
             this._btnLoadAEnabled.Name = "_btnLoadAEnabled";
             this._btnLoadAEnabled.Size = new System.Drawing.Size(150, 23);
             this._btnLoadAEnabled.TabIndex = 37;
@@ -250,7 +256,7 @@
             this._lblLoadAEnabled.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblLoadAEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblLoadAEnabled.ForeColor = System.Drawing.Color.White;
-            this._lblLoadAEnabled.Location = new System.Drawing.Point(143, 178);
+            this._lblLoadAEnabled.Location = new System.Drawing.Point(143, 251);
             this._lblLoadAEnabled.Name = "_lblLoadAEnabled";
             this._lblLoadAEnabled.Size = new System.Drawing.Size(150, 23);
             this._lblLoadAEnabled.TabIndex = 44;
@@ -262,7 +268,7 @@
             this._lblPreferredSlug.BackColor = System.Drawing.SystemColors.Window;
             this._lblPreferredSlug.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblPreferredSlug.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblPreferredSlug.Location = new System.Drawing.Point(143, 149);
+            this._lblPreferredSlug.Location = new System.Drawing.Point(143, 222);
             this._lblPreferredSlug.Name = "_lblPreferredSlug";
             this._lblPreferredSlug.Size = new System.Drawing.Size(150, 23);
             this._lblPreferredSlug.TabIndex = 32;
@@ -271,7 +277,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(10, 155);
+            this.label10.Location = new System.Drawing.Point(10, 228);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(74, 13);
             this.label10.TabIndex = 22;
@@ -282,7 +288,7 @@
             this._cmbPreferredSlug.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._cmbPreferredSlug.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._cmbPreferredSlug.FormattingEnabled = true;
-            this._cmbPreferredSlug.Location = new System.Drawing.Point(143, 149);
+            this._cmbPreferredSlug.Location = new System.Drawing.Point(143, 222);
             this._cmbPreferredSlug.Name = "_cmbPreferredSlug";
             this._cmbPreferredSlug.Size = new System.Drawing.Size(150, 23);
             this._cmbPreferredSlug.TabIndex = 23;
@@ -291,7 +297,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 125);
+            this.label3.Location = new System.Drawing.Point(10, 198);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(86, 13);
             this.label3.TabIndex = 45;
@@ -302,7 +308,7 @@
             this._lblSlugPickPriority.BackColor = System.Drawing.SystemColors.Window;
             this._lblSlugPickPriority.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblSlugPickPriority.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblSlugPickPriority.Location = new System.Drawing.Point(143, 120);
+            this._lblSlugPickPriority.Location = new System.Drawing.Point(143, 193);
             this._lblSlugPickPriority.Name = "_lblSlugPickPriority";
             this._lblSlugPickPriority.Size = new System.Drawing.Size(150, 23);
             this._lblSlugPickPriority.TabIndex = 32;
@@ -313,7 +319,7 @@
             this._cmbSlugPickPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._cmbSlugPickPriority.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._cmbSlugPickPriority.FormattingEnabled = true;
-            this._cmbSlugPickPriority.Location = new System.Drawing.Point(143, 120);
+            this._cmbSlugPickPriority.Location = new System.Drawing.Point(143, 193);
             this._cmbSlugPickPriority.Name = "_cmbSlugPickPriority";
             this._cmbSlugPickPriority.Size = new System.Drawing.Size(150, 23);
             this._cmbSlugPickPriority.TabIndex = 23;
@@ -331,10 +337,82 @@
             this._craneFunctionGrid.TabStop = true;
             this._craneFunctionGrid.ToolTipText = "";
             // 
+            // _btnLowerLevelInboundEnabled
+            // 
+            this._btnLowerLevelInboundEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnLowerLevelInboundEnabled.Location = new System.Drawing.Point(143, 74);
+            this._btnLowerLevelInboundEnabled.Name = "_btnLowerLevelInboundEnabled";
+            this._btnLowerLevelInboundEnabled.Size = new System.Drawing.Size(150, 23);
+            this._btnLowerLevelInboundEnabled.TabIndex = 49;
+            this._btnLowerLevelInboundEnabled.Text = "Enable";
+            this._btnLowerLevelInboundEnabled.UseVisualStyleBackColor = true;
+            this._btnLowerLevelInboundEnabled.Click += new System.EventHandler(this._BtnLowerLevelInboundEnabled_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(10, 51);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(107, 13);
+            this.label1.TabIndex = 46;
+            this.label1.Text = "Upper Level Enabled";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(10, 80);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(107, 13);
+            this.label6.TabIndex = 48;
+            this.label6.Text = "Lower Level Enabled";
+            // 
+            // _lblLowerLevelInboundEnabled
+            // 
+            this._lblLowerLevelInboundEnabled.BackColor = System.Drawing.Color.Gray;
+            this._lblLowerLevelInboundEnabled.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblLowerLevelInboundEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblLowerLevelInboundEnabled.ForeColor = System.Drawing.Color.White;
+            this._lblLowerLevelInboundEnabled.Location = new System.Drawing.Point(143, 74);
+            this._lblLowerLevelInboundEnabled.Name = "_lblLowerLevelInboundEnabled";
+            this._lblLowerLevelInboundEnabled.Size = new System.Drawing.Size(150, 23);
+            this._lblLowerLevelInboundEnabled.TabIndex = 50;
+            this._lblLowerLevelInboundEnabled.Text = "Disabled";
+            this._lblLowerLevelInboundEnabled.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _btnUpperLevelInboundEnabled
+            // 
+            this._btnUpperLevelInboundEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnUpperLevelInboundEnabled.Location = new System.Drawing.Point(143, 45);
+            this._btnUpperLevelInboundEnabled.Name = "_btnUpperLevelInboundEnabled";
+            this._btnUpperLevelInboundEnabled.Size = new System.Drawing.Size(150, 23);
+            this._btnUpperLevelInboundEnabled.TabIndex = 47;
+            this._btnUpperLevelInboundEnabled.Text = "Enable";
+            this._btnUpperLevelInboundEnabled.UseVisualStyleBackColor = true;
+            this._btnUpperLevelInboundEnabled.Click += new System.EventHandler(this._BtnUpperLevelInboundEnabled_Click);
+            // 
+            // _lblUpperLevelInboundEnabled
+            // 
+            this._lblUpperLevelInboundEnabled.BackColor = System.Drawing.Color.Gray;
+            this._lblUpperLevelInboundEnabled.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblUpperLevelInboundEnabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblUpperLevelInboundEnabled.ForeColor = System.Drawing.Color.White;
+            this._lblUpperLevelInboundEnabled.Location = new System.Drawing.Point(143, 45);
+            this._lblUpperLevelInboundEnabled.Name = "_lblUpperLevelInboundEnabled";
+            this._lblUpperLevelInboundEnabled.Size = new System.Drawing.Size(150, 23);
+            this._lblUpperLevelInboundEnabled.TabIndex = 51;
+            this._lblUpperLevelInboundEnabled.Text = "Disabled";
+            this._lblUpperLevelInboundEnabled.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // SystemSettingsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this._btnLowerLevelInboundEnabled);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this._lblLowerLevelInboundEnabled);
+            this.Controls.Add(this._btnUpperLevelInboundEnabled);
+            this.Controls.Add(this._lblUpperLevelInboundEnabled);
             this.Controls.Add(this.label3);
             this.Controls.Add(this._btnLoadBEnabled);
             this.Controls.Add(this.label4);
@@ -397,5 +475,11 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label _lblSlugPickPriority;
         private System.Windows.Forms.ComboBox _cmbSlugPickPriority;
+        private System.Windows.Forms.Button _btnLowerLevelInboundEnabled;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label _lblLowerLevelInboundEnabled;
+        private System.Windows.Forms.Button _btnUpperLevelInboundEnabled;
+        private System.Windows.Forms.Label _lblUpperLevelInboundEnabled;
     }
 }
