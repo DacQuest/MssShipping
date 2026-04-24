@@ -1,4 +1,5 @@
-﻿using DacQuest.DFX.Core.DataItems.Collections;
+﻿using DacQuest.DFX.Core.Configuration;
+using DacQuest.DFX.Core.DataItems.Collections;
 using DacQuest.DFX.Core.Strings;
 using Mss.Collections;
 using Mss.Common;
@@ -42,9 +43,14 @@ namespace Mss.Operations
             base.RegisterCustomStates();
             RegisterState(AwaitingDestinationState, "Awaiting Destination", AwaitingDestinationStateHandler, true);
         }
-
+        protected override void ProcessParameters(XConfigurationParameterSet parameters)
+        {
+            _parameters = (AssignmentParameterSetWrapper)parameters;
+        }
         protected override void DoStart()
         {
+            base.DoStart();
+
             AssignmentPit.DataItemChanged += _AssignmentPit_DataItemChanged;
         }
 
