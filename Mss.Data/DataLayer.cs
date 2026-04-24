@@ -1252,8 +1252,8 @@ namespace Mss.Data
             _LockAll();
             try
             {
-
-                if (TryGetPitItem(level, palletID, out PitItem pitItem))
+                if  (craneNumber != CraneNumber.Crane1
+                    && TryGetPitItem(level, palletID, out PitItem pitItem))
                 {
                     palletItem = pitItem.Pallet;
                     PitCode pitCode = pitItem.PitCode;
