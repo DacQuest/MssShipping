@@ -6,10 +6,10 @@ using System;
 
 namespace Mss.Data.Pocos
 {
-    [Dapper.Contrib.Extensions.Table("SHIP_BroadcastDetail")]
+    [System.ComponentModel.DataAnnotations.Schema.Table("SHIP_BroadcastDetail")]
     public class BroadcastDetail
     {
-        [Key]
+        [System.ComponentModel.DataAnnotations.Key]
         [Identity]
         public int DetailID { get; set; }
 

@@ -6,10 +6,10 @@ using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace Mss.Data.Pocos
 {
-    [Dapper.Contrib.Extensions.Table("SHIP_BroadcastQueue")]
+    [System.ComponentModel.DataAnnotations.Schema.Table("SHIP_BroadcastQueue")]
     public class BroadcastQueue
     {
-        [Key]
+        [System.ComponentModel.DataAnnotations.Key]
         [Identity]
         public int QueueID { get; set; }
 
