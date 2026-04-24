@@ -266,8 +266,8 @@ namespace Mss.Data
         {
             availableLevel = Levels.None;
 
-            int upperAvailable = Constant.UpperBufferSize - _assignmentPit.Values.Count(p => p.PitCode == PitCode.Upper);
-            int lowerAvailable = Constant.LowerBufferSize - _assignmentPit.Values.Count(p => p.PitCode == PitCode.Lower);
+            int upperAvailable = Constant.UpperAssignmentBufferSize - _assignmentPit.Values.Count(p => p.PitCode == PitCode.Upper);
+            int lowerAvailable = Constant.LowerAssignmentBufferSize - _assignmentPit.Values.Count(p => p.PitCode == PitCode.Lower);
 
             if (upperAvailable > lowerAvailable)
             {
@@ -924,7 +924,7 @@ namespace Mss.Data
             {
                 case OperationCode.AS1:
                     return _ProcessPalletAtAssignment1(
-                        operationCode,
+//                         operationCode,
                         palletID,
                         out palletItem,
                         out moveCommand,
@@ -932,7 +932,7 @@ namespace Mss.Data
                         out fault);
                 case OperationCode.AS2:
                     return _ProcessPalletAtAssignment2(
-                        operationCode,
+//                         operationCode,
                         palletID,
                         out palletItem,
                         out moveCommand,
@@ -940,7 +940,7 @@ namespace Mss.Data
                         out fault);
                 case OperationCode.AS3:
                     return _ProcessPalletAtAssignment3(
-                        operationCode,
+//                         operationCode,
                         palletID,
                         out palletItem,
                         out moveCommand,
@@ -956,93 +956,87 @@ namespace Mss.Data
         }
 
         private bool _ProcessPalletAtAssignment1(
-            OperationCode operationCode,
+//             OperationCode operationCode,
             string palletID,
             out PalletItem palletItem,
             out int moveCommand,
             out string extendedState,
             out string fault)
         {
-            moveCommand = Constant.NoMoveCommand;
-            extendedState = string.Empty;
-
             if (!MesInterface.TryFetchPalletItemAtAS1andAS2(
-                operationCode,
+                OperationCode.AS1,
                 palletID,
                 out bool sendToConsoleArea,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
                 palletItem = null;
+                moveCommand = Constant.NoMoveCommand;
+                extendedState = string.Empty;
                 return false;
             }
+
+            moveCommand = Constant.NoMoveCommand;
+            extendedState = string.Empty;
+            fault = string.Empty;
 
             _LockAll();
             try
             {
-                throw new NotImplementedException("_ProcessPalletAtAssignment3() not implemented!");
-
-//                 if (destination == PalletDestination.Purge
-//                     || fetchedPalletItem.Status == PalletStatus.Purge)
-//                 {
-//                     if (!_GetAvailableLevel(Levels.Lower, out Levels availableLevel))
-//                     {
-//                         palletItem = null;
-//                         moveCommand = Constant.NoMoveCommand;
-//                         extendedState = $"There is currently no destination available for Pallet {palletID}";
-//                         return false;
-//                     }
-//                     palletItem = fetchedPalletItem;
-//                     palletItem.Status = PalletStatus.Purge;
-//                     SetPitPallet(availableLevel, palletItem, PitCode.Purge);
-//                     moveCommand = availableLevel == Levels.Upper
-//                         ? Constant.Assignment1MoveCommandForward
-//                         : Constant.Assignment1MoveCommandLower;
-//                     extendedState = $"Assigning Purge Pallet {palletItem.PalletID} to {availableLevel.ToText()} Level.";
-//                     return true;
-//                 }
-//                 else if (destination == PalletDestination.Storage)
-//                 {
-//                     if (!_GetAvailableLevel(Levels.Lower, out Levels availableLevel))
-//                     {
-//                         palletItem = null;
-//                         moveCommand = Constant.NoMoveCommand;
-//                         extendedState = $"There is currently no destination available for Pallet {palletID}";
-//                         return false;
-//                     }
-// 
-// 
-// 
-// 
-// 
-//                 }
-
-
-
-//                 else if (destination == PalletDestination.Storage)
-//                 {
-//                     if (!_GetAvailableLevel(Levels.Lower, out Levels availableLevel))
-//                     {
-//                         palletItem = null;
-//                         moveCommand = Constant.NoMoveCommand;
-//                         extendedState = $"There is currently no destination available for Pallet {palletID}";
-//                         return false;
-//                     }
-//                     palletItem = fetchedPalletItem;
-//                     moveCommand = availableLevel == Levels.Upper
-//                         ? Constant.Assignment1MoveCommandForward
-//                         : Constant.Assignment1MoveCommandLower;
-//                     extendedState = fetchedPalletItem.Sku.IsStackSku()
-//                         ? $"Assigning Purge Pallet {palletItem.PalletID} to {availableLevel.ToText()} Level."
-//                         : palletItem.Status == PalletStatus.Hold
-//                             ? $"Assigning Hold Pallet {palletItem.PalletID} to {availableLevel.ToText()} Level."
-//                             : $"Assigning Pallet {palletItem.PalletID} to {availableLevel.ToText()} Level.";
-//                     PitCode pitCode = availableLevel == Levels.Upper
-//                         ? PitCode.Upper
-//                         : PitCode.Lower;
-//                     SetPitPallet(availableLevel, palletItem, pitCode);
-//                     return true;
-//                 }
+                palletItem = fetchedPalletItem;
+                Levels availableLevel;
+                if (sendToConsoleArea)
+                {
+                    SetPitPallet(Levels.None, palletItem, PitCode.Console);
+                    moveCommand = Constant.Assignment1MoveCommandForward;
+                    extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
+                    return true;
+                }
+                else if (palletItem.Status == PalletStatus.Purge)
+                {
+                    _ = _assignmentPit.Remove(palletID);
+                    if (_GetAvailableLevel(Levels.Lower, out availableLevel))
+                    {
+                        if (availableLevel == Levels.Lower)
+                        {
+                            moveCommand = Constant.Assignment1MoveCommandLower;
+                            SetPitPallet(Levels.None, palletItem, PitCode.Lower);
+                            extendedState = $"Routing Pallet {palletID} to Purge via Lower Level.";
+                            return true;
+                        }
+                        else if (availableLevel == Levels.Upper)
+                        {
+                            moveCommand = Constant.Assignment1MoveCommandForward;
+                            SetPitPallet(Levels.None, palletItem, PitCode.Upper);
+                            extendedState = $"Routing Pallet {palletID} to Purge via Upper Level.";
+                            return true;
+                        }
+                    }
+                    moveCommand = Constant.NoMoveCommand;
+                    extendedState = $"Pallet {palletID} does not currently have a Destination.";
+                    fault = string.Empty;
+                    return false;
+                }
+                if (_GetAvailableLevel(Levels.Lower, out availableLevel))
+                {
+                    if (availableLevel >= Levels.Lower)
+                    {
+                        moveCommand = Constant.Assignment1MoveCommandLower;
+                        SetPitPallet(Levels.None, palletItem, PitCode.Lower);
+                        extendedState = $"Routing Pallet {palletID} to Lower Level.";
+                    }
+                    else
+                    {
+                        moveCommand = Constant.Assignment1MoveCommandForward;
+                        SetPitPallet(Levels.None, palletItem, PitCode.Upper);
+                        extendedState = $"Routing Pallet {palletID} to Upper Level.";
+                    }
+                    return true;
+                }
+                moveCommand = Constant.NoMoveCommand;
+                extendedState = $"Pallet {palletID} does not currently have a Destination.";
+                fault = string.Empty;
+                return false;
             }
             finally
             {
@@ -1051,31 +1045,86 @@ namespace Mss.Data
         }
 
         private bool _ProcessPalletAtAssignment2(
-            OperationCode operationCode,
+//             OperationCode operationCode,
             string palletID,
             out PalletItem palletItem,
             out int moveCommand,
             out string extendedState,
             out string fault)
         {
-            moveCommand = Constant.NoMoveCommand;
-            extendedState = string.Empty;
-
             if (!MesInterface.TryFetchPalletItemAtAS1andAS2(
-                operationCode,
+                OperationCode.AS1,
                 palletID,
                 out bool sendToConsoleArea,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
                 palletItem = null;
+                moveCommand = Constant.NoMoveCommand;
+                extendedState = string.Empty;
                 return false;
             }
+
+            moveCommand = Constant.NoMoveCommand;
+            extendedState = string.Empty;
+            fault = string.Empty;
 
             _LockAll();
             try
             {
-                throw new NotImplementedException("_ProcessPalletAtAssignment2() not implemented!");
+                palletItem = fetchedPalletItem;
+                Levels availableLevel;
+                if (sendToConsoleArea)
+                {
+                    SetPitPallet(Levels.None, palletItem, PitCode.Console);
+                    moveCommand = Constant.Assignment1MoveCommandForward;
+                    extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
+                    return true;
+                }
+                else if (palletItem.Status == PalletStatus.Purge)
+                {
+                    _ = _assignmentPit.Remove(palletID);
+                    if (_GetAvailableLevel(Levels.Lower, out availableLevel))
+                    {
+                        if (availableLevel >= Levels.Lower)
+                        {
+                            moveCommand = Constant.Assignment2MoveCommandLower;
+                            SetPitPallet(Levels.None, palletItem, PitCode.Lower);
+                            extendedState = $"Routing Pallet {palletID} to Purge via Lower Level.";
+                        }
+                        else
+                        {
+                            moveCommand = Constant.Assignment2MoveCommandUpper;
+                            SetPitPallet(Levels.None, palletItem, PitCode.Upper);
+                            extendedState = $"Routing Pallet {palletID} to Purge via Upper Level.";
+                        }
+                        return true;
+                    }
+                    moveCommand = Constant.NoMoveCommand;
+                    extendedState = $"Pallet {palletID} does not currently have a Destination.";
+                    fault = string.Empty;
+                    return false;
+                }
+                if (_GetAvailableLevel(Levels.Lower, out availableLevel))
+                {
+                    if (availableLevel >= Levels.Lower)
+                    {
+                        moveCommand = Constant.Assignment1MoveCommandLower;
+                        SetPitPallet(Levels.None, palletItem, PitCode.Lower);
+                        extendedState = $"Routing Pallet {palletID} to Lower Level.";
+                    }
+                    else
+                    {
+                        moveCommand = Constant.Assignment1MoveCommandForward;
+                        SetPitPallet(Levels.None, palletItem, PitCode.Upper);
+                        extendedState = $"Routing Pallet {palletID} to Upper Level.";
+                    }
+                    return true;
+                }
+                moveCommand = Constant.NoMoveCommand;
+                extendedState = $"Pallet {palletID} does not currently have a Destination.";
+                fault = string.Empty;
+                return false;
             }
             finally
             {
@@ -1084,25 +1133,27 @@ namespace Mss.Data
         }
 
         private bool _ProcessPalletAtAssignment3(
-            OperationCode operationCode,
+//             OperationCode operationCode,
             string palletID,
             out PalletItem palletItem,
             out int moveCommand,
             out string extendedState,
             out string fault)
         {
-            moveCommand = Constant.NoMoveCommand;
-            extendedState = string.Empty;
-
             if (!MesInterface.TryFetchPalletItem(
-                operationCode,
+                OperationCode.AS3,
                 palletID,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
                 palletItem = null;
+                moveCommand = Constant.NoMoveCommand;
+                extendedState = string.Empty;
                 return false;
             }
+
+            moveCommand = Constant.NoMoveCommand;
+            extendedState = string.Empty;
 
             _LockAll();
             try

@@ -159,18 +159,19 @@ namespace Mss.Common
         public const int Crane4UpperInboundLocation  = 41002;
         public const int Crane4UpperOutboundLocation = 42002;
 
-        public const int UpperBufferSize = 3;
-        public const int LowerBufferSize = 3;
-        public const int ConsoleBufferSize = 6;
+        public const int UpperAssignmentBufferSize = 2;
+        public const int LowerAssignmentBufferSize = 2;
+        public const int ConsoleAssignmentBufferSize = 6;
 
         // Operation Move Commands
         public const int NoMoveCommand = 0;
 
-        public const int Assignment1MoveCommandForward = 1;
-        public const int Assignment1MoveCommandLower = 2;
+        public const int Assignment1MoveCommandLower = 1;
+        public const int Assignment1MoveCommandForward = 2;
 
-        public const int Assignment2MoveCommandConsole = 1;
+        public const int Assignment2MoveCommandLower = 1;
         public const int Assignment2MoveCommandUpper = 2;
+        public const int Assignment2MoveCommandConsole = 3;
 
         public const int Assignment3MoveCommandLower = 1;
         public const int Assignment3MoveCommandUpper = 2;
