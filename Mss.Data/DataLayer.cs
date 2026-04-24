@@ -456,11 +456,6 @@ namespace Mss.Data
             PalletItem palletItem,
             PitCode pitCode)
         {
-            XArgumentChecker.ThrowIfNotContainedIn(
-                level,
-                nameof(level),
-                new Levels[] { Levels.Lower, Levels.Upper });
-
             _LockAll();
             try
             {

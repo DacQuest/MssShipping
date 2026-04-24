@@ -41,8 +41,8 @@ namespace Mss.Collections
          Comment = "")]
         public Levels Level
         {
-            get => GetEnum<Levels>(nameof(Levels));
-            set => SetEnum(nameof(Levels), value);
+            get => GetEnum<Levels>(nameof(Level));
+            set => SetEnum(nameof(Level), value);
         }
 
         [XDataItemProperty(
