@@ -25,6 +25,16 @@ namespace Mss.Collections
         public bool IsDoneOrInvalid => Status == LoadItemStatus.Done
                     || IsInvalid;
 
+        public static int LoadIndexFromGridRowColumn(
+            Levels gridLevel,
+            int row,
+            int column)
+        {
+            return ((9 - row) * 3)
+                + (column - 1)
+                + (gridLevel == Levels.Lower ? Constant.LoadSize / 2 : 0);
+        }
+
         public static int GridRowIndexFromNodeIndex(int nodeIndex)
         {
             XArgumentChecker.ThrowIfLessThanZero(nodeIndex, nameof(nodeIndex));
@@ -104,7 +114,7 @@ namespace Mss.Collections
         public int TransferMoveCommand
             => TransferMoveCommandFromNodeIndex(LoadCommandOffset, NodeIndex);
 
-        public static (Color, Color) GetLoadStatusColors(
+        public static (Color Fore, Color Back) GetLoadStatusColors(
             LoadItemStatus status,
             bool transferring,
             bool flashInverted)
@@ -118,6 +128,8 @@ namespace Mss.Collections
             {
                 case LoadItemStatus.Invalid:
                     return (Color.White, Color.Black);
+                case LoadItemStatus.Waiting:
+                    return (Color.Black, Color.LightGray);
                 case LoadItemStatus.Pending:
                     return (Color.White, Color.DarkCyan);
                 case LoadItemStatus.Pickable:
@@ -126,8 +138,6 @@ namespace Mss.Collections
                     return (Color.White, Color.Blue);
                 case LoadItemStatus.Picked:
                     return (Color.White, Color.Navy);
-//                 case LoadItemStatus.Sequencing:
-//                     return (Color.Black, Color.Lavender);
                 case LoadItemStatus.Presequenced:
                     return (Color.White, Color.DarkMagenta);
                 case LoadItemStatus.Sequenced:
@@ -136,8 +146,8 @@ namespace Mss.Collections
                         : (Color.White, Color.Magenta);
                 case LoadItemStatus.Done:
                     return (Color.White, Color.DarkGreen);
-//                 case LoadItemStatus.Loadable:
-//                     return (Color.Black, Color.Pink);
+                case LoadItemStatus.Loadable:
+                    return (Color.Black, Color.Lime);
                 default:
                     return (Color.Yellow, Color.Red);
             }

@@ -1143,9 +1143,10 @@ namespace Mss.Data
             out string extendedState,
             out string fault)
         {
-            if (!MesInterface.TryFetchPalletItem(
+            if (!MesInterface.TryFetchPalletItemAtAS1andAS2(
                 OperationCode.AS3,
                 palletID,
+                out bool sendToConsoleArea,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -1163,8 +1164,14 @@ namespace Mss.Data
             {
                 palletItem = fetchedPalletItem;
                 Levels availableLevel;
-
-                if (palletItem.Status == PalletStatus.Purge
+                if (sendToConsoleArea)
+                {
+                    SetPitPallet(Levels.None, palletItem, PitCode.Console);
+                    moveCommand = Constant.Assignment3MoveCommandConsole;
+                    extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
+                    return true;
+                }
+                else if (palletItem.Status == PalletStatus.Purge
                     || palletItem.Status == PalletStatus.Unknown)
                 {
                     palletItem.Status = PalletStatus.Purge;
@@ -1173,13 +1180,13 @@ namespace Mss.Data
                     {
                         if (availableLevel == Levels.Lower)
                         {
-                            moveCommand = Constant.Assignment2MoveCommandLower;
+                            moveCommand = Constant.Assignment3MoveCommandLower;
                             SetPitPallet(Levels.None, palletItem, PitCode.Lower);
                             extendedState = $"Routing Pallet {palletID} to Purge via Lower Level.";
                         }
                         else // availableLevel == Levels.Upper
                         {
-                            moveCommand = Constant.Assignment2MoveCommandUpper;
+                            moveCommand = Constant.Assignment3MoveCommandUpper;
                             SetPitPallet(Levels.None, palletItem, PitCode.Upper);
                             extendedState = $"Routing Pallet {palletID} to Purge via Upper Level.";
                         }
@@ -1194,13 +1201,13 @@ namespace Mss.Data
                 {
                     if (availableLevel == Levels.Lower)
                     {
-                        moveCommand = Constant.Assignment2MoveCommandLower;
+                        moveCommand = Constant.Assignment3MoveCommandLower;
                         SetPitPallet(Levels.None, palletItem, PitCode.Lower);
                         extendedState = $"Routing Pallet {palletID} to Lower Level.";
                     }
                     else // availableLevel == Levels.Upper
                     {
-                        moveCommand = Constant.Assignment2MoveCommandUpper;
+                        moveCommand = Constant.Assignment3MoveCommandUpper;
                         SetPitPallet(Levels.None, palletItem, PitCode.Upper);
                         extendedState = $"Routing Pallet {palletID} to Upper Level.";
                     }

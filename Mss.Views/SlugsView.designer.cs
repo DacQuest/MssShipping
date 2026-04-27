@@ -151,7 +151,7 @@
             this._btnAcceptLoadA.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._btnAcceptLoadA.Image = global::Mss.Views.Properties.Resources.GreenCheckFancy24;
             this._btnAcceptLoadA.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._btnAcceptLoadA.Location = new System.Drawing.Point(1502, 47);
+            this._btnAcceptLoadA.Location = new System.Drawing.Point(690, 47);
             this._btnAcceptLoadA.Name = "_btnAcceptLoadA";
             this._btnAcceptLoadA.Size = new System.Drawing.Size(117, 30);
             this._btnAcceptLoadA.TabIndex = 5;
@@ -167,7 +167,7 @@
             this._btnAbortLoadA.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._btnAbortLoadA.Image = global::Mss.Views.Properties.Resources.RedWhiteProhibited24;
             this._btnAbortLoadA.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._btnAbortLoadA.Location = new System.Drawing.Point(1379, 47);
+            this._btnAbortLoadA.Location = new System.Drawing.Point(567, 47);
             this._btnAbortLoadA.Name = "_btnAbortLoadA";
             this._btnAbortLoadA.Size = new System.Drawing.Size(117, 30);
             this._btnAbortLoadA.TabIndex = 6;
@@ -183,7 +183,7 @@
             this._btnAcceptLoadB.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._btnAcceptLoadB.Image = global::Mss.Views.Properties.Resources.GreenCheckFancy24;
             this._btnAcceptLoadB.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._btnAcceptLoadB.Location = new System.Drawing.Point(690, 47);
+            this._btnAcceptLoadB.Location = new System.Drawing.Point(1502, 47);
             this._btnAcceptLoadB.Name = "_btnAcceptLoadB";
             this._btnAcceptLoadB.Size = new System.Drawing.Size(117, 30);
             this._btnAcceptLoadB.TabIndex = 5;
@@ -199,7 +199,7 @@
             this._btnAbortLoadB.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._btnAbortLoadB.Image = global::Mss.Views.Properties.Resources.RedWhiteProhibited24;
             this._btnAbortLoadB.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._btnAbortLoadB.Location = new System.Drawing.Point(567, 47);
+            this._btnAbortLoadB.Location = new System.Drawing.Point(1379, 47);
             this._btnAbortLoadB.Name = "_btnAbortLoadB";
             this._btnAbortLoadB.Size = new System.Drawing.Size(117, 30);
             this._btnAbortLoadB.TabIndex = 6;
@@ -254,7 +254,7 @@
             this._slugAGridUpper.Name = "_slugAGridUpper";
             this._slugAGridUpper.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this._slugAGridUpper.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this._slugAGridUpper.Size = new System.Drawing.Size(797, 370);
+            this._slugAGridUpper.Size = new System.Drawing.Size(797, 406);
             this._slugAGridUpper.TabIndex = 1;
             this._slugAGridUpper.TabStop = true;
             this._slugAGridUpper.ToolTipText = "";
@@ -262,11 +262,11 @@
             // _slugAGridLower
             // 
             this._slugAGridLower.EnableSort = true;
-            this._slugAGridLower.Location = new System.Drawing.Point(10, 459);
+            this._slugAGridLower.Location = new System.Drawing.Point(10, 495);
             this._slugAGridLower.Name = "_slugAGridLower";
             this._slugAGridLower.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this._slugAGridLower.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this._slugAGridLower.Size = new System.Drawing.Size(797, 370);
+            this._slugAGridLower.Size = new System.Drawing.Size(797, 406);
             this._slugAGridLower.TabIndex = 2;
             this._slugAGridLower.TabStop = true;
             this._slugAGridLower.ToolTipText = "";
@@ -274,11 +274,11 @@
             // _slugBGridLower
             // 
             this._slugBGridLower.EnableSort = true;
-            this._slugBGridLower.Location = new System.Drawing.Point(822, 459);
+            this._slugBGridLower.Location = new System.Drawing.Point(822, 495);
             this._slugBGridLower.Name = "_slugBGridLower";
             this._slugBGridLower.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this._slugBGridLower.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this._slugBGridLower.Size = new System.Drawing.Size(797, 370);
+            this._slugBGridLower.Size = new System.Drawing.Size(797, 406);
             this._slugBGridLower.TabIndex = 2;
             this._slugBGridLower.TabStop = true;
             this._slugBGridLower.ToolTipText = "";
@@ -290,7 +290,7 @@
             this._slugBGridUpper.Name = "_slugBGridUpper";
             this._slugBGridUpper.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this._slugBGridUpper.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this._slugBGridUpper.Size = new System.Drawing.Size(797, 370);
+            this._slugBGridUpper.Size = new System.Drawing.Size(797, 406);
             this._slugBGridUpper.TabIndex = 1;
             this._slugBGridUpper.TabStop = true;
             this._slugBGridUpper.ToolTipText = "";
@@ -315,7 +315,7 @@
             this.Controls.Add(this._slugBGridUpper);
             this.Controls.Add(this.label3);
             this.Name = "SlugsView";
-            this.Size = new System.Drawing.Size(1651, 840);
+            this.Size = new System.Drawing.Size(1651, 912);
             this.navigator.ResumeLayout(false);
             this.navigator.PerformLayout();
             this.ResumeLayout(false);

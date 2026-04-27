@@ -28,10 +28,10 @@ namespace Mss.Views
         private SlugProxy _slugProxy = null;
 //         private StorageProxy _storageProxy = null;
 //         private SystemSettingsProxy _systemSettingsProxy = null;
-        private int _headerColumnWidth = 60;
-        private int _dataColumnWidth = 245;
+        private int _headerColumnWidth = 75;
+        private int _dataColumnWidth = 240;
         private int _headerRowHeight = 26;
-        private int _dataRowHeight = 38;
+        private int _dataRowHeight = 42;
         private int _rowCount = Constant.LoadSize / 6;
 
         private SlugLetter _slugLetter;
@@ -93,7 +93,8 @@ namespace Mss.Views
             // Set up header attributes
             SourceGrid.Cells.Views.Header boldHeader = new SourceGrid.Cells.Views.Header
             {
-                Font = new Font(Font, FontStyle.Bold),
+                //                 Font = new Font(Font, FontStyle.Bold),
+                Font = new Font("Arial", 10F, FontStyle.Bold),
                 TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter
             };
 
@@ -168,13 +169,13 @@ namespace Mss.Views
             for (int rowNumber = 1; rowNumber <= _rowCount; rowNumber++)
             {
                 ICell cell = this[rowNumber, 1];
-                cell.View.Font = new Font("Courier New", 10F);
+                cell.View.Font = new Font("Courier New", 12F, FontStyle.Bold);
 
                 cell = this[rowNumber, 2];
-                cell.View.Font = new Font("Courier New", 10F);
+                cell.View.Font = new Font("Courier New", 12F, FontStyle.Bold);
 
                 cell = this[rowNumber, 3];
-                cell.View.Font = new Font("Courier New", 10F);
+                cell.View.Font = new Font("Courier New", 12F, FontStyle.Bold);
             }
         }
 
@@ -240,7 +241,8 @@ namespace Mss.Views
 //                 }
 //                 else
                 if (_showShortages
-                    && loadItem.Status != LoadItemStatus.Invalid
+                    && loadItem.Status >= LoadItemStatus.Pending
+                    && loadItem.Status <= LoadItemStatus.Pickable
                     && loadItem.Broadcast.Shortage)
                 {
                     borderColor = Color.Red;
@@ -270,39 +272,37 @@ namespace Mss.Views
                 return string.Empty;
             }
 
-            string sequence = loadItem.Broadcast.Csn;
-            if (sequence.Length == 0)
+            string palletID = loadItem.Pallet.PalletID == Constant.NoPalletID
+                ? new string('-', Constant.PalletIDLength)
+                : loadItem.Pallet.PalletID;
+
+            string csn = loadItem.Broadcast.Csn;
+            if (csn.Length == 0)
             {
-                sequence = new string('-', Constant.CsnLength);
+                csn = new string('-', BroadcastItem.MakeCsn(0, Constant.VehicleRow1CsnSuffix).Length);
             }
+
+            string crane = "C-";
+            if (loadItem.Crane > CraneNumber.None)
+            {
+                crane = $"C{(int)loadItem.Crane}";
+            }
+
+            string pickModeCode = loadItem.Broadcast.PickMode.Code();
 
             string sku = loadItem.Broadcast.Sku;
             if (sku.Length == 0)
             {
-                sku = new string('-', Constant.SkuLength - sku.Length);
+                sku = new string('-', Constant.ActualSkuLength - sku.Length);
             }
 
-            string palletID;
-            if (loadItem.Pallet.PalletID == Constant.NoPalletID)
-            {
-                palletID = new string('-', Constant.PalletIDLength);
-            }
-            else
-            {
-                palletID = loadItem.Pallet.PalletID;
-            }
-
-            string bottomSpacer = new string(
-                ' ',
-                Constant.LoadCellCharacterWidth
-                    - Constant.PalletIDLength
-                    - sequence.Length);
             return string.Format(
-                "{0}\n{1}{2}{3}",
-                sku,
+                "{0}  {1}  {2}  {3}\n{4}",
                 palletID,
-                bottomSpacer,
-                sequence);
+                csn,
+                crane,
+                pickModeCode,
+                sku);
         }
 
         public void RefreshItems()
@@ -333,7 +333,7 @@ namespace Mss.Views
 
         private int _ConvertToLoadIndex(int row, int column)
         {
-            return ((10 - row) * 3) + (column - 1) + (_level == Levels.Upper ? Constant.LoadSize / 2 : 0);
+            return LoadItem.LoadIndexFromGridRowColumn(_level, row, column);
         }
 
         private void _LoadGrid_MouseClick(object sender, MouseEventArgs e)
@@ -369,7 +369,7 @@ namespace Mss.Views
 //                 contextMenuInsertEmptyPallet.Text = loadItem.InsertEmpty
 //                     ? "DO NOT Insert Empty Pallet"
 //                     : "Insert Empty Pallet";
-//                 contextMenuInsertEmptyPallet.Visible = allowInsertEmptyPallet;
+                contextMenuInsertEmptyPallet.Visible = allowInsertEmptyPallet;
 
                 // Show Context Menu
                 if (allowReprintLabel

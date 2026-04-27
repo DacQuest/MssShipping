@@ -268,9 +268,6 @@ insert into @ColumnSets values
     ,[SlugBLoadNumber] INT DEFAULT 0 NOT NULL
     ,[SlugBLoadStartedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
     ,[SlugBLoadCompletedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
-
-
-
     ,[LoadPickPriority] BIGINT DEFAULT 0 NOT NULL
     ,[CraneMode] BIGINT DEFAULT 0 NOT NULL
     ,[LoadAID] INT DEFAULT 0 NOT NULL
@@ -278,8 +275,9 @@ insert into @ColumnSets values
     ,[LoadBEnabled] BIT DEFAULT 0 NOT NULL
     ,[LoadBStartedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
     ,[LoadBCompletedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
+    ,[UpperLevelInboundEnabled] BIT DEFAULT 0 NOT NULL
+    ,[LowerLevelInboundEnabled] BIT DEFAULT 0 NOT NULL
     '),
-
     ('SystemSettingsItem_PrioritizeAuditPicks','
     ,[PrioritizeAuditPicks] BIT DEFAULT 0 NOT NULL
     '),
@@ -344,8 +342,8 @@ insert into @TableDefs values
 
   ,(0,0,0,'[dbo].[HoldCodes]','Dictionary','HoldCodeItem','300','1','1')
 
-  ,(0,0,0,'[dbo].[Storage]','Array','BinItem','1056','1','1')
-  ,(0,0,0,'[dbo].[Storage_Pallet]','Child','PalletItem','1056','1','1')
+  ,(0,0,0,'[dbo].[Storage]','Array','BinItem','1104','1','1')
+  ,(0,0,0,'[dbo].[Storage_Pallet]','Child','PalletItem','1104','1','1')
 
   ,(0,0,0,'[dbo].[UpperPit]','Dictionary','PitItem','100','1','1')
   ,(0,0,0,'[dbo].[UpperPit_Pallet]','Child','PalletItem','100','1','1')

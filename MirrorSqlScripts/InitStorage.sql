@@ -19,7 +19,7 @@ declare @location int
 
 set @maxCrane = 4
 set @maxSide = 2
-set @maxHorz = 22
+set @maxHorz = 23
 set @maxVert = 6
 
 

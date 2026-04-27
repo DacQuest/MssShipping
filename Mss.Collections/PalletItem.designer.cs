@@ -18,7 +18,7 @@ namespace Mss.Collections
 
         [XDataItemProperty(
            Comment = "",
-           MaxLength = Constant.PalletIDLength)]
+           MaxLength = Constant.MaxPalletIDLength)]
         public string PalletID
         {
             get => GetString(nameof(PalletID));

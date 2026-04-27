@@ -40,6 +40,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\DacQuest\Frameworks\DFX20\Source\DacQuest.DFX.Devices\bin\Debug\DacQuest.DFX.Devices.dll</HintPath>
     </Reference>
+    <Reference Include="SourceGrid, Version=4.30.4205.34166, Culture=neutral, PublicKeyToken=df6f5e538749e85d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\DacQuest\Frameworks\DFX20\Libs\SourceGrid 4.30\SourceGrid\bin\Debug\SourceGrid.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />

@@ -63,8 +63,8 @@ namespace Mss.Views
             // contextMenu
             // 
             this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.contextMenuReprint,
             this.contextMenuEditItem,
+            this.contextMenuReprint,
             this.contextMenuRollback,
             this.contextMenuInsertEmptyPallet});
             this.contextMenu.Name = "contextMenu";
@@ -77,17 +77,17 @@ namespace Mss.Views
             this.contextMenuReprint.Size = new System.Drawing.Size(193, 22);
             this.contextMenuReprint.Text = "Reprint Shipping Label";
             // 
-            // contextMenuRollback
-            // 
-            this.contextMenuRollback.Name = "contextMenuRollback";
-            this.contextMenuRollback.Size = new System.Drawing.Size(193, 22);
-            this.contextMenuRollback.Text = "Rollback Load Item";
-            // 
             // contextMenuEditItem
             // 
             this.contextMenuEditItem.Name = "contextMenuEditItem";
             this.contextMenuEditItem.Size = new System.Drawing.Size(193, 22);
             this.contextMenuEditItem.Text = "Edit Load Item";
+            // 
+            // contextMenuRollback
+            // 
+            this.contextMenuRollback.Name = "contextMenuRollback";
+            this.contextMenuRollback.Size = new System.Drawing.Size(193, 22);
+            this.contextMenuRollback.Text = "Rollback Load Item";
             // 
             // contextMenuInsertEmptyPallet
             // 
@@ -100,7 +100,7 @@ namespace Mss.Views
             this._flashTimer.Interval = 500;
             this._flashTimer.Tick += new System.EventHandler(this._flashTimer_Tick);
             // 
-            // LoadGrid
+            // SlugGrid
             // 
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this._LoadGrid_MouseClick);
             this.contextMenu.ResumeLayout(false);

@@ -13,4 +13,22 @@ namespace Mss.Common
         ByJobID    = 2, // checks that SKU matches //!!! Dave wants 4
 
     }
+
+    public static class PickModeExtensions
+    {
+        public static string Code(this PickMode pickMode)
+        {
+            switch (pickMode)
+            {
+                case PickMode.BySku:
+                    return "S";
+                case PickMode.ByPalletID:
+                    return "P";
+                case PickMode.ByJobID:
+                    return "J";
+                default:
+                    return "?";
+            }
+        }
+    }
 }

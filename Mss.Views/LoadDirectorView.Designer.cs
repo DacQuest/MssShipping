@@ -49,7 +49,7 @@
             this._btnAccept.BackColor = System.Drawing.SystemColors.Control;
             this._btnAccept.Enabled = false;
             this._btnAccept.Font = new System.Drawing.Font("Arial", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnAccept.Location = new System.Drawing.Point(154, 554);
+            this._btnAccept.Location = new System.Drawing.Point(151, 638);
             this._btnAccept.Name = "_btnAccept";
             this._btnAccept.Size = new System.Drawing.Size(253, 107);
             this._btnAccept.TabIndex = 2;
@@ -67,7 +67,7 @@
             this._navigator.Location = new System.Drawing.Point(0, 0);
             this._navigator.Name = "_navigator";
             this._navigator.Padding = new System.Windows.Forms.Padding(5, 2, 5, 2);
-            this._navigator.Size = new System.Drawing.Size(1438, 35);
+            this._navigator.Size = new System.Drawing.Size(1651, 35);
             this._navigator.TabIndex = 0;
             // 
             // _navigatorBtnRefreshItem
@@ -84,7 +84,7 @@
             this._btnReject.BackColor = System.Drawing.SystemColors.Control;
             this._btnReject.Enabled = false;
             this._btnReject.Font = new System.Drawing.Font("Arial", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnReject.Location = new System.Drawing.Point(1014, 554);
+            this._btnReject.Location = new System.Drawing.Point(1022, 638);
             this._btnReject.Name = "_btnReject";
             this._btnReject.Size = new System.Drawing.Size(253, 107);
             this._btnReject.TabIndex = 9;
@@ -95,7 +95,7 @@
             // label1
             // 
             this.label1.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(577, 543);
+            this.label1.Location = new System.Drawing.Point(577, 575);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(114, 23);
             this.label1.TabIndex = 3;
@@ -105,7 +105,7 @@
             // label2
             // 
             this.label2.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(577, 654);
+            this.label2.Location = new System.Drawing.Point(577, 686);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(114, 23);
             this.label2.TabIndex = 5;
@@ -115,7 +115,7 @@
             // label3
             // 
             this.label3.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(577, 730);
+            this.label3.Location = new System.Drawing.Point(577, 762);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(114, 23);
             this.label3.TabIndex = 7;
@@ -127,7 +127,7 @@
             this._lblPalletID.BackColor = System.Drawing.SystemColors.Window;
             this._lblPalletID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblPalletID.Font = new System.Drawing.Font("Arial", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblPalletID.Location = new System.Drawing.Point(581, 566);
+            this._lblPalletID.Location = new System.Drawing.Point(581, 598);
             this._lblPalletID.Name = "_lblPalletID";
             this._lblPalletID.Size = new System.Drawing.Size(253, 77);
             this._lblPalletID.TabIndex = 4;
@@ -138,7 +138,7 @@
             this._lblSku.BackColor = System.Drawing.SystemColors.Window;
             this._lblSku.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblSku.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblSku.Location = new System.Drawing.Point(581, 677);
+            this._lblSku.Location = new System.Drawing.Point(581, 709);
             this._lblSku.Name = "_lblSku";
             this._lblSku.Size = new System.Drawing.Size(253, 43);
             this._lblSku.TabIndex = 6;
@@ -149,7 +149,7 @@
             this._lblJobID.BackColor = System.Drawing.SystemColors.Window;
             this._lblJobID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._lblJobID.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblJobID.Location = new System.Drawing.Point(581, 753);
+            this._lblJobID.Location = new System.Drawing.Point(581, 785);
             this._lblJobID.Name = "_lblJobID";
             this._lblJobID.Size = new System.Drawing.Size(253, 43);
             this._lblJobID.TabIndex = 8;
@@ -169,11 +169,11 @@
             // _slugAGrid
             // 
             this._slugAGrid.EnableSort = true;
-            this._slugAGrid.Location = new System.Drawing.Point(12, 131);
+            this._slugAGrid.Location = new System.Drawing.Point(10, 131);
             this._slugAGrid.Name = "_slugAGrid";
             this._slugAGrid.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this._slugAGrid.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this._slugAGrid.Size = new System.Drawing.Size(697, 388);
+            this._slugAGrid.Size = new System.Drawing.Size(797, 406);
             this._slugAGrid.TabIndex = 10;
             this._slugAGrid.TabStop = true;
             this._slugAGrid.ToolTipText = "";
@@ -181,11 +181,11 @@
             // _slugBGrid
             // 
             this._slugBGrid.EnableSort = true;
-            this._slugBGrid.Location = new System.Drawing.Point(727, 131);
+            this._slugBGrid.Location = new System.Drawing.Point(822, 131);
             this._slugBGrid.Name = "_slugBGrid";
             this._slugBGrid.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this._slugBGrid.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this._slugBGrid.Size = new System.Drawing.Size(697, 388);
+            this._slugBGrid.Size = new System.Drawing.Size(797, 406);
             this._slugBGrid.TabIndex = 11;
             this._slugBGrid.TabStop = true;
             this._slugBGrid.ToolTipText = "";
@@ -207,7 +207,7 @@
             this.Controls.Add(this._navigator);
             this.Controls.Add(this._btnAccept);
             this.Name = "LoadDirectorView";
-            this.Size = new System.Drawing.Size(1438, 851);
+            this.Size = new System.Drawing.Size(1651, 912);
             this._navigator.ResumeLayout(false);
             this._navigator.PerformLayout();
             this.ResumeLayout(false);

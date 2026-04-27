@@ -613,6 +613,9 @@
     <EmbeddedResource Include="SelectPalletStatusesForm.resx">
       <DependentUpon>SelectPalletStatusesForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SlugGrid.resx">
+      <DependentUpon>SlugGrid.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SlugsView.resx">
       <DependentUpon>SlugsView.cs</DependentUpon>
     </EmbeddedResource>

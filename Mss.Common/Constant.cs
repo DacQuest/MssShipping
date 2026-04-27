@@ -42,11 +42,17 @@ namespace Mss.Common
         public const string TransferTelemetryEnabledName = "TransferTelemetryEnabled";
 
 
-        public const int PalletIDLength = 10;
-        public const int JobIDLength = 50;
-        public const int SkuLength = 50;
+        public const int MaxSkuLength = 50;
         public const int MaxBroadcastSkip = 100;
         public const int MaxRotation = 9998;
+        public const int MaxPalletIDLength = 10;
+        public const int PalletIDLength = 4;
+        public const int CsnLength = 20;
+        public const int VinLength = 20;
+        public const int CommentLength = 50;
+        public const int HoldCodeDescriptionLength = 50;
+        public const int JobIDLength = 50;
+        public const int ActualSkuLength = 15;
         public const int PickModeKeyLength = 50;
         public const int NoHoldCode = 0;
         public const int IgnoreHoldCode = -1;
@@ -175,6 +181,7 @@ namespace Mss.Common
 
         public const int Assignment3MoveCommandLower = 1;
         public const int Assignment3MoveCommandUpper = 2;
+        public const int Assignment3MoveCommandConsole = 3;
 
         public const int RouterMoveCommandForward = 1;
         public const int RouterMoveCommandToCrane = 2;
@@ -212,12 +219,6 @@ namespace Mss.Common
         public const string Row2PalletIDValidatorName = "Row2PalletIDValidator";
         public static readonly string NoPalletID = string.Empty;
         public static readonly string NoJobID = string.Empty;
-
-        public const int CsnLength = 20;
-        public const int MaxSkuLength = 50;
-        public const int VinLength = 20;
-        public const int CommentLength = 50;
-        public const int HoldCodeDescriptionLength = 50;
 
         public const string PalletIDSequenceTelemetryEnabledName = "PalletIDSequenceTelemetryEnabled";
         public const string StorageViewInitialNodeIndexMessageName = "StorageViewInitialNodeIndex";
