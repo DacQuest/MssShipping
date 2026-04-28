@@ -10,16 +10,16 @@ using System.Windows.Forms;
 
 namespace Mss.Views
 {
-    public partial class PitDeleteForm : Form
+    public partial class PitMultiDeleteForm : Form
     {
-        public PitDeleteForm()
+        public PitMultiDeleteForm()
         {
             InitializeComponent();
         }
-        public PitDeleteForm(string palletID, string pitName)
+        public PitMultiDeleteForm(string pitName)
         {
             InitializeComponent();
-            _lblMessage.Text = $"Do you want to Delete Pallet {palletID} from the {pitName}?";
+            _lblMessage.Text = $"Do you want to Delete all the selected {pitName} pallets?";
         }
 
         private void _BtnYes_Click(object sender, EventArgs e)

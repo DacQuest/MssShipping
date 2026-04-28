@@ -35,10 +35,10 @@
             this._navigatorLblCount = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._navigatorBtnRefreshItem = new System.Windows.Forms.ToolStripButton();
-            this._navigatorBtnExport = new System.Windows.Forms.ToolStripButton();
-            this._navigatorBtnRelease = new System.Windows.Forms.ToolStripButton();
             this._navigatorBtnEdit = new System.Windows.Forms.ToolStripButton();
             this._navigatorBtnRecover = new System.Windows.Forms.ToolStripButton();
+            this._navigatorBtnRelease = new System.Windows.Forms.ToolStripButton();
+            this._navigatorBtnExport = new System.Windows.Forms.ToolStripButton();
             this._lblTitle = new System.Windows.Forms.Label();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this._broadcastGrid)).BeginInit();
@@ -49,7 +49,7 @@
             // 
             this._broadcastGrid.AllowUserToAddRows = false;
             this._broadcastGrid.AllowUserToDeleteRows = false;
-            this._broadcastGrid.AllowUserToOrderColumns = true;
+            this._broadcastGrid.AllowUserToResizeColumns = false;
             this._broadcastGrid.AllowUserToResizeRows = false;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this._broadcastGrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
@@ -61,13 +61,15 @@
             this._broadcastGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this._broadcastGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this._broadcastGrid.GridColor = System.Drawing.SystemColors.Control;
-            this._broadcastGrid.Location = new System.Drawing.Point(0, 68);
+            this._broadcastGrid.Location = new System.Drawing.Point(3, 68);
             this._broadcastGrid.MultiSelect = false;
             this._broadcastGrid.Name = "_broadcastGrid";
             this._broadcastGrid.ReadOnly = true;
+            this._broadcastGrid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this._broadcastGrid.RowHeadersVisible = false;
+            this._broadcastGrid.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this._broadcastGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._broadcastGrid.Size = new System.Drawing.Size(644, 345);
+            this._broadcastGrid.Size = new System.Drawing.Size(638, 345);
             this._broadcastGrid.TabIndex = 1;
             // 
             // navigator
@@ -112,27 +114,6 @@
             this._navigatorBtnRefreshItem.ToolTipText = "Refresh";
             this._navigatorBtnRefreshItem.Click += new System.EventHandler(this._NavigatorBtnRefreshItem_Click);
             // 
-            // _navigatorBtnExport
-            // 
-            this._navigatorBtnExport.Enabled = false;
-            this._navigatorBtnExport.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._navigatorBtnExport.Name = "_navigatorBtnExport";
-            this._navigatorBtnExport.Size = new System.Drawing.Size(44, 28);
-            this._navigatorBtnExport.Text = "Export";
-            this._navigatorBtnExport.Visible = false;
-            this._navigatorBtnExport.Click += new System.EventHandler(this._NavigatorBtnExport_Click);
-            // 
-            // _navigatorBtnRelease
-            // 
-            this._navigatorBtnRelease.Enabled = false;
-            this._navigatorBtnRelease.Image = global::Mss.Views.Properties.Resources.PurpleRelease24;
-            this._navigatorBtnRelease.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this._navigatorBtnRelease.Name = "_navigatorBtnRelease";
-            this._navigatorBtnRelease.Size = new System.Drawing.Size(74, 28);
-            this._navigatorBtnRelease.Text = "Release";
-            this._navigatorBtnRelease.Visible = false;
-            this._navigatorBtnRelease.Click += new System.EventHandler(this._NavigatorBtnRelease_Click);
-            // 
             // _navigatorBtnEdit
             // 
             this._navigatorBtnEdit.Enabled = false;
@@ -154,6 +135,27 @@
             this._navigatorBtnRecover.Text = "Recover";
             this._navigatorBtnRecover.Visible = false;
             this._navigatorBtnRecover.Click += new System.EventHandler(this._NavigatorBtnRecover_Click);
+            // 
+            // _navigatorBtnRelease
+            // 
+            this._navigatorBtnRelease.Enabled = false;
+            this._navigatorBtnRelease.Image = global::Mss.Views.Properties.Resources.PurpleRelease24;
+            this._navigatorBtnRelease.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._navigatorBtnRelease.Name = "_navigatorBtnRelease";
+            this._navigatorBtnRelease.Size = new System.Drawing.Size(74, 28);
+            this._navigatorBtnRelease.Text = "Release";
+            this._navigatorBtnRelease.Visible = false;
+            this._navigatorBtnRelease.Click += new System.EventHandler(this._NavigatorBtnRelease_Click);
+            // 
+            // _navigatorBtnExport
+            // 
+            this._navigatorBtnExport.Enabled = false;
+            this._navigatorBtnExport.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._navigatorBtnExport.Name = "_navigatorBtnExport";
+            this._navigatorBtnExport.Size = new System.Drawing.Size(44, 28);
+            this._navigatorBtnExport.Text = "Export";
+            this._navigatorBtnExport.Visible = false;
+            this._navigatorBtnExport.Click += new System.EventHandler(this._NavigatorBtnExport_Click);
             // 
             // _lblTitle
             // 

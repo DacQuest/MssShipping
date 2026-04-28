@@ -541,7 +541,7 @@ namespace Mss.Views
                     this[rowNumber, columnNumber] = cell;
                 }
             }
-            ((PitView)Parent).UpdateTitle(RowsCount - 1);
+//             ((PitView)Parent).UpdateTitle(RowsCount - 1);
         }
 
         //         private void _ComboBoxValue_Changed(Object sender, EventArgs e)

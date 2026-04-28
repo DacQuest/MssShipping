@@ -28,15 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.navigator = new System.Windows.Forms.ToolStrip();
             this.navigatorBtnRefreshItem = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnAddItem = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnQuickAdd = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnAddSingleEmpty = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnDelete = new System.Windows.Forms.ToolStripButton();
-            this.lblCollectionName = new System.Windows.Forms.Label();
-            this._pitGrid = new Mss.Views.PitGrid();
+            this._lblCollectionName = new System.Windows.Forms.Label();
+            this._dgvPit = new System.Windows.Forms.DataGridView();
             this.navigator.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._dgvPit)).BeginInit();
             this.SuspendLayout();
             // 
             // navigator
@@ -53,7 +55,7 @@
             this.navigator.Location = new System.Drawing.Point(0, 0);
             this.navigator.Name = "navigator";
             this.navigator.Padding = new System.Windows.Forms.Padding(5, 2, 5, 2);
-            this.navigator.Size = new System.Drawing.Size(1459, 35);
+            this.navigator.Size = new System.Drawing.Size(671, 35);
             this.navigator.TabIndex = 0;
             // 
             // navigatorBtnRefreshItem
@@ -104,56 +106,67 @@
             this.navigatorBtnDelete.Visible = false;
             this.navigatorBtnDelete.Click += new System.EventHandler(this._NavigatorBtnDelete_Click);
             // 
-            // lblCollectionName
+            // _lblCollectionName
             // 
-            this.lblCollectionName.AutoSize = true;
-            this.lblCollectionName.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
-            this.lblCollectionName.Location = new System.Drawing.Point(16, 46);
-            this.lblCollectionName.Name = "lblCollectionName";
-            this.lblCollectionName.Size = new System.Drawing.Size(134, 19);
-            this.lblCollectionName.TabIndex = 1;
-            this.lblCollectionName.Text = "Collection Name";
+            this._lblCollectionName.AutoSize = true;
+            this._lblCollectionName.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
+            this._lblCollectionName.Location = new System.Drawing.Point(3, 46);
+            this._lblCollectionName.Name = "_lblCollectionName";
+            this._lblCollectionName.Size = new System.Drawing.Size(134, 19);
+            this._lblCollectionName.TabIndex = 1;
+            this._lblCollectionName.Text = "Collection Name";
             // 
-            // _pitGrid
+            // _dgvPit
             // 
-            this._pitGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this._pitGrid.EnableSort = false;
-            this._pitGrid.Location = new System.Drawing.Point(19, 65);
-            this._pitGrid.Name = "_pitGrid";
-            this._pitGrid.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
-            this._pitGrid.SelectionMode = SourceGrid.GridSelectionMode.Row;
-            this._pitGrid.Size = new System.Drawing.Size(1422, 356);
-            this._pitGrid.TabIndex = 2;
-            this._pitGrid.TabStop = true;
-            this._pitGrid.Text = "PalletGrid";
-            this._pitGrid.ToolTipText = "";
+            this._dgvPit.AllowUserToAddRows = false;
+            this._dgvPit.AllowUserToDeleteRows = false;
+            this._dgvPit.AllowUserToResizeColumns = false;
+            this._dgvPit.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this._dgvPit.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this._dgvPit.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this._dgvPit.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this._dgvPit.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this._dgvPit.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this._dgvPit.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this._dgvPit.GridColor = System.Drawing.SystemColors.Control;
+            this._dgvPit.Location = new System.Drawing.Point(3, 68);
+            this._dgvPit.Name = "_dgvPit";
+            this._dgvPit.ReadOnly = true;
+            this._dgvPit.RowHeadersVisible = false;
+            this._dgvPit.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this._dgvPit.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this._dgvPit.Size = new System.Drawing.Size(668, 241);
+            this._dgvPit.TabIndex = 3;
+            this._dgvPit.SelectionChanged += new System.EventHandler(this._DgvPit_SelectionChanged);
             // 
             // PitView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.lblCollectionName);
+            this.Controls.Add(this._dgvPit);
+            this.Controls.Add(this._lblCollectionName);
             this.Controls.Add(this.navigator);
-            this.Controls.Add(this._pitGrid);
             this.Name = "PitView";
-            this.Size = new System.Drawing.Size(1459, 439);
+            this.Size = new System.Drawing.Size(671, 312);
             this.navigator.ResumeLayout(false);
             this.navigator.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._dgvPit)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private PitGrid _pitGrid;
         protected System.Windows.Forms.ToolStrip navigator;
         protected System.Windows.Forms.ToolStripButton navigatorBtnRefreshItem;
         private System.Windows.Forms.ToolStripButton navigatorBtnAddItem;
         private System.Windows.Forms.ToolStripButton navigatorBtnDelete;
-        private System.Windows.Forms.Label lblCollectionName;
+        private System.Windows.Forms.Label _lblCollectionName;
         private System.Windows.Forms.ToolStripButton navigatorBtnAddSingleEmpty;
         private System.Windows.Forms.ToolStripButton navigatorBtnQuickAdd;
+        private System.Windows.Forms.DataGridView _dgvPit;
     }
 }

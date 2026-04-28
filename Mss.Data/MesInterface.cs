@@ -571,6 +571,7 @@ namespace Mss.Data
                             Description = r.Description
                         })
                     .ToList();
+                holdCodes.Add(new HoldCodeItem { HoldCode = Constant.NoHoldCode, Description = Constant.NoHoldCodeDescription});
                 return true;
             }
             catch (Exception x)

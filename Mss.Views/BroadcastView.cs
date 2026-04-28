@@ -41,6 +41,10 @@ namespace Mss.Views
             _broadcastGrid.AutoSize = false;
             _broadcastGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
+        }
+
+        protected override void OpenView()
+        {
             XProxyCache.Acquire(
                 Constant.BroadcastName,
                 Constant.CurrentBroadcastQuery,
@@ -60,10 +64,10 @@ namespace Mss.Views
             XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
             _storageProxy.DataItemChanged += _StorageChangedHandler;
 
-        }
+            _broadcastGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _broadcastGrid.ColumnHeadersHeight = 30; // Set to desired height in pixels
+            _broadcastGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10, FontStyle.Bold);
 
-        protected override void OpenView()
-        {
             DataGridViewImageColumn imageColumn;
             DataGridViewTextBoxColumn column;
 
@@ -80,6 +84,7 @@ namespace Mss.Views
                 HeaderText = "Status",
                 DataPropertyName = "StatusText",
                 Name = "StatusColumn",
+                MinimumWidth = 100,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
             _ = _broadcastGrid.Columns.Add(column);
@@ -89,6 +94,7 @@ namespace Mss.Views
                 HeaderText = "CSN",
                 DataPropertyName = "Csn",
                 Name = "CsnColumn",
+                MinimumWidth = 100,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
             _ = _broadcastGrid.Columns.Add(column);
@@ -98,6 +104,7 @@ namespace Mss.Views
                 HeaderText = "SKU",
                 DataPropertyName = "Sku",
                 Name = "SkuColumn",
+                MinimumWidth = 100,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
             _ = _broadcastGrid.Columns.Add(column);
@@ -107,6 +114,7 @@ namespace Mss.Views
                 HeaderText = "VIN",
                 DataPropertyName = "Vin",
                 Name = "VinColumn",
+                MinimumWidth = 120,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
             _ = _broadcastGrid.Columns.Add(column);
@@ -116,6 +124,7 @@ namespace Mss.Views
                 HeaderText = "Pick Mode",
                 DataPropertyName = "PickMode",
                 Name = "PickModeColumn",
+                MinimumWidth = 100,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
             _ = _broadcastGrid.Columns.Add(column);
@@ -125,6 +134,7 @@ namespace Mss.Views
                 HeaderText = "Pick Mode Key",
                 DataPropertyName = "PickModeKey",
                 Name = "PickModeKeyColumn",
+                MinimumWidth = 120,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
             _ = _broadcastGrid.Columns.Add(column);

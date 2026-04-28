@@ -415,6 +415,12 @@
     <Compile Include="PitGrid.designer.cs">
       <DependentUpon>PitGrid.cs</DependentUpon>
     </Compile>
+    <Compile Include="PitMultiDeleteForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PitMultiDeleteForm.designer.cs">
+      <DependentUpon>PitMultiDeleteForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PitView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -589,6 +595,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PalletTrackerView.resx">
       <DependentUpon>PalletTrackerView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PitMultiDeleteForm.resx">
+      <DependentUpon>PitMultiDeleteForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PitView.resx">
       <DependentUpon>PitView.cs</DependentUpon>

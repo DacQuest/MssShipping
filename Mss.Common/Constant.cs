@@ -55,6 +55,7 @@ namespace Mss.Common
         public const int ActualSkuLength = 15;
         public const int PickModeKeyLength = 50;
         public const int NoHoldCode = 0;
+        public const string NoHoldCodeDescription = "No Hold Code";
         public const int IgnoreHoldCode = -1;
 
         public const string VehicleRow1CsnSuffix = "F";

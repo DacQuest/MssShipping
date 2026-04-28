@@ -1,31 +1,42 @@
-﻿using System;
+﻿using DacQuest.DFX.Core;
+using DacQuest.DFX.Core.Configuration;
+using DacQuest.DFX.Core.DataItems.Collections;
+using DacQuest.DFX.Core.DataItems.Proxy;
+using DacQuest.DFX.Core.MessageBox;
+using DacQuest.DFX.Core.Strings;
+using DacQuest.DFX.SnapInViews;
+using DevExpress.Data.Selection;
+using Mss.Collections;
+using Mss.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using DacQuest.DFX.Core;
-using DacQuest.DFX.Core.Configuration;
-using DacQuest.DFX.Core.DataItems.Proxy;
-using DacQuest.DFX.Core.MessageBox;
-using DacQuest.DFX.SnapInViews;
-using Mss.Collections;
-using Mss.Common;
-using DacQuest.DFX.Core.DataItems.Collections;
 
 namespace Mss.Views
 {
     public partial class PitView : XSnapInView
     {
+        private BindingSource _bindingSource = new BindingSource();
         private PitViewParameterSetWrapper _parameters;
         private PitProxy _pitProxy;
         private HoldCodesProxy _holdCodesProxy;
 
+        private readonly string _palletIDColumnName = "PalletIDColumn";
+
         public PitView()
         {
             InitializeComponent();
+
+            _dgvPit.DataSource = _bindingSource;
+            _dgvPit.AutoGenerateColumns = false;
+            _dgvPit.AutoSize = false;
+            _dgvPit.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+
         }
 
         protected override void OpenView()
@@ -36,43 +47,188 @@ namespace Mss.Views
 
             XProxyCache.Acquire(Constant.HoldCodesName, out _holdCodesProxy);
 
-            _pitGrid.Initialize(
-//                 _parameters.CollectionName,
-                _pitProxy,
-                _holdCodesProxy,
-                _parameters.AllowEditing,
-                true,
-                this);
+            _dgvPit.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _dgvPit.ColumnHeadersHeight = 30; // Set to desired height in pixels
+            _dgvPit.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10, FontStyle.Bold);
 
-            navigatorBtnAddItem.Visible = false;
+//             DataGridViewImageColumn imageColumn;
+            DataGridViewTextBoxColumn column;
+
+//             imageColumn = new DataGridViewImageColumn
+//             {
+//                 DataPropertyName = "StatusImage",
+//                 HeaderText = "",
+//                 Name = "StatusImageColumn"
+//             };
+//             _ = _dgvPit.Columns.Add(imageColumn);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "PIT Code",
+                DataPropertyName = "PitCode",
+                Name = "PitCodeColumn",
+                MinimumWidth = 120,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _dgvPit.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Added On",
+                DataPropertyName = "SetOnText",
+                Name = "SetOnColumn",
+                MinimumWidth = 160,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _dgvPit.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Row",
+                DataPropertyName = "PalletVehicleRowText",
+                Name = "VehicleRowColumn",
+                MinimumWidth = 80,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _dgvPit.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Pallet",
+                DataPropertyName = "PalletID",
+                Name = _palletIDColumnName,
+                MinimumWidth = 80,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _dgvPit.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "SKU",
+                DataPropertyName = "PalletSku",
+                Name = "SkuColumn",
+                MinimumWidth = 120,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _dgvPit.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Job ID",
+                DataPropertyName = "PalletJobID",
+                Name = "JobIDColumn",
+                MinimumWidth = 100,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _dgvPit.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Status",
+                DataPropertyName = "PalletStatusText",
+                Name = "StatusColumn",
+                MinimumWidth = 120,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _dgvPit.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Hold Code",
+                DataPropertyName = "HoldCodeDescription",
+                Name = "HoldCodeColumn",
+                MinimumWidth = 200,
+                SortMode = DataGridViewColumnSortMode.Automatic,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            };
+            _ = _dgvPit.Columns.Add(column);
+
+            _UpdateGrid();
+
+            navigatorBtnAddItem.Visible = _parameters.AllowAdding;
+            navigatorBtnDelete.Visible = _parameters.AllowDeleting;
 //             navigatorBtnQuickAdd.Visible = _parameters.AllowEditing
 //                 && _parameters.CollectionName == Constant.InboundPitName;
             navigatorBtnAddSingleEmpty.Visible = false;
-            navigatorBtnDelete.Visible = _parameters.AllowEditing;
+        }
+
+        private void _UpdateGrid()
+        {
+            List<PitItem> pitItems = _pitProxy.Values;
+
+            PitItem.SetHoldCodes(_holdCodesProxy.Values.ToDictionary(h => h.HoldCode, h => h.Description));
+
+            UpdateTitle(_pitProxy.Count);
+
+            _bindingSource.DataSource = pitItems;
+            _dgvPit.Update();
         }
 
         private void _PalletsProxy_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
-            _pitGrid.OnDataItemChanged(e);
+            _UpdateGrid();
         }
 
         private void _PalletsProxy_CollectionRefreshed(object sender, EventArgs e)
         {
-            _pitGrid.OnCollectionRefreshed();
+            _UpdateGrid();
         }
 
         public void UpdateTitle(int rowCount)
         {
-            string format = rowCount == 1 ? "{0}   ( {1} Pallet )" : "{0}   ( {1} Pallets )";
-            lblCollectionName.Text = string.Format(
-                format,
-                _parameters.DisplayName,
-                rowCount);
+            string collectionName = _parameters.DisplayName;
+            _lblCollectionName.Text = rowCount == 1
+                ? $"{collectionName}  ( 1 Pallet )"
+                : $"{collectionName}  ( {rowCount} Pallets )";
         }
 
         protected override void ProcessParameters(XConfigurationParameterSet parameters)
         {
             _parameters = (PitViewParameterSetWrapper)parameters;
+        }
+
+        private void _NavigatorBtnDelete_Click(object sender, EventArgs e)
+        {
+            List<string> palletIDs = new List<string>();
+            foreach (DataGridViewRow row in _dgvPit.SelectedRows)
+            {
+                palletIDs.Add(row.Cells[_palletIDColumnName].Value.ToString());
+            }
+
+            if(palletIDs.Count > 0)
+            {
+                string pitName = _pitProxy.CollectionConfiguration.FriendlyName;
+                if (palletIDs.Count == 1)
+                {
+                    using (PitDeleteForm form = new PitDeleteForm(palletIDs[0], pitName))
+                    {
+                        if (form.ShowDialog() == DialogResult.OK)
+                        {
+                            _ = _pitProxy.Remove(palletIDs[0]);
+                        }
+                    }
+                }
+                else // count > 1
+                {
+                    using (PitMultiDeleteForm form = new PitMultiDeleteForm(pitName))
+                    {
+                        if (form.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (string palletID in palletIDs)
+                            {
+                                _ = _pitProxy.Remove(palletID);
+                            }
+                        }
+                    }
+                }
+            }
+            navigatorBtnDelete.Enabled = false;
+        }
+
+        private void _NavigatorBtnRefreshItem_Click(object sender, EventArgs e)
+        {
+            _pitProxy.Refresh();
+            _holdCodesProxy.Refresh();
         }
 
         private void _NavigatorBtnAddItem_Click(object sender, EventArgs e)
@@ -84,17 +240,6 @@ namespace Mss.Views
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning);
 
-        }
-
-        private void _NavigatorBtnDelete_Click(object sender, EventArgs e)
-        {
-            _pitGrid.Delete();
-        }
-
-        private void _NavigatorBtnRefreshItem_Click(object sender, EventArgs e)
-        {
-            _pitProxy.Refresh();
-            _holdCodesProxy.Refresh();
         }
 
         private void _NavigatorBtnQuickAdd_Click(object sender, EventArgs e)
@@ -179,6 +324,11 @@ namespace Mss.Views
 //             };
 // 
 //             _pitProxy.Update(palletItem.PalletID, palletItem);
+        }
+
+        private void _DgvPit_SelectionChanged(object sender, EventArgs e)
+        {
+            navigatorBtnDelete.Enabled = _dgvPit.SelectedRows.Count > 0;
         }
 
         //public override void ViewClosed()
