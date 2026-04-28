@@ -283,20 +283,13 @@ namespace Mss.Views
                                 : palletItem.PalletID;
                             break;
                         case VehicleRowColumnIndex:
-                            cell.Value = palletItem.IsStack
-                                ? string.Empty
-                                : palletItem.VehicleRow.ToString().Left(1);
+                            cell.Value = palletItem.VehicleRow.ToString().Right(1);
                             break;
                         case PalletStatusColumnIndex:
-                            if ((palletItem.Status == PalletStatus.Unknown && searchResult.BinStatus == BinStatus.Empty)
-                                || palletItem.Status == PalletStatus.Invalid)
-                            {
-                                cell.Value = string.Empty;
-                            }
-                            else
-                            {
-                                cell.Value = palletItem.Status.ToText();
-                            }
+                            cell.Value = (palletItem.Status == PalletStatus.Unknown && searchResult.BinStatus == BinStatus.Empty)
+                                || palletItem.Status == PalletStatus.Invalid
+                                    ? string.Empty
+                                    : palletItem.Status.ToText();
                             break;
                         //                         case HoldCodeColumnIndex:
                         //                             int palletHoldCode = palletItem.HoldCode;
