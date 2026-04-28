@@ -233,12 +233,26 @@ namespace Mss.Views
 
         private void _NavigatorBtnAddItem_Click(object sender, EventArgs e)
         {
-            _ = XMessageBox.Show(
-                this,
-                "NOT IMPLEMENTED!",
-                "Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning);
+            Levels level = Levels.None;
+            switch (_pitProxy.CollectionName)
+            {
+                case Constant.UpperPitName:
+                    level = Levels.Upper;
+                    break;
+                case Constant.LowerPitName:
+                    level = Levels.Upper;
+                    break;
+                case Constant.AssignmentPitName:
+                    level = Levels.None;
+                    break;
+            }
+            using (PitAddForm form = new PitAddForm(level, _pitProxy, _holdCodesProxy.Values))
+            {
+                if (form.ShowDialog()==DialogResult.OK)
+                {
+                    // Nothing needed.
+                }
+            }
 
         }
 

@@ -49,9 +49,9 @@
             this.navigator.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.navigatorBtnRefreshItem,
             this.navigatorBtnAddItem,
-            this.navigatorBtnQuickAdd,
+            this.navigatorBtnDelete,
             this.navigatorBtnAddSingleEmpty,
-            this.navigatorBtnDelete});
+            this.navigatorBtnQuickAdd});
             this.navigator.Location = new System.Drawing.Point(0, 0);
             this.navigator.Name = "navigator";
             this.navigator.Padding = new System.Windows.Forms.Padding(5, 2, 5, 2);
@@ -72,8 +72,8 @@
             this.navigatorBtnAddItem.Image = global::Mss.Views.Properties.Resources.GreenPlus24;
             this.navigatorBtnAddItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.navigatorBtnAddItem.Name = "navigatorBtnAddItem";
-            this.navigatorBtnAddItem.Size = new System.Drawing.Size(117, 28);
-            this.navigatorBtnAddItem.Text = "Slow Add Pallet";
+            this.navigatorBtnAddItem.Size = new System.Drawing.Size(89, 28);
+            this.navigatorBtnAddItem.Text = "Add Pallet";
             this.navigatorBtnAddItem.Visible = false;
             this.navigatorBtnAddItem.Click += new System.EventHandler(this._NavigatorBtnAddItem_Click);
             // 
@@ -81,8 +81,8 @@
             // 
             this.navigatorBtnQuickAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.navigatorBtnQuickAdd.Name = "navigatorBtnQuickAdd";
-            this.navigatorBtnQuickAdd.Size = new System.Drawing.Size(65, 28);
-            this.navigatorBtnQuickAdd.Text = "Add Pallet";
+            this.navigatorBtnQuickAdd.Size = new System.Drawing.Size(99, 28);
+            this.navigatorBtnQuickAdd.Text = "Quick Add Pallet";
             this.navigatorBtnQuickAdd.Visible = false;
             this.navigatorBtnQuickAdd.Click += new System.EventHandler(this._NavigatorBtnQuickAdd_Click);
             // 

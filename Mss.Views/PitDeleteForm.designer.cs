@@ -43,16 +43,16 @@
             this._lblMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblMessage.Location = new System.Drawing.Point(66, 12);
             this._lblMessage.Name = "_lblMessage";
-            this._lblMessage.Size = new System.Drawing.Size(304, 48);
+            this._lblMessage.Size = new System.Drawing.Size(300, 48);
             this._lblMessage.TabIndex = 10;
-            this._lblMessage.Text = "Do you want to Delete Pallet 9999 from the Xxxxxxxxxx PIT?";
+            this._lblMessage.Text = "Do you want to Delete Pallet 9999 from the Assignment PIT?";
             this._lblMessage.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // btnNo
             // 
             this.btnNo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnNo.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnNo.Location = new System.Drawing.Point(295, 70);
+            this.btnNo.Location = new System.Drawing.Point(291, 70);
             this.btnNo.Name = "btnNo";
             this.btnNo.Size = new System.Drawing.Size(75, 23);
             this.btnNo.TabIndex = 12;
@@ -63,7 +63,7 @@
             // btnYes
             // 
             this.btnYes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnYes.Location = new System.Drawing.Point(214, 70);
+            this.btnYes.Location = new System.Drawing.Point(210, 70);
             this.btnYes.Name = "btnYes";
             this.btnYes.Size = new System.Drawing.Size(75, 23);
             this.btnYes.TabIndex = 11;
@@ -86,7 +86,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(382, 105);
+            this.CancelButton = this.btnNo;
+            this.ClientSize = new System.Drawing.Size(378, 105);
             this.ControlBox = false;
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this._lblMessage);

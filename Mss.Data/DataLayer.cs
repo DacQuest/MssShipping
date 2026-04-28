@@ -460,8 +460,10 @@ namespace Mss.Data
             try
             {
                 Pit pit = level == Levels.Upper
-                    ? (Pit)_upperPit
-                    : (Pit)_lowerPit;
+                    ? _upperPit
+                    : level == Levels.Lower
+                        ? _lowerPit
+                        : (Pit)_assignmentPit;
                 pit.Set(level, palletItem, pitCode);
             }
             finally
@@ -1078,7 +1080,7 @@ namespace Mss.Data
                 if (sendToConsoleArea)
                 {
                     SetPitPallet(Levels.None, palletItem, PitCode.Console);
-                    moveCommand = Constant.Assignment1MoveCommandForward;
+                    moveCommand = Constant.Assignment2MoveCommandConsole;
                     extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
                     return true;
                 }

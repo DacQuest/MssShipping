@@ -668,7 +668,9 @@ namespace Mss.Views
         private void _PopulateHoldCodeComboBox(ComboBox combobox)
         {
             combobox.Items.Clear();
-            combobox.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+            combobox.ValueMember = nameof(HoldCodeItem.HoldCode);
+            combobox.DisplayMember = nameof(HoldCodeItem.Description);
+            combobox.DataSource = _holdCodesProxy.Values.OrderBy(h => h.Description).ToArray();
         }
 
         private void _PopulateControls(BinItem originalBinItem)

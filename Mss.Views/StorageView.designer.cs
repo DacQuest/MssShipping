@@ -686,7 +686,7 @@
             this._cmbHoldCode.Name = "_cmbHoldCode";
             this._cmbHoldCode.Size = new System.Drawing.Size(534, 21);
             this._cmbHoldCode.TabIndex = 45;
-            this._cmbHoldCode.ValueMember = "Code";
+            this._cmbHoldCode.ValueMember = "HoldCode";
             this._cmbHoldCode.SelectedIndexChanged += new System.EventHandler(this._CmbHoldCode_SelectedIndexChanged);
             // 
             // _lblHoldCode
@@ -1150,7 +1150,7 @@
             this._cmbNewHoldCode.Name = "_cmbNewHoldCode";
             this._cmbNewHoldCode.Size = new System.Drawing.Size(437, 21);
             this._cmbNewHoldCode.TabIndex = 57;
-            this._cmbNewHoldCode.ValueMember = "Code";
+            this._cmbNewHoldCode.ValueMember = "HoldCode";
             this._cmbNewHoldCode.Visible = false;
             this._cmbNewHoldCode.SelectedIndexChanged += new System.EventHandler(this._CmbNewHoldCode_SelectedIndexChanged);
             // 

@@ -46,11 +46,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mss.LoadDirectorClient", "M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MesInterfaceSqlScripts", "MesInterfaceSqlScripts", "{9CD45BA6-07F6-4B3D-8CCD-4EE03F77DD5F}"
 	ProjectSection(SolutionItems) = preProject
-		MesInterfaceSqlScripts\CreateMesLoadTables.sql = MesInterfaceSqlScripts\CreateMesLoadTables.sql
-		MesInterfaceSqlScripts\CreateMesHoldCodesTable.sql = MesInterfaceSqlScripts\CreateMesHoldCodesTable.sql
 		MesInterfaceSqlScripts\CreateMesBroadcastTables.sql = MesInterfaceSqlScripts\CreateMesBroadcastTables.sql
+		MesInterfaceSqlScripts\CreateMesHoldCodesTable.sql = MesInterfaceSqlScripts\CreateMesHoldCodesTable.sql
+		MesInterfaceSqlScripts\CreateMesLoadTables.sql = MesInterfaceSqlScripts\CreateMesLoadTables.sql
 		MesInterfaceSqlScripts\CreateMesStatusChangeTables.sql = MesInterfaceSqlScripts\CreateMesStatusChangeTables.sql
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mss.OfflineSystemEventViewer", "Mss.OfflineSystemEventViewer\Mss.OfflineSystemEventViewer.csproj", "{69FDB23A-E80E-4D53-BDEA-87F2733EB95D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +104,10 @@ Global
 		{C64D3FC3-B4D5-4C2B-B5CE-C4FD8ECC53F5}.Debug|Any CPU.Build.0 = Debug|x86
 		{C64D3FC3-B4D5-4C2B-B5CE-C4FD8ECC53F5}.Release|Any CPU.ActiveCfg = Release|x86
 		{C64D3FC3-B4D5-4C2B-B5CE-C4FD8ECC53F5}.Release|Any CPU.Build.0 = Release|x86
+		{69FDB23A-E80E-4D53-BDEA-87F2733EB95D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69FDB23A-E80E-4D53-BDEA-87F2733EB95D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69FDB23A-E80E-4D53-BDEA-87F2733EB95D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69FDB23A-E80E-4D53-BDEA-87F2733EB95D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

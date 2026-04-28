@@ -382,6 +382,12 @@
     <Compile Include="LabelPrinterTesterView.designer.cs">
       <DependentUpon>LabelPrinterTesterView.cs</DependentUpon>
     </Compile>
+    <Compile Include="PitAddForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PitAddForm.designer.cs">
+      <DependentUpon>PitAddForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PitDeleteForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -581,6 +587,9 @@
     <EmbeddedResource Include="LabelPrinterTesterView.resx">
       <DependentUpon>LabelPrinterTesterView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PitAddForm.resx">
+      <DependentUpon>PitAddForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PitDeleteForm.resx">
       <DependentUpon>PitDeleteForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -710,6 +719,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Magna.ico" />
+    <None Include="Resources\GreenPlus48.png" />
     <None Include="Resources\RedMinus48.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
