@@ -35,6 +35,10 @@
     <ApplicationIcon>Magna.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DacQuest.DFX.Devices, Version=1.0.0.17063, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\DacQuest\Frameworks\DFX20\Source\DacQuest.DFX.Devices\bin\Debug\DacQuest.DFX.Devices.dll</HintPath>
+    </Reference>
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.1.72\lib\net461\Dapper.dll</HintPath>
     </Reference>
@@ -254,6 +258,8 @@
     <Compile Include="Pocos\StatusChange.cs" />
     <Compile Include="Repositories\BroadcastQueueRepository.cs" />
     <Compile Include="Repositories\StatusChangeQueueRepository.cs" />
+    <Compile Include="LoadLabelFormatter.cs" />
+    <Compile Include="ShippingLabelFormatter.cs" />
     <Compile Include="SlugManager.cs" />
     <Compile Include="MesInterface.cs" />
     <Compile Include="Pocos\BroadcastDetail.cs" />

@@ -277,6 +277,7 @@ insert into @ColumnSets values
     ,[LoadBCompletedOn] DATETIME DEFAULT ''12/31/1999'' NOT NULL
     ,[UpperLevelInboundEnabled] BIT DEFAULT 0 NOT NULL
     ,[LowerLevelInboundEnabled] BIT DEFAULT 0 NOT NULL
+    ,[LoadDirectorMode] BIGINT DEFAULT 0 NOT NULL
     '),
     ('SystemSettingsItem_PrioritizeAuditPicks','
     ,[PrioritizeAuditPicks] BIT DEFAULT 0 NOT NULL

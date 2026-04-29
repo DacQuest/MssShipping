@@ -65,6 +65,14 @@ namespace Mss.Collections
         }
 
         [XDataItemProperty(
+            Comment = ".")]
+        public LoadDirectorMode LoadDirectorMode
+        {
+            get => GetEnum<LoadDirectorMode>(nameof(LoadDirectorMode));
+            set => SetEnum(nameof(LoadDirectorMode), value);
+        }
+
+        [XDataItemProperty(
             Comment = "The largest Rotation Number received.")]
         public int LargestRotationReceived
         {

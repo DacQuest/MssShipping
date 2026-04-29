@@ -33,7 +33,7 @@ namespace Mss.Data
                 out fault);
         }
 
-        public static bool TryFetchPalletItemAtAS1andAS2(
+        public static bool TryFetchPalletItem(
             OperationCode operationCode,
             string palletID,
             out bool sendToConsoleArea,
