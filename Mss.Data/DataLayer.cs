@@ -2662,6 +2662,7 @@ namespace Mss.Data
                     out palletItem))
                 {
                     palletItem = fetchedPalletItem;
+                    SetPitPallet(level, palletItem, PitCode.Purge);
                     moveCommand = Constant.RecircBufferMoveCommandRelease;
                     extendedState = $"(UNKNOWN) Removing Unknown Pallet {palletID} from Recirc Buffer.";
                     return true;
