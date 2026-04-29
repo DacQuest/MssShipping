@@ -73,7 +73,7 @@ namespace Mss.Operations
 
         //==================================================================================
 
-        #region WaitForDestination State
+        #region MonitoringBufferState State
 
         protected readonly string MonitoringBufferState = "MonitoringBuffer";
 
@@ -132,7 +132,6 @@ namespace Mss.Operations
         protected override bool DoMoveCompleted()
         {
             DataLayer.RemoveRecircBufferPallet(CurrentPallet.PalletID);
-            DataLayer.RemovePitPallet(CurrentPallet.PalletID);
             return true;
         }
 
