@@ -54,6 +54,12 @@ namespace Mss.Collections
             set => SetItemProperty(nameof(SystemSettingsItem.FifoMode), value);
         }
 
+        public LoadDirectorMode LoadDirectorMode
+        {
+            get => GetItemProperty<LoadDirectorMode>(nameof(SystemSettingsItem.LoadDirectorMode));
+            set => SetItemProperty(nameof(SystemSettingsItem.LoadDirectorMode), value);
+        }
+
         public int LargestRotationReceived
         {
             get => GetItemProperty<int>(nameof(SystemSettingsItem.LargestRotationReceived));

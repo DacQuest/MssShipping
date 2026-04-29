@@ -386,20 +386,21 @@ namespace Mss.Views
         {
             LoadItem loadItem = _slugProxy.Items[loadIndex];
 
-            ReprintLabelConfirmationForm form = new ReprintLabelConfirmationForm(
-                $"Do you want to reprint the label for Pallet {loadItem.Pallet.PalletID}");
-            if (form.ShowDialog(this) == DialogResult.Yes)
+            using (ReprintLabelConfirmationForm form = new ReprintLabelConfirmationForm(
+                $"Do you want to reprint the label for Pallet {loadItem.Pallet.PalletID}"))
             {
-                XMessaging.Publish(
-                    ReprintLabelMessageData.ReprintLabelRequest,
-                    new ReprintLabelMessageData(
-                        loadItem.SlugLetter,
-                        loadItem.SlugLevel,
-                        loadItem.NodeIndex),
-                    XMessageScopes.All,
-                    this);
+                if (form.ShowDialog(this) == DialogResult.Yes)
+                {
+                    XMessaging.Publish(
+                        ReprintLabelMessageData.ReprintLabelRequest,
+                        new ReprintLabelMessageData(
+                            loadItem.SlugLetter,
+                            loadItem.SlugLevel,
+                            loadItem.NodeIndex),
+                        XMessageScopes.All,
+                        this);
+                }
             }
-            form.Dispose();
         }
 
         private void _Rollback(int loadIndex)

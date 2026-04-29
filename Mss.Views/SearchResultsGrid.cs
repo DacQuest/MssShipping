@@ -59,9 +59,9 @@ namespace Mss.Views
         private List<BinItem> _searchResults = new List<BinItem>();
         private ISearchResultsGridParent _parent = null;
 
-        private int _headerColumnWidth = 34;
-        private int _headerRowHeight = 22;
-        private int _dataRowHeight = 22;
+        private readonly int _headerColumnWidth = 34;
+        private readonly int _headerRowHeight = 22;
+        private readonly int _dataRowHeight = 22;
         private SourceGrid.Cells.Controllers.ToolTipText _toolTipController;
 
         public SearchResultsGrid()
@@ -109,15 +109,14 @@ namespace Mss.Views
                 Font = new Font(Font, FontStyle.Bold),
                 TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter,
                 BackColor = Color.LightGray,
-                ForeColor = Color.Black
+                ForeColor = Color.Black,
+                Border = new DevAge.Drawing.RectangleBorder(
+                    new DevAge.Drawing.BorderLine(Color.Black, 0),
+                    new DevAge.Drawing.BorderLine(Color.DarkGray, 2),
+                    new DevAge.Drawing.BorderLine(Color.Black, 0),
+                    new DevAge.Drawing.BorderLine(Color.DarkGray, 1)
+                )
             };
-
-            headerView.Border = new DevAge.Drawing.RectangleBorder(
-                new DevAge.Drawing.BorderLine(Color.Black, 0),
-                new DevAge.Drawing.BorderLine(Color.DarkGray, 2),
-                new DevAge.Drawing.BorderLine(Color.Black, 0),
-                new DevAge.Drawing.BorderLine(Color.DarkGray, 1)
-            );
 
             ColumnsCount = ColumnCount;
             FixedColumns = 1;
@@ -129,9 +128,11 @@ namespace Mss.Views
             for (int index = 0; index < ColumnsCount; index++)
             {
                 Columns[index].AutoSizeMode = SourceGrid.AutoSizeMode.None;
-                cell = new SourceGrid.Cells.ColumnHeader();
+                cell = new SourceGrid.Cells.ColumnHeader
+                {
+                    View = headerView
+                };
                 //cell.View = boldHeader;
-                cell.View = headerView;
                 //cell.Controller.RemoveController(cell.Controller.FindController(typeof(SourceGrid.Cells.Controllers.SortableHeader)));
                 //cell.Controller.RemoveController(cell.Controller.FindController(typeof(SourceGrid.Cells.Controllers.Resizable)));
                 //this[0, index] = cell;
@@ -258,14 +259,9 @@ namespace Mss.Views
                         //    cell.Value = searchResult.BinVerticalNumber.ToString();
                         //    break;
                         case BinStatusColumnIndex:
-                            if (searchResult.BinStatus == BinStatus.Invalid)
-                            {
-                                cell.Value = string.Empty;
-                            }
-                            else
-                            {
-                                cell.Value = searchResult.BinStatus.ToText();
-                            }
+                            cell.Value = searchResult.BinStatus == BinStatus.Invalid
+                                ? string.Empty
+                                : searchResult.BinStatus.ToText();
                             //if (searchResult.BinStatus > BinStatus.Pickable)
                             //{
                             //    cell.ToolTipText = searchResult.BinStatus.ToText();
@@ -291,22 +287,22 @@ namespace Mss.Views
                                     ? string.Empty
                                     : palletItem.Status.ToText();
                             break;
-                        //                         case HoldCodeColumnIndex:
-                        //                             int palletHoldCode = palletItem.HoldCode;
-                        //                             if (palletHoldCode == Constant.NoHoldCode)
-                        //                             {
-                        //                                 searchResult.SearchResultsHoldCodeText = string.Empty;
-                        //                             }
-                        //                             else if (_holdCodesProxy.ContainsKey(palletHoldCode))
-                        //                             {
-                        //                                 searchResult.SearchResultsHoldCodeText = _holdCodesProxy[palletHoldCode].Description;
-                        //                             }
-                        //                             else
-                        //                             {
-                        //                                 searchResult.SearchResultsHoldCodeText = palletHoldCode.ToString();
-                        //                             }
-                        //                             cell.Value = searchResult.SearchResultsHoldCodeText;
-                        //                             break;
+//                         case HoldCodeColumnIndex:
+//                             int palletHoldCode = palletItem.HoldCode;
+//                             if (palletHoldCode == Constant.NoHoldCode)
+//                             {
+//                                 searchResult.SearchResultsHoldCodeText = string.Empty;
+//                             }
+//                             else if (_holdCodesProxy.ContainsKey(palletHoldCode))
+//                             {
+//                                 searchResult.SearchResultsHoldCodeText = _holdCodesProxy[palletHoldCode].Description;
+//                             }
+//                             else
+//                             {
+//                                 searchResult.SearchResultsHoldCodeText = palletHoldCode.ToString();
+//                             }
+//                             cell.Value = searchResult.SearchResultsHoldCodeText;
+//                             break;
                         case SkuColumnIndex:
                             cell.Value = palletItem.Sku;
                             break;
@@ -321,14 +317,9 @@ namespace Mss.Views
                         //                             }
                         //                             break;
                         case BuiltOnColumnIndex:
-                            if (palletItem.BuiltOn > Constant.BeginningOfTime)
-                            {
-                                cell.Value = palletItem.BuiltOn.ToString(Constant.LongDateTimeFormat24);
-                            }
-                            else
-                            {
-                                cell.Value = string.Empty;
-                            }
+                            cell.Value = palletItem.BuiltOn > Constant.BeginningOfTime
+                                ? palletItem.BuiltOn.ToString(Constant.LongDateTimeFormat24)
+                                : string.Empty;
                             break;
                     }
                     this[rowNumber, columnNumber] = cell;

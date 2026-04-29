@@ -965,7 +965,7 @@ namespace Mss.Data
             out string extendedState,
             out string fault)
         {
-            if (!MesInterface.TryFetchPalletItemAtAS1andAS2(
+            if (!MesInterface.TryFetchPalletItem(
                 OperationCode.AS1,
                 palletID,
                 out bool sendToConsoleArea,
@@ -1013,6 +1013,12 @@ namespace Mss.Data
                             SetPitPallet(Levels.None, palletItem, PitCode.Upper);
                             extendedState = $"Routing Pallet {palletID} to Purge via Upper Level.";
                         }
+                        string comment = $"Pallet {palletItem.PalletID} received at Assignment1 with no data";
+                        palletItem.Comment = comment;
+                        XSystemEvent.Publish(
+                            "Assignment 1",
+                            XSystemEventLevel.Warning,
+                            comment);
                         return true;
                     }
                     moveCommand = Constant.NoMoveCommand;
@@ -1055,7 +1061,7 @@ namespace Mss.Data
             out string extendedState,
             out string fault)
         {
-            if (!MesInterface.TryFetchPalletItemAtAS1andAS2(
+            if (!MesInterface.TryFetchPalletItem(
                 OperationCode.AS2,
                 palletID,
                 out bool sendToConsoleArea,
@@ -1103,6 +1109,12 @@ namespace Mss.Data
                             SetPitPallet(Levels.None, palletItem, PitCode.Upper);
                             extendedState = $"Routing Pallet {palletID} to Purge via Upper Level.";
                         }
+                        string comment = $"Pallet {palletItem.PalletID} received at Assignment2 with no data";
+                        palletItem.Comment = comment;
+                        XSystemEvent.Publish(
+                            "Assignment 1",
+                            XSystemEventLevel.Warning,
+                            comment);
                         return true;
                     }
                     moveCommand = Constant.NoMoveCommand;
@@ -1145,7 +1157,7 @@ namespace Mss.Data
             out string extendedState,
             out string fault)
         {
-            if (!MesInterface.TryFetchPalletItemAtAS1andAS2(
+            if (!MesInterface.TryFetchPalletItem(
                 OperationCode.AS3,
                 palletID,
                 out bool sendToConsoleArea,
@@ -1192,6 +1204,12 @@ namespace Mss.Data
                             SetPitPallet(Levels.None, palletItem, PitCode.Upper);
                             extendedState = $"Routing Pallet {palletID} to Purge via Upper Level.";
                         }
+                        string comment = $"Pallet {palletItem.PalletID} received at Assignment3 with no data";
+                        palletItem.Comment = comment;
+                        XSystemEvent.Publish(
+                            "Assignment 1",
+                            XSystemEventLevel.Warning,
+                            comment);
                         return true;
                     }
                     moveCommand = Constant.NoMoveCommand;
@@ -2494,6 +2512,20 @@ namespace Mss.Data
         //==================================================================================
 
         #region Load Director
+
+        public bool ProcessPalletAtLoadDirector(
+            OperationCode operationCode,
+            Levels level,
+            string palletID,
+            out PalletItem palletItem,
+            out LoadItem loadItem,
+            out int moveCommand,
+            out string extendedState,
+            out string fault)
+        {
+            throw new NotImplementedException("DataLayer.ProcessPalletAtLoadDirector");
+        }
+
         #endregion
 
         //==================================================================================
@@ -2553,11 +2585,17 @@ namespace Mss.Data
                         return true;
                     }
                 }
-                if (TryGetPitItem(level, palletID, out PitItem pitItem))
+                else if (TryGetPitItem(level, palletID, out PitItem pitItem))
                 {
                     PitCode pitCode = pitItem.PitCode;
                     palletItem = pitItem.Pallet;
-                    if (pitCode == PitCode.Stack
+                    if (pitCode == PitCode.Purge)
+                    {
+                        moveCommand = Constant.RecircRouterMoveCommandForward;
+                        extendedState = $"(PURGE) Moving {palletItem.PalletID} forward to Purge Operation.";
+                        return true;
+                    }
+                    else if (pitCode == PitCode.Stack
                         && palletItem.IsStack)
                     {
                         moveCommand = Constant.RecircRouterMoveCommandForward;
@@ -2728,7 +2766,7 @@ namespace Mss.Data
                     extendedState = $"({Constant.PalletTypeLoad})  Moving Pallet {palletItem.PalletID} forward to {loadItem.SlugLetter.SlugDisplayName()}";
                     return true;
                 }
-                if (TryGetPitItem(level, palletID, out PitItem pitItem))
+                else if (TryGetPitItem(level, palletID, out PitItem pitItem))
                 {
                     PitCode pitCode = pitItem.PitCode;
                     if (pitCode == PitCode.Stack)

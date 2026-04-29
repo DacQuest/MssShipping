@@ -100,20 +100,6 @@ namespace Mss.Operations
                 out fault);
         }
 
-        protected bool QueryMesPallet(
-            string palletID,
-            out bool sendToConsoleArea,
-            out PalletItem palletItem,
-            out string fault)
-        {
-            return MesInterface.TryFetchPalletItemAtAS1andAS2(
-                OperationCode,
-                palletID,
-                out sendToConsoleArea,
-                out palletItem,
-                out fault);
-        }
-
         //==================================================================================
 
         #region General Overrides

@@ -226,6 +226,15 @@ namespace Mss.Common
         public const string AdminStorageViewName = "AdminStorageView";
 
 
+        public const string LD_OperatorResponseName = "LD_OperatorResponse";
+        public const string LD_RequestPalletDataName = "LD_RequestPallet";
+        public const string LD_PalletItemName = "LD_PalletItem";
+        public const string LD_IsAutoModeName = "LD_IsAutoMode";
+        public const string LD_LoadItemName = "LD_LoadItem";
+        public const string LD_AutoReleaseNonLoadPalletsInManualModeName = "LD_AutoReleaseNonLoadPalletsInManualMode";
+        public const string LD_IsAwaitingOperatorResponseName = "LD_IsAwaitingOperatorResponse";
+        public const string LD_BroadcastSkuMismatchName = "LD_BroadcastSkuMismatch";
+
         // === THESE ARRAYS APPLY TO LOADS OF 54 PALLETS ====================================================
 
         public static readonly int[] UpperLevelStartIndexes = new[] { 0, 1, 2, 24, 25, 26 };

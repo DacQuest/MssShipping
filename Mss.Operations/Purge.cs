@@ -49,7 +49,7 @@ namespace Mss.Operations
             out int moveCommand,
             out string extendedState)
         {
-            if (DataLayer.ProcessPalletAtPurge(
+            if (!DataLayer.ProcessPalletAtPurge(
                 OperationCode,
                 Level,
                 PalletID,
@@ -58,14 +58,14 @@ namespace Mss.Operations
                 out extendedState,
                 out string fault))
             {
-                CurrentPallet = palletItem;
-                return true;
+                if (!string.IsNullOrWhiteSpace(fault))
+                {
+                    SetOperationFaulted(fault);
+                }
+                return false;
             }
-            if (!string.IsNullOrWhiteSpace(fault))
-            {
-                SetOperationFaulted(fault);
-            }
-            return false;
+            CurrentPallet = palletItem;
+            return true;
         }
 
         #endregion
