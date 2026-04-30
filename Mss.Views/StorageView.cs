@@ -93,7 +93,8 @@ namespace Mss.Views
 //             _cmbPalletStatus.AddEnumItem(PalletStatus.Stack);
             _cmbPalletStatus.AddEnumItem(PalletStatus.Unknown);
 
-//             _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+            _cmbHoldCode.ValueMember = nameof(HoldCodeItem.HoldCode);
+            _cmbHoldCode.DisplayMember = nameof(HoldCodeItem.Description);
             _PopulateHoldCodeComboBox(_cmbHoldCode);
 
             _initializingControl = false;
@@ -126,7 +127,8 @@ namespace Mss.Views
             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Purge);
             //             _ = _cmbNewStatus.AddEnumItem(PalletStatus.Stack);
 
-            _cmbNewHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
+            _cmbNewHoldCode.ValueMember = nameof(HoldCodeItem.HoldCode);
+            _cmbNewHoldCode.DisplayMember = nameof(HoldCodeItem.Description);
             _PopulateHoldCodeComboBox(_cmbNewHoldCode);
 
             _lblNewStatus.Visible = _allowBulkEditing;
@@ -412,8 +414,6 @@ namespace Mss.Views
 
         private void _HoldCodesProxy_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
-//             _cmbHoldCode.Items.Clear();
-//             _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
             _PopulateHoldCodeComboBox(_cmbHoldCode);
             _PopulateHoldCodeComboBox(_cmbNewHoldCode);
             _PopulateControls(_workingBinItem);
@@ -421,8 +421,6 @@ namespace Mss.Views
 
         private void _HoldCodesProxy_CollectionRefreshed(Object sender, EventArgs e)
         {
-//             _cmbHoldCode.Items.Clear();
-//             _cmbHoldCode.Items.AddRange(_holdCodesProxy.Values.OrderBy(h => h.Description).ToArray());
             _PopulateHoldCodeComboBox(_cmbHoldCode);
             _PopulateHoldCodeComboBox(_cmbNewHoldCode);
             _PopulateControls(_workingBinItem);
@@ -667,9 +665,6 @@ namespace Mss.Views
 
         private void _PopulateHoldCodeComboBox(ComboBox combobox)
         {
-            combobox.Items.Clear();
-            combobox.ValueMember = nameof(HoldCodeItem.HoldCode);
-            combobox.DisplayMember = nameof(HoldCodeItem.Description);
             combobox.DataSource = _holdCodesProxy.Values.OrderBy(h => h.Description).ToArray();
         }
 
