@@ -989,10 +989,17 @@ namespace Mss.Data
                 Levels availableLevel;
                 if (sendToConsoleArea)
                 {
-                    SetPitPallet(Levels.None, palletItem, PitCode.Console);
-                    moveCommand = Constant.Assignment1MoveCommandForward;
-                    extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
-                    return true;
+                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Console) < Constant.ConsoleAssignmentBufferSize)
+                    {
+                        SetPitPallet(Levels.None, palletItem, PitCode.Console);
+                        moveCommand = Constant.Assignment1MoveCommandForward;
+                        extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
+                        return true;
+                    }
+                    moveCommand = Constant.NoMoveCommand;
+                    extendedState = $"Pallet {palletID} does not currently have an available Destination.";
+                    fault = string.Empty;
+                    return false;
                 }
                 else if (palletItem.Status == PalletStatus.Purge
                     || palletItem.Status == PalletStatus.Unknown)
@@ -1085,10 +1092,17 @@ namespace Mss.Data
                 Levels availableLevel;
                 if (sendToConsoleArea)
                 {
-                    SetPitPallet(Levels.None, palletItem, PitCode.Console);
-                    moveCommand = Constant.Assignment2MoveCommandConsole;
-                    extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
-                    return true;
+                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Console) <= Constant.ConsoleAssignmentBufferSize)
+                    {
+                        SetPitPallet(Levels.None, palletItem, PitCode.Console);
+                        moveCommand = Constant.Assignment1MoveCommandForward;
+                        extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
+                        return true;
+                    }
+                    moveCommand = Constant.NoMoveCommand;
+                    extendedState = $"Pallet {palletID} does not currently have an available Destination.";
+                    fault = string.Empty;
+                    return false;
                 }
                 else if (palletItem.Status == PalletStatus.Purge
                     || palletItem.Status == PalletStatus.Unknown)

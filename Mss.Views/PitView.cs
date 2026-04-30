@@ -227,8 +227,8 @@ namespace Mss.Views
 
         private void _NavigatorBtnRefreshItem_Click(object sender, EventArgs e)
         {
-            _pitProxy.Refresh();
             _holdCodesProxy.Refresh();
+            _pitProxy.Refresh();
         }
 
         private void _NavigatorBtnAddItem_Click(object sender, EventArgs e)
