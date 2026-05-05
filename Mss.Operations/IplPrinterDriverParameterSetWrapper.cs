@@ -10,7 +10,7 @@ namespace Mss.Operations
     {
         private string _formatPlaceholderStartDelimiter = "[[";
         private string _formatPlaceholderEndDelimiter = "]]";
-        private bool _singleDefinitionFile = false;
+        private bool _singleDefinitionFile = true;
         private string _labelDefinitionPath = @"..\Labels";
         private XConfigurationValueList _labelDefinitionNames = null;
 

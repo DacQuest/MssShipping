@@ -258,7 +258,7 @@
     <Compile Include="Pocos\StatusChange.cs" />
     <Compile Include="Repositories\BroadcastQueueRepository.cs" />
     <Compile Include="Repositories\StatusChangeQueueRepository.cs" />
-    <Compile Include="LoadLabelFormatter.cs" />
+    <Compile Include="TrailerLabelFormatter.cs" />
     <Compile Include="ShippingLabelFormatter.cs" />
     <Compile Include="SlugManager.cs" />
     <Compile Include="MesInterface.cs" />

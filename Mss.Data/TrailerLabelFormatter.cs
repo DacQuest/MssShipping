@@ -1,6 +1,7 @@
 ﻿using DacQuest.DFX.Core.ByteBuffers;
 using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Devices;
+using DevExpress.XtraReports.UI;
 using Mss.Collections;
 using Mss.Common;
 using System;
@@ -11,26 +12,28 @@ using System.Threading.Tasks;
 
 namespace Mss.Data
 {
-    public static class ShippingLabelFormatter
+    public static class TrailerLabelFormatter
     {
-        public static string LabelVin = "VIN";
-        public static string LabelRotation = "ROTATION";
-        public static string LabelVehicleLocation = "VEHICLE_LOCATION";
-        public static string LabelBarcode = "SHIPPING_LABEL_BARCODE";
+        public static string LabelPalletCount = "PALLET_COUNT";
+        public static string LabelFirstRotation = "FIRST_ROTATION";
+        public static string LabelLastRotation = "LAST_ROTATION";
+        public static string LabelTrailerID = "TRAILER_ID";
+        public static string LabelBarcode = "TRAILER_LABEL_BARCODE";
 //         public static string LabelTriangleData = "TRIANGLE_DATA";
 
         public static XLabelDataPairs Format(
-            LoadItem loadItem,
-            string vehicleLocation)
+            int palletCount,
+            string firstRotation,
+            string lastRotation,
+            string trailerID)
         {
-            BroadcastItem broadcastItem = loadItem.Broadcast;
-            string rotation = loadItem.Broadcast.RotationText;
-            string barcode = $"{rotation}-{vehicleLocation}";
-            return new XLabelDataPairs(Constant.ShippingLabelName)
+            string barcode = $"{trailerID},{firstRotation},{lastRotation},{palletCount}";
+            return new XLabelDataPairs(Constant.TrailerLabelName)
             {
-                {LabelVin, broadcastItem.Vin},
-                {LabelRotation, rotation},
-                {LabelVehicleLocation, vehicleLocation},
+                {LabelPalletCount, palletCount.ToString()},
+                {LabelFirstRotation, firstRotation},
+                {LabelLastRotation, lastRotation},
+                {LabelTrailerID, trailerID},
                 {LabelBarcode, barcode},
             };
         }

@@ -32,9 +32,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btnConnect = new System.Windows.Forms.Button();
             this.btnDisconnect = new System.Windows.Forms.Button();
-            this._btnPrintShipping = new System.Windows.Forms.Button();
-            this._btnPrintLear = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this._btnPrintShippingLabel = new System.Windows.Forms.Button();
+            this._btnPrintLoadLabel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lstLabelPrinters
@@ -76,47 +75,34 @@
             this.btnDisconnect.UseVisualStyleBackColor = true;
             this.btnDisconnect.Click += new System.EventHandler(this._BtnDisconnect_Click);
             // 
-            // _btnPrintShipping
+            // _btnPrintShippingLabel
             // 
-            this._btnPrintShipping.Enabled = false;
-            this._btnPrintShipping.Location = new System.Drawing.Point(16, 151);
-            this._btnPrintShipping.Name = "_btnPrintShipping";
-            this._btnPrintShipping.Size = new System.Drawing.Size(156, 23);
-            this._btnPrintShipping.TabIndex = 3;
-            this._btnPrintShipping.Text = "Shipping Label";
-            this._btnPrintShipping.UseVisualStyleBackColor = true;
-            this._btnPrintShipping.Click += new System.EventHandler(this._BtnPrintShipping_Click);
+            this._btnPrintShippingLabel.Enabled = false;
+            this._btnPrintShippingLabel.Location = new System.Drawing.Point(16, 151);
+            this._btnPrintShippingLabel.Name = "_btnPrintShippingLabel";
+            this._btnPrintShippingLabel.Size = new System.Drawing.Size(156, 23);
+            this._btnPrintShippingLabel.TabIndex = 3;
+            this._btnPrintShippingLabel.Text = "Shipping Label";
+            this._btnPrintShippingLabel.UseVisualStyleBackColor = true;
+            this._btnPrintShippingLabel.Click += new System.EventHandler(this._BtnPrintShippingLabel_Click);
             // 
-            // _btnPrintLear
+            // _btnPrintLoadLabel
             // 
-            this._btnPrintLear.Enabled = false;
-            this._btnPrintLear.Location = new System.Drawing.Point(16, 180);
-            this._btnPrintLear.Name = "_btnPrintLear";
-            this._btnPrintLear.Size = new System.Drawing.Size(156, 23);
-            this._btnPrintLear.TabIndex = 3;
-            this._btnPrintLear.Text = "Lear Label";
-            this._btnPrintLear.UseVisualStyleBackColor = true;
-            this._btnPrintLear.Click += new System.EventHandler(this._BtnPrintLear_Click);
-            // 
-            // button1
-            // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(93, 5);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this._btnPrintLoadLabel.Enabled = false;
+            this._btnPrintLoadLabel.Location = new System.Drawing.Point(16, 180);
+            this._btnPrintLoadLabel.Name = "_btnPrintLoadLabel";
+            this._btnPrintLoadLabel.Size = new System.Drawing.Size(156, 23);
+            this._btnPrintLoadLabel.TabIndex = 3;
+            this._btnPrintLoadLabel.Text = "Trailer Label";
+            this._btnPrintLoadLabel.UseVisualStyleBackColor = true;
+            this._btnPrintLoadLabel.Click += new System.EventHandler(this._BtnPrintTrailerLabel_Click);
             // 
             // LabelPrinterTesterView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this._btnPrintLear);
-            this.Controls.Add(this._btnPrintShipping);
+            this.Controls.Add(this._btnPrintLoadLabel);
+            this.Controls.Add(this._btnPrintShippingLabel);
             this.Controls.Add(this.btnDisconnect);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.label1);
@@ -134,8 +120,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.Button btnDisconnect;
-        private System.Windows.Forms.Button _btnPrintShipping;
-        private System.Windows.Forms.Button _btnPrintLear;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button _btnPrintShippingLabel;
+        private System.Windows.Forms.Button _btnPrintLoadLabel;
     }
 }
