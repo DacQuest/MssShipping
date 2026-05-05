@@ -20,8 +20,8 @@ namespace Mss.Operations
             {
                 string sql = string.Format(
                     //                     @"INSERT INTO PurgePallets (PurgedOn,PalletID,JobID,Comment,) VALUES ('{0}','{1}','{2}','{3}'); SELECT Convert(Int, SCOPE_IDENTITY());",
-                    @"INSERT INTO {0} (PurgedOn,PalletID,Sku,  JobID, HoldCode,BuiltOn, Comment,)
-                      VALUES          ('{1}',   '{2}',   '{3}','{4}', {5},     {6},     '{7}');",
+                    @"INSERT INTO {0} (PurgedOn,PalletID,Sku,  JobID, HoldCode,BuiltOn, Comment)
+                      VALUES          ('{1}',   '{2}',   '{3}','{4}', {5},     '{6}',   '{7}');",
                     Constant.PurgePalletsTableName,
                     DateTime.Now.ToString(Constant.LongDateTimeFormat24),
                     palletItem.PalletID,
