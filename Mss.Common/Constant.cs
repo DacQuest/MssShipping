@@ -23,6 +23,9 @@ namespace Mss.Common
 
         public const string PalletStatusChangeEventContext = "Pallet Status Change";
 
+        public const string ShippingLabelName = "ShippingLabelP708";
+        public const string TrailerLabelName = "TrailerLabelP708";
+
         // Shared Collection Names
         public const string StorageName = "Storage";
         public const string AssignmentPitName = "AssignmentPit";

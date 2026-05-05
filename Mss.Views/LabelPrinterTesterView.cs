@@ -31,14 +31,14 @@ namespace Mss.Views
 
         protected override void OpenView()
         {
-            _PopulateLoadItems();
+            _PopulateLoadItem();
 
             if (!XConfigurationManager.TryGetConfigurationItem(
                 XConfigurationManager.strX_TAG_DEVICE_SETS_SECTION,
                 Constant.LabelPrinterTesterDeviceSetName,
                 out XDeviceSetConfigurationItem deviceSetConfigurationItem))
             {
-                MessageBox.Show(
+                _ = MessageBox.Show(
                     $"{Constant.LabelPrinterTesterDeviceSetName} Device Set not found in configuration",
                     "ERROR",
                     MessageBoxButtons.OK,
@@ -47,7 +47,7 @@ namespace Mss.Views
             }
             foreach (string name in deviceSetConfigurationItem.DeviceNames)
             {
-                lstLabelPrinters.Items.Add(name);
+                _ = lstLabelPrinters.Items.Add(name);
             }
             if (lstLabelPrinters.Items.Count > 0)
             {
@@ -60,24 +60,23 @@ namespace Mss.Views
 //         {
 //         }
 
-        private void _PopulateLoadItems()
+        private void _PopulateLoadItem()
         {
             PalletItem palletItem = new PalletItem
             {
-//                 PalletID = 1296,
-//                 JobID = 9487,
-//                 Sku = "3R15CGA"
+                PalletID = "5150",
+                JobID = "765432",
+                Sku = "F70-F364-1Y6"
             };
             BroadcastItem broadcastItem = new BroadcastItem
             {
-//                 BroadcastNumber = 574273,
-//                 Vin = "1FTER4FH6PLE06082",
+                Csn = "4001219F",
+                Vin = "2FD0W4HT5VBA00287",
             };
             _loadItem = new LoadItem()
             {
-////                 LoadName = Constant.LoadAName,
-//                 Broadcasts = new BroadcastItem[] { new BroadcastItem(), broadcastItem, new BroadcastItem() },
-//                 Pallets = new PalletItem[] { new PalletItem(), palletItem, new PalletItem() }
+                Broadcast = broadcastItem,
+                Pallet = palletItem
             };
         }
 
@@ -89,7 +88,7 @@ namespace Mss.Views
                 deviceName,
                 out XDeviceConfigurationItem deviceConfigurationItem))
             {
-                MessageBox.Show(
+                _ = MessageBox.Show(
                     $"Failed to load label printer configuration: {deviceName}",
                     "ERROR",
                     MessageBoxButtons.OK,
@@ -101,7 +100,7 @@ namespace Mss.Views
                 _device = (XDevice)XActivator.CreateInstance(deviceConfigurationItem.ClassType, true);
                 if (!_device.Initialize(deviceConfigurationItem))
                 {
-                    MessageBox.Show(
+                    _ = MessageBox.Show(
                         $"Failed to initialize label printer: {deviceName}",
                         "ERROR",
                         MessageBoxButtons.OK,
@@ -109,10 +108,10 @@ namespace Mss.Views
                     return;
                 }
                 btnConnect.Enabled = false;
-                _btnPrintShipping.Enabled = true;
+                _btnPrintShippingLabel.Enabled = true;
                 if (deviceName.StartsWith("Man"))
                 {
-                    _btnPrintLear.Enabled = true;
+                    _btnPrintLoadLabel.Enabled = true;
                 }
                 btnDisconnect.Enabled = true;
             }
@@ -120,7 +119,7 @@ namespace Mss.Views
             {
                 _device = null;
                 x.PublishSystemEvent("Label Printer Tester");
-                MessageBox.Show(
+                _ = MessageBox.Show(
                     $"Failed to initialize label printer: {deviceName}",
                     "ERROR",
                     MessageBoxButtons.OK,
@@ -141,8 +140,8 @@ namespace Mss.Views
                 _device = null;
             }
             btnConnect.Enabled = true;
-            _btnPrintShipping.Enabled = false;
-            _btnPrintLear.Enabled = false;
+            _btnPrintShippingLabel.Enabled = false;
+            _btnPrintLoadLabel.Enabled = false;
             btnDisconnect.Enabled = false;
         }
 
@@ -152,31 +151,22 @@ namespace Mss.Views
             return true;
         }
 
-        private void _BtnPrintShipping_Click(object sender, EventArgs e)
+        private void _BtnPrintShippingLabel_Click(object sender, EventArgs e)
         {
-//             _device.WriteTag(
-//                 Constant.LabelPrintCommandRoleName,
-//                 ShippingLabelFormatter.Format(_loadItem, _groupIndex));
+            _ = _device.WriteTag(
+                Constant.LabelPrintCommandRoleName,
+                ShippingLabelFormatter.Format(_loadItem, "LH"));
         }
 
-        private void _BtnPrintLear_Click(object sender, EventArgs e)
+        private void _BtnPrintTrailerLabel_Click(object sender, EventArgs e)
         {
-//             _device.WriteTag(
-//                 Constant.LabelPrintCommandRoleName,
-//                 ShippingLabelFormatter.FormatLearLabel(_loadItem.Pallets[1]));
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-//             if (!LearData.FormatRFTagString(_loadItem.Pallets[1], out string rfTagString, out string error))
-//             {
-//                 MessageBox.Show(error);
-//             }
-//             else
-//             {
-//                 MessageBox.Show(rfTagString);
-//             }
-
+            _ = _device.WriteTag(
+                Constant.LabelPrintCommandRoleName,
+                TrailerLabelFormatter.Format(
+                    54,
+                    "1201",
+                    "1232",
+                    "07"));
         }
 
         //protected override void AutoSubscribe()

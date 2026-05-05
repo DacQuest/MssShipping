@@ -3922,7 +3922,7 @@ namespace Mss.Data
 
             if ((!statusChange.JobID.IsNullOrWhiteSpace()
                     && _storage.TryFindBinByJobID(statusChange.JobID, out BinItem binItem))
-                || (!statusChange.PalletID.IsNullOrWhiteSpace()
+                || (statusChange.PalletID.ValidPalletID()
                     && _storage.TryFindBinByPalletID(statusChange.PalletID, out binItem)))
             {
                 // binItem != null is guaranteed here
@@ -3951,6 +3951,18 @@ namespace Mss.Data
                     {
                         palletItem.HoldCode = statusChange.HoldCode;
                     }
+                }
+                else if (statusChange.PalletStatus == PalletStatus.OK
+                    || statusChange.PalletStatus == PalletStatus.Reserved)
+                {
+                    palletItem.HoldCode = statusChange.HoldCode <= Constant.NoHoldCode
+                        ? Constant.NoHoldCode
+                        : statusChange.HoldCode;
+                }
+                else
+                {
+                    error = $"StatusChange HeaderID {statusChange.ChangeID}. Cannot change Pallet Status to {(int)statusChange.PalletStatus}.";
+                    return false;
                 }
                 palletItem.Status = statusChange.PalletStatus;
                 if (!statusChange.Comment.IsNullOrWhiteSpace())

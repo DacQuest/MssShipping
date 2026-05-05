@@ -26,6 +26,8 @@ namespace Mss.Collections
 
         public int Rotation => RotationFromCsn(Csn);
 
+        public string RotationText => RotationTextFromCsn(Csn);
+
         public static string MakeCsn(int rotationNumber, string csnSuffix)
         {
             XArgumentChecker.ThrowIfNotContainedIn(
@@ -50,7 +52,7 @@ namespace Mss.Collections
                     "Length of 'csn' must be at least 2 characters long",
                     nameof(csn));
             }
-            string rotationText = csn.Left(csn.Length - 1);
+            string rotationText = RotationTextFromCsn(csn);
             if (!rotationText.All(c => char.IsDigit(c)))
             {
                 throw new ArgumentException(
@@ -58,6 +60,11 @@ namespace Mss.Collections
                     nameof(csn));
             }
             return int.Parse(rotationText);
+        }
+
+        public static string RotationTextFromCsn(string csn)
+        {
+            return csn.Left(csn.Length - 1);
         }
 
         public static BroadcastItem CreateMissingBroadcastItem(int rotation)
