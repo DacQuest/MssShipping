@@ -33,7 +33,7 @@
             this.btnConnect = new System.Windows.Forms.Button();
             this.btnDisconnect = new System.Windows.Forms.Button();
             this._btnPrintShippingLabel = new System.Windows.Forms.Button();
-            this._btnPrintLoadLabel = new System.Windows.Forms.Button();
+            this._btnPrintTrailerLabel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lstLabelPrinters
@@ -86,22 +86,22 @@
             this._btnPrintShippingLabel.UseVisualStyleBackColor = true;
             this._btnPrintShippingLabel.Click += new System.EventHandler(this._BtnPrintShippingLabel_Click);
             // 
-            // _btnPrintLoadLabel
+            // _btnPrintTrailerLabel
             // 
-            this._btnPrintLoadLabel.Enabled = false;
-            this._btnPrintLoadLabel.Location = new System.Drawing.Point(16, 180);
-            this._btnPrintLoadLabel.Name = "_btnPrintLoadLabel";
-            this._btnPrintLoadLabel.Size = new System.Drawing.Size(156, 23);
-            this._btnPrintLoadLabel.TabIndex = 3;
-            this._btnPrintLoadLabel.Text = "Trailer Label";
-            this._btnPrintLoadLabel.UseVisualStyleBackColor = true;
-            this._btnPrintLoadLabel.Click += new System.EventHandler(this._BtnPrintTrailerLabel_Click);
+            this._btnPrintTrailerLabel.Enabled = false;
+            this._btnPrintTrailerLabel.Location = new System.Drawing.Point(16, 180);
+            this._btnPrintTrailerLabel.Name = "_btnPrintTrailerLabel";
+            this._btnPrintTrailerLabel.Size = new System.Drawing.Size(156, 23);
+            this._btnPrintTrailerLabel.TabIndex = 3;
+            this._btnPrintTrailerLabel.Text = "Trailer Label";
+            this._btnPrintTrailerLabel.UseVisualStyleBackColor = true;
+            this._btnPrintTrailerLabel.Click += new System.EventHandler(this._BtnPrintTrailerLabel_Click);
             // 
             // LabelPrinterTesterView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this._btnPrintLoadLabel);
+            this.Controls.Add(this._btnPrintTrailerLabel);
             this.Controls.Add(this._btnPrintShippingLabel);
             this.Controls.Add(this.btnDisconnect);
             this.Controls.Add(this.btnConnect);
@@ -121,6 +121,6 @@
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.Button btnDisconnect;
         private System.Windows.Forms.Button _btnPrintShippingLabel;
-        private System.Windows.Forms.Button _btnPrintLoadLabel;
+        private System.Windows.Forms.Button _btnPrintTrailerLabel;
     }
 }

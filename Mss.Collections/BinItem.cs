@@ -65,10 +65,7 @@ namespace Mss.Collections
             Pallet = pallet;
         }
 
-
-
-
-
+        public string SearchResultsHoldCodeText { get; set; } = string.Empty;
 
         public CraneNumber CraneNumber => GetCraneNumber(NodeIndex);
         public int BinNumber => NodeIndex + 1;

@@ -24,7 +24,7 @@ namespace Mss.Data
             string vehicleLocation)
         {
             BroadcastItem broadcastItem = loadItem.Broadcast;
-            string rotation = loadItem.Broadcast.RotationText;
+            string rotation = loadItem.Broadcast.LabelRotationText;
             string barcode = $"{rotation}-{vehicleLocation}";
             return new XLabelDataPairs(Constant.ShippingLabelName)
             {
