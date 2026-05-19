@@ -324,12 +324,6 @@
     <Compile Include="AdvancedSearchForm.designer.cs">
       <DependentUpon>AdvancedSearchForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="BroadcastAdminEditorView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="BroadcastAdminEditorView.Designer.cs">
-      <DependentUpon>BroadcastAdminEditorView.cs</DependentUpon>
-    </Compile>
     <Compile Include="BroadcastView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -381,6 +375,18 @@
     </Compile>
     <Compile Include="LabelPrinterTesterView.designer.cs">
       <DependentUpon>LabelPrinterTesterView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CloseLoadConfirmationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CloseLoadConfirmationForm.designer.cs">
+      <DependentUpon>CloseLoadConfirmationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SelectBroadcastReleaseCountForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectBroadcastReleaseCountForm.designer.cs">
+      <DependentUpon>SelectBroadcastReleaseCountForm.cs</DependentUpon>
     </Compile>
     <Compile Include="PitAddForm.cs">
       <SubType>Form</SubType>
@@ -587,6 +593,10 @@
     <EmbeddedResource Include="LabelPrinterTesterView.resx">
       <DependentUpon>LabelPrinterTesterView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CloseLoadConfirmationForm.resx">
+      <DependentUpon>CloseLoadConfirmationForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="PitAddForm.resx">
       <DependentUpon>PitAddForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -624,6 +634,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SelectBinStatusesForm.resx">
       <DependentUpon>SelectBinStatusesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SelectBroadcastReleaseCountForm.resx">
+      <DependentUpon>SelectBroadcastReleaseCountForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SelectPalletIDForm.resx">
       <DependentUpon>SelectPalletIDForm.cs</DependentUpon>

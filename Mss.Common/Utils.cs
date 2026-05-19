@@ -62,6 +62,7 @@ namespace Mss.Common
                 : StringComparison.Ordinal;
             return string.Compare(strA, strB, comparison) > 0;
         }
+
         public static bool IsGreaterThanOrEqualTo(this string strA, string strB, bool ignoreCase)
         {
             StringComparison comparison = ignoreCase
@@ -69,6 +70,7 @@ namespace Mss.Common
                 : StringComparison.Ordinal;
             return string.Compare(strA, strB, comparison) >= 0;
         }
+
         public static bool IsLessThan(this string strA, string strB, bool ignoreCase)
         {
             StringComparison comparison = ignoreCase
@@ -76,6 +78,7 @@ namespace Mss.Common
                 : StringComparison.Ordinal;
             return string.Compare(strA, strB, comparison) < 0;
         }
+
         public static bool IsLessThanOrEqualTo(this string strA, string strB, bool ignoreCase)
         {
             StringComparison comparison = ignoreCase
@@ -83,5 +86,15 @@ namespace Mss.Common
                 : StringComparison.Ordinal;
             return string.Compare(strA, strB, comparison) <= 0;
         }
+
+        private static readonly Dictionary<int, int[]> _releasableCounts = new Dictionary<int, int[]>
+        {
+            { 54, new int[] { 54, 42, 27, 15 } },
+            { 39, new int[] { 39, 27, 12 } },
+            { 27, new int[] { 27, 15 } },
+            { 12, new int[] { 12 } }
+        };
+
+        public static int[] GetReleasableCounts(int waitingCount) => _releasableCounts[waitingCount];
     }
 }

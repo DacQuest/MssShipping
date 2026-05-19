@@ -50,10 +50,10 @@
             // 
             this._lblMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._lblMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblMessage.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblMessage.Location = new System.Drawing.Point(66, 12);
             this._lblMessage.Name = "_lblMessage";
-            this._lblMessage.Size = new System.Drawing.Size(292, 66);
+            this._lblMessage.Size = new System.Drawing.Size(222, 48);
             this._lblMessage.TabIndex = 10;
             this._lblMessage.Text = "What would you like to do for all the Master settings?";
             this._lblMessage.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -62,7 +62,8 @@
             // 
             this._btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this._btnCancel.Location = new System.Drawing.Point(272, 88);
+            this._btnCancel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnCancel.Location = new System.Drawing.Point(202, 73);
             this._btnCancel.Name = "_btnCancel";
             this._btnCancel.Size = new System.Drawing.Size(75, 23);
             this._btnCancel.TabIndex = 12;
@@ -73,7 +74,8 @@
             // 
             this._btnEnableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._btnEnableAll.DialogResult = System.Windows.Forms.DialogResult.Yes;
-            this._btnEnableAll.Location = new System.Drawing.Point(90, 88);
+            this._btnEnableAll.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnEnableAll.Location = new System.Drawing.Point(20, 73);
             this._btnEnableAll.Name = "_btnEnableAll";
             this._btnEnableAll.Size = new System.Drawing.Size(75, 23);
             this._btnEnableAll.TabIndex = 11;
@@ -84,7 +86,8 @@
             // 
             this._btnDisableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._btnDisableAll.DialogResult = System.Windows.Forms.DialogResult.No;
-            this._btnDisableAll.Location = new System.Drawing.Point(181, 88);
+            this._btnDisableAll.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnDisableAll.Location = new System.Drawing.Point(111, 73);
             this._btnDisableAll.Name = "_btnDisableAll";
             this._btnDisableAll.Size = new System.Drawing.Size(75, 23);
             this._btnDisableAll.TabIndex = 14;
@@ -97,7 +100,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this._btnCancel;
-            this.ClientSize = new System.Drawing.Size(370, 127);
+            this.ClientSize = new System.Drawing.Size(300, 112);
             this.ControlBox = false;
             this.Controls.Add(this._btnDisableAll);
             this.Controls.Add(this.pictureBox1);

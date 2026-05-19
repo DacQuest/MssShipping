@@ -56,7 +56,7 @@ namespace Mss.Views
             {
                 _cmbPitCode.AddEnumItem(PitCode.Lower);
                 _cmbPitCode.AddEnumItem(PitCode.Upper);
-                _cmbPitCode.AddEnumItem(PitCode.Console);
+                _cmbPitCode.AddEnumItem(PitCode.Twenty);
                 _cmbPitCode.AddEnumItem(PitCode.Purge);
             }
             else

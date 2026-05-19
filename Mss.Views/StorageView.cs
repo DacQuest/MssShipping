@@ -1742,7 +1742,7 @@ namespace Mss.Views
 
         private void _TxtNewComment_TextChanged(object sender, EventArgs e)
         {
-            _lblRemainingCharacters.Text = $"({Constant.CommentLength - _txtNewComment.Text.Length})";
+            _lblRemainingCharacters.Text = $"{Constant.CommentLength - _txtNewComment.Text.Length}";
             _newComment = _txtNewComment.Text;
             _EnableConvertButtons();
         }
@@ -1963,31 +1963,31 @@ namespace Mss.Views
             }
         }
 
-//         private void chkApplyBulkAudits_CheckedChanged(object sender, EventArgs e)
-//         {
-//             if (chkApplyBulkAudits.Checked)
-//             {
-//                 grpBulkAudits.Enabled = true;
-//                 grpBulkAudits.Visible = true;
-//                 grpNewStatus.Enabled = false;
-//                 _newStatus = PalletStatus.Invalid;
-//                 _newHoldCode = 0;
-//                 _newComment = string.Empty;
-//                 cmbNewHoldCode.SelectedIndex = -1;
-//                 cmbNewStatus.SelectedIndex = -1;
-//                 txtNewComment.Text = string.Empty;
-//             }
-//             else
-//             {
-//                 grpBulkAudits.Enabled = false;
-//                 grpBulkAudits.Visible = false;
-//                 _markAudits = false;
-//                 _unmarkAudits = false;
-//                 chkBulkMarkAudit.Checked = false;
-//                 chkUnmarkAudit.Checked = false;
-//                 grpNewStatus.Enabled = true;
-//             }
-//             _EnableConvertButtons();
-//         }
+        //         private void chkApplyBulkAudits_CheckedChanged(object sender, EventArgs e)
+        //         {
+        //             if (chkApplyBulkAudits.Checked)
+        //             {
+        //                 grpBulkAudits.Enabled = true;
+        //                 grpBulkAudits.Visible = true;
+        //                 grpNewStatus.Enabled = false;
+        //                 _newStatus = PalletStatus.Invalid;
+        //                 _newHoldCode = 0;
+        //                 _newComment = string.Empty;
+        //                 cmbNewHoldCode.SelectedIndex = -1;
+        //                 cmbNewStatus.SelectedIndex = -1;
+        //                 txtNewComment.Text = string.Empty;
+        //             }
+        //             else
+        //             {
+        //                 grpBulkAudits.Enabled = false;
+        //                 grpBulkAudits.Visible = false;
+        //                 _markAudits = false;
+        //                 _unmarkAudits = false;
+        //                 chkBulkMarkAudit.Checked = false;
+        //                 chkUnmarkAudit.Checked = false;
+        //                 grpNewStatus.Enabled = true;
+        //             }
+        //             _EnableConvertButtons();
+        //         }
     }
 }

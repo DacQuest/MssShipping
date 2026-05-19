@@ -151,7 +151,7 @@
             // lblVertical
             // 
             this.lblVertical.BackColor = System.Drawing.Color.White;
-            this.lblVertical.Font = new System.Drawing.Font("Arial", 44F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblVertical.Font = new System.Drawing.Font("Segoe UI", 40F, System.Drawing.FontStyle.Bold);
             this.lblVertical.Location = new System.Drawing.Point(393, 67);
             this.lblVertical.Name = "lblVertical";
             this.lblVertical.Size = new System.Drawing.Size(90, 78);
@@ -163,7 +163,7 @@
             // _lblHorizontal
             // 
             this._lblHorizontal.BackColor = System.Drawing.Color.White;
-            this._lblHorizontal.Font = new System.Drawing.Font("Arial", 44F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblHorizontal.Font = new System.Drawing.Font("Segoe UI", 40F, System.Drawing.FontStyle.Bold);
             this._lblHorizontal.Location = new System.Drawing.Point(258, 67);
             this._lblHorizontal.Name = "_lblHorizontal";
             this._lblHorizontal.Size = new System.Drawing.Size(104, 78);
@@ -175,7 +175,7 @@
             // _lblCrane
             // 
             this._lblCrane.BackColor = System.Drawing.Color.White;
-            this._lblCrane.Font = new System.Drawing.Font("Arial", 44.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblCrane.Font = new System.Drawing.Font("Segoe UI", 40F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblCrane.Location = new System.Drawing.Point(31, 67);
             this._lblCrane.Name = "_lblCrane";
             this._lblCrane.Size = new System.Drawing.Size(90, 78);
@@ -291,6 +291,7 @@
             this._grpBinData.Controls.Add(this._chkAudit);
             this._grpBinData.Controls.Add(this._lblBinStatus);
             this._grpBinData.Controls.Add(this._lblBinNotUsable);
+            this._grpBinData.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._grpBinData.Location = new System.Drawing.Point(13, 156);
             this._grpBinData.Name = "_grpBinData";
             this._grpBinData.Size = new System.Drawing.Size(329, 159);
@@ -301,9 +302,9 @@
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(177, 24);
+            this.label22.Location = new System.Drawing.Point(177, 20);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(45, 13);
+            this.label22.Size = new System.Drawing.Size(47, 15);
             this.label22.TabIndex = 74;
             this.label22.Text = "Bin Size";
             // 
@@ -311,9 +312,10 @@
             // 
             this._lblBinSize.BackColor = System.Drawing.SystemColors.Window;
             this._lblBinSize.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblBinSize.Location = new System.Drawing.Point(228, 20);
+            this._lblBinSize.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblBinSize.Location = new System.Drawing.Point(230, 16);
             this._lblBinSize.Name = "_lblBinSize";
-            this._lblBinSize.Size = new System.Drawing.Size(88, 21);
+            this._lblBinSize.Size = new System.Drawing.Size(86, 21);
             this._lblBinSize.TabIndex = 75;
             this._lblBinSize.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -321,9 +323,10 @@
             // 
             this._lblAge.BackColor = System.Drawing.SystemColors.Window;
             this._lblAge.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblAge.Location = new System.Drawing.Point(248, 47);
+            this._lblAge.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblAge.Location = new System.Drawing.Point(251, 44);
             this._lblAge.Name = "_lblAge";
-            this._lblAge.Size = new System.Drawing.Size(68, 21);
+            this._lblAge.Size = new System.Drawing.Size(65, 21);
             this._lblAge.TabIndex = 7;
             this._lblAge.Text = "<1 Hour";
             this._lblAge.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -332,27 +335,30 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(10, 51);
+            this.label16.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label16.Location = new System.Drawing.Point(10, 48);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(55, 13);
+            this.label16.Size = new System.Drawing.Size(60, 15);
             this.label16.TabIndex = 4;
             this.label16.Text = "Stored On";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 78);
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label2.Location = new System.Drawing.Point(10, 76);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(55, 13);
+            this.label2.Size = new System.Drawing.Size(59, 15);
             this.label2.TabIndex = 8;
             this.label2.Text = "Bin Status";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 24);
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label1.Location = new System.Drawing.Point(10, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(62, 13);
+            this.label1.Size = new System.Drawing.Size(71, 15);
             this.label1.TabIndex = 0;
             this.label1.Text = "Bin Number";
             // 
@@ -360,9 +366,10 @@
             // 
             this._chkDisabled.AutoSize = true;
             this._chkDisabled.FlatAppearance.BorderColor = System.Drawing.Color.White;
-            this._chkDisabled.Location = new System.Drawing.Point(251, 104);
+            this._chkDisabled.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._chkDisabled.Location = new System.Drawing.Point(250, 100);
             this._chkDisabled.Name = "_chkDisabled";
-            this._chkDisabled.Size = new System.Drawing.Size(67, 17);
+            this._chkDisabled.Size = new System.Drawing.Size(71, 19);
             this._chkDisabled.TabIndex = 13;
             this._chkDisabled.Text = "Disabled";
             this._chkDisabled.UseVisualStyleBackColor = true;
@@ -372,7 +379,8 @@
             // 
             this._lblBinNumber.BackColor = System.Drawing.SystemColors.Window;
             this._lblBinNumber.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblBinNumber.Location = new System.Drawing.Point(78, 20);
+            this._lblBinNumber.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblBinNumber.Location = new System.Drawing.Point(82, 16);
             this._lblBinNumber.Name = "_lblBinNumber";
             this._lblBinNumber.Size = new System.Drawing.Size(84, 21);
             this._lblBinNumber.TabIndex = 1;
@@ -384,9 +392,10 @@
             // 
             this._lblStoredOn.BackColor = System.Drawing.SystemColors.Window;
             this._lblStoredOn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblStoredOn.Location = new System.Drawing.Point(78, 47);
+            this._lblStoredOn.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblStoredOn.Location = new System.Drawing.Point(82, 44);
             this._lblStoredOn.Name = "_lblStoredOn";
-            this._lblStoredOn.Size = new System.Drawing.Size(145, 21);
+            this._lblStoredOn.Size = new System.Drawing.Size(142, 21);
             this._lblStoredOn.TabIndex = 5;
             this._lblStoredOn.Text = "00/00/0000 00:00:00 PM";
             this._lblStoredOn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -395,9 +404,10 @@
             // 
             this._chkPickOnly.AutoSize = true;
             this._chkPickOnly.FlatAppearance.BorderColor = System.Drawing.Color.White;
-            this._chkPickOnly.Location = new System.Drawing.Point(157, 104);
+            this._chkPickOnly.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._chkPickOnly.Location = new System.Drawing.Point(153, 100);
             this._chkPickOnly.Name = "_chkPickOnly";
-            this._chkPickOnly.Size = new System.Drawing.Size(71, 17);
+            this._chkPickOnly.Size = new System.Drawing.Size(76, 19);
             this._chkPickOnly.TabIndex = 11;
             this._chkPickOnly.Text = "Pick Only";
             this._chkPickOnly.UseVisualStyleBackColor = true;
@@ -406,28 +416,31 @@
             // _cmbBinStatus
             // 
             this._cmbBinStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cmbBinStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._cmbBinStatus.FormattingEnabled = true;
-            this._cmbBinStatus.Location = new System.Drawing.Point(78, 74);
+            this._cmbBinStatus.Location = new System.Drawing.Point(82, 72);
             this._cmbBinStatus.Name = "_cmbBinStatus";
-            this._cmbBinStatus.Size = new System.Drawing.Size(238, 21);
+            this._cmbBinStatus.Size = new System.Drawing.Size(234, 23);
             this._cmbBinStatus.TabIndex = 9;
             this._cmbBinStatus.SelectedIndexChanged += new System.EventHandler(this._CmbBinStatus_SelectedIndexChanged);
             // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(224, 51);
+            this.label18.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label18.Location = new System.Drawing.Point(224, 48);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(26, 13);
+            this.label18.Size = new System.Drawing.Size(28, 15);
             this.label18.TabIndex = 6;
             this.label18.Text = "Age";
             // 
             // _chkAudit
             // 
             this._chkAudit.AutoSize = true;
-            this._chkAudit.Location = new System.Drawing.Point(82, 104);
+            this._chkAudit.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._chkAudit.Location = new System.Drawing.Point(82, 100);
             this._chkAudit.Name = "_chkAudit";
-            this._chkAudit.Size = new System.Drawing.Size(50, 17);
+            this._chkAudit.Size = new System.Drawing.Size(55, 19);
             this._chkAudit.TabIndex = 20;
             this._chkAudit.Text = "Audit";
             this._chkAudit.UseVisualStyleBackColor = true;
@@ -437,9 +450,9 @@
             // 
             this._lblBinStatus.BackColor = System.Drawing.SystemColors.Window;
             this._lblBinStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblBinStatus.Location = new System.Drawing.Point(78, 74);
+            this._lblBinStatus.Location = new System.Drawing.Point(82, 72);
             this._lblBinStatus.Name = "_lblBinStatus";
-            this._lblBinStatus.Size = new System.Drawing.Size(238, 21);
+            this._lblBinStatus.Size = new System.Drawing.Size(234, 21);
             this._lblBinStatus.TabIndex = 17;
             this._lblBinStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -447,11 +460,11 @@
             // 
             this._lblBinNotUsable.BackColor = System.Drawing.Color.Red;
             this._lblBinNotUsable.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblBinNotUsable.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblBinNotUsable.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblBinNotUsable.ForeColor = System.Drawing.Color.Yellow;
-            this._lblBinNotUsable.Location = new System.Drawing.Point(13, 127);
+            this._lblBinNotUsable.Location = new System.Drawing.Point(13, 122);
             this._lblBinNotUsable.Name = "_lblBinNotUsable";
-            this._lblBinNotUsable.Size = new System.Drawing.Size(303, 21);
+            this._lblBinNotUsable.Size = new System.Drawing.Size(303, 27);
             this._lblBinNotUsable.TabIndex = 18;
             this._lblBinNotUsable.Text = "Not Usable";
             this._lblBinNotUsable.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -461,6 +474,7 @@
             // 
             this._lblAuditAttempts.BackColor = System.Drawing.SystemColors.Window;
             this._lblAuditAttempts.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblAuditAttempts.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._lblAuditAttempts.Location = new System.Drawing.Point(404, 322);
             this._lblAuditAttempts.Name = "_lblAuditAttempts";
             this._lblAuditAttempts.Size = new System.Drawing.Size(23, 21);
@@ -472,9 +486,10 @@
             // label13
             // 
             this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.label13.Location = new System.Drawing.Point(326, 326);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(75, 13);
+            this.label13.Size = new System.Drawing.Size(88, 15);
             this.label13.TabIndex = 21;
             this.label13.Text = "Audit Attempts";
             this.label13.Visible = false;
@@ -501,7 +516,7 @@
             this._grpPalletData.Controls.Add(this._cmbHoldCode);
             this._grpPalletData.Controls.Add(this._lblHoldCode);
             this._grpPalletData.Controls.Add(this._lblPalletStatus);
-            this._grpPalletData.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._grpPalletData.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._grpPalletData.Location = new System.Drawing.Point(355, 156);
             this._grpPalletData.Name = "_grpPalletData";
             this._grpPalletData.Size = new System.Drawing.Size(631, 159);
@@ -513,18 +528,20 @@
             // 
             this._lblJobID.BackColor = System.Drawing.SystemColors.Window;
             this._lblJobID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblJobID.Location = new System.Drawing.Point(82, 47);
+            this._lblJobID.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblJobID.Location = new System.Drawing.Point(87, 44);
             this._lblJobID.Name = "_lblJobID";
-            this._lblJobID.Size = new System.Drawing.Size(245, 21);
+            this._lblJobID.Size = new System.Drawing.Size(240, 21);
             this._lblJobID.TabIndex = 47;
             this._lblJobID.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(15, 51);
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label5.Location = new System.Drawing.Point(15, 48);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(38, 13);
+            this.label5.Size = new System.Drawing.Size(39, 15);
             this.label5.TabIndex = 46;
             this.label5.Text = "Job ID";
             // 
@@ -532,9 +549,10 @@
             // 
             this._lblCommentRemainingCharacters.BackColor = System.Drawing.SystemColors.Window;
             this._lblCommentRemainingCharacters.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblCommentRemainingCharacters.Location = new System.Drawing.Point(583, 128);
+            this._lblCommentRemainingCharacters.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblCommentRemainingCharacters.Location = new System.Drawing.Point(583, 126);
             this._lblCommentRemainingCharacters.Name = "_lblCommentRemainingCharacters";
-            this._lblCommentRemainingCharacters.Size = new System.Drawing.Size(33, 21);
+            this._lblCommentRemainingCharacters.Size = new System.Drawing.Size(33, 23);
             this._lblCommentRemainingCharacters.TabIndex = 44;
             this._lblCommentRemainingCharacters.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -542,11 +560,11 @@
             // 
             this._lblComment.BackColor = System.Drawing.SystemColors.Window;
             this._lblComment.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblComment.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblComment.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._lblComment.ForeColor = System.Drawing.SystemColors.WindowText;
-            this._lblComment.Location = new System.Drawing.Point(82, 128);
+            this._lblComment.Location = new System.Drawing.Point(87, 127);
             this._lblComment.Name = "_lblComment";
-            this._lblComment.Size = new System.Drawing.Size(495, 21);
+            this._lblComment.Size = new System.Drawing.Size(490, 23);
             this._lblComment.TabIndex = 43;
             this._lblComment.TextChanged += new System.EventHandler(this._lblComment_TextChanged);
             // 
@@ -554,7 +572,8 @@
             // 
             this._lblBuiltOn.BackColor = System.Drawing.SystemColors.Window;
             this._lblBuiltOn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblBuiltOn.Location = new System.Drawing.Point(389, 20);
+            this._lblBuiltOn.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblBuiltOn.Location = new System.Drawing.Point(389, 18);
             this._lblBuiltOn.Name = "_lblBuiltOn";
             this._lblBuiltOn.Size = new System.Drawing.Size(227, 21);
             this._lblBuiltOn.TabIndex = 30;
@@ -563,36 +582,39 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(15, 132);
+            this.label12.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label12.Location = new System.Drawing.Point(15, 130);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(51, 13);
+            this.label12.Size = new System.Drawing.Size(61, 15);
             this.label12.TabIndex = 14;
             this.label12.Text = "Comment";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(339, 24);
+            this.label11.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label11.Location = new System.Drawing.Point(339, 22);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(44, 13);
+            this.label11.Size = new System.Drawing.Size(50, 15);
             this.label11.TabIndex = 29;
             this.label11.Text = "Built On";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 79);
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label4.Location = new System.Drawing.Point(15, 74);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(66, 13);
+            this.label4.Size = new System.Drawing.Size(71, 15);
             this.label4.TabIndex = 3;
             this.label4.Text = "Pallet Status";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(306, 79);
+            this.label8.Location = new System.Drawing.Point(355, 73);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(29, 13);
+            this.label8.Size = new System.Drawing.Size(28, 15);
             this.label8.TabIndex = 5;
             this.label8.Text = "SKU";
             // 
@@ -600,9 +622,10 @@
             // 
             this._lblPalletID.BackColor = System.Drawing.SystemColors.Window;
             this._lblPalletID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblPalletID.Location = new System.Drawing.Point(82, 20);
+            this._lblPalletID.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblPalletID.Location = new System.Drawing.Point(87, 18);
             this._lblPalletID.Name = "_lblPalletID";
-            this._lblPalletID.Size = new System.Drawing.Size(73, 21);
+            this._lblPalletID.Size = new System.Drawing.Size(68, 21);
             this._lblPalletID.TabIndex = 1;
             this._lblPalletID.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -610,47 +633,51 @@
             // 
             this._lblSku.BackColor = System.Drawing.SystemColors.Window;
             this._lblSku.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblSku.Location = new System.Drawing.Point(342, 75);
+            this._lblSku.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblSku.Location = new System.Drawing.Point(389, 70);
             this._lblSku.Name = "_lblSku";
-            this._lblSku.Size = new System.Drawing.Size(274, 21);
+            this._lblSku.Size = new System.Drawing.Size(227, 21);
             this._lblSku.TabIndex = 42;
             this._lblSku.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(15, 106);
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label7.Location = new System.Drawing.Point(15, 102);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(57, 13);
+            this.label7.Size = new System.Drawing.Size(64, 15);
             this.label7.TabIndex = 5;
             this.label7.Text = "Hold Code";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(15, 24);
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label6.Location = new System.Drawing.Point(15, 22);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(47, 13);
+            this.label6.Size = new System.Drawing.Size(50, 15);
             this.label6.TabIndex = 0;
             this.label6.Text = "Pallet ID";
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(164, 24);
+            this.label20.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label20.Location = new System.Drawing.Point(164, 22);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(67, 13);
+            this.label20.Size = new System.Drawing.Size(70, 15);
             this.label20.TabIndex = 12;
             this.label20.Text = "Vehicle Row";
             // 
             // _txtComment
             // 
             this._txtComment.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._txtComment.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._txtComment.Location = new System.Drawing.Point(82, 128);
+            this._txtComment.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._txtComment.Location = new System.Drawing.Point(87, 127);
             this._txtComment.MaxLength = 50;
             this._txtComment.Name = "_txtComment";
-            this._txtComment.Size = new System.Drawing.Size(484, 21);
+            this._txtComment.Size = new System.Drawing.Size(490, 23);
             this._txtComment.TabIndex = 15;
             this._txtComment.WordWrap = false;
             this._txtComment.TextChanged += new System.EventHandler(this._TxtComment_TextChanged);
@@ -659,7 +686,8 @@
             // 
             this._lblVehicleRow.BackColor = System.Drawing.SystemColors.Window;
             this._lblVehicleRow.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblVehicleRow.Location = new System.Drawing.Point(237, 20);
+            this._lblVehicleRow.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblVehicleRow.Location = new System.Drawing.Point(237, 18);
             this._lblVehicleRow.Name = "_lblVehicleRow";
             this._lblVehicleRow.Size = new System.Drawing.Size(90, 21);
             this._lblVehicleRow.TabIndex = 13;
@@ -668,11 +696,12 @@
             // _cmbPalletStatus
             // 
             this._cmbPalletStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cmbPalletStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._cmbPalletStatus.FormattingEnabled = true;
-            this._cmbPalletStatus.Location = new System.Drawing.Point(82, 75);
+            this._cmbPalletStatus.Location = new System.Drawing.Point(87, 70);
             this._cmbPalletStatus.MaxDropDownItems = 16;
             this._cmbPalletStatus.Name = "_cmbPalletStatus";
-            this._cmbPalletStatus.Size = new System.Drawing.Size(210, 21);
+            this._cmbPalletStatus.Size = new System.Drawing.Size(240, 23);
             this._cmbPalletStatus.TabIndex = 4;
             this._cmbPalletStatus.SelectedIndexChanged += new System.EventHandler(this._CmbPalletStatus_SelectedIndexChanged);
             // 
@@ -680,11 +709,12 @@
             // 
             this._cmbHoldCode.DisplayMember = "Description";
             this._cmbHoldCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cmbHoldCode.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._cmbHoldCode.FormattingEnabled = true;
-            this._cmbHoldCode.Location = new System.Drawing.Point(82, 102);
+            this._cmbHoldCode.Location = new System.Drawing.Point(87, 98);
             this._cmbHoldCode.MaxDropDownItems = 16;
             this._cmbHoldCode.Name = "_cmbHoldCode";
-            this._cmbHoldCode.Size = new System.Drawing.Size(534, 21);
+            this._cmbHoldCode.Size = new System.Drawing.Size(529, 23);
             this._cmbHoldCode.TabIndex = 45;
             this._cmbHoldCode.ValueMember = "HoldCode";
             this._cmbHoldCode.SelectedIndexChanged += new System.EventHandler(this._CmbHoldCode_SelectedIndexChanged);
@@ -693,9 +723,9 @@
             // 
             this._lblHoldCode.BackColor = System.Drawing.SystemColors.Window;
             this._lblHoldCode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblHoldCode.Location = new System.Drawing.Point(82, 102);
+            this._lblHoldCode.Location = new System.Drawing.Point(87, 98);
             this._lblHoldCode.Name = "_lblHoldCode";
-            this._lblHoldCode.Size = new System.Drawing.Size(534, 21);
+            this._lblHoldCode.Size = new System.Drawing.Size(529, 21);
             this._lblHoldCode.TabIndex = 42;
             this._lblHoldCode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -703,7 +733,7 @@
             // 
             this._lblPalletStatus.BackColor = System.Drawing.SystemColors.Window;
             this._lblPalletStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblPalletStatus.Location = new System.Drawing.Point(82, 75);
+            this._lblPalletStatus.Location = new System.Drawing.Point(87, 70);
             this._lblPalletStatus.Name = "_lblPalletStatus";
             this._lblPalletStatus.Size = new System.Drawing.Size(210, 21);
             this._lblPalletStatus.TabIndex = 42;
@@ -712,15 +742,16 @@
             // _lblMessages
             // 
             this._lblMessages.AutoSize = true;
-            this._lblMessages.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblMessages.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblMessages.Location = new System.Drawing.Point(507, 51);
             this._lblMessages.Name = "_lblMessages";
-            this._lblMessages.Size = new System.Drawing.Size(66, 15);
+            this._lblMessages.Size = new System.Drawing.Size(60, 15);
             this._lblMessages.TabIndex = 8;
             this._lblMessages.Text = "Messages";
             // 
             // _btnClearMessages
             // 
+            this._btnClearMessages.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._btnClearMessages.Location = new System.Drawing.Point(901, 39);
             this._btnClearMessages.Name = "_btnClearMessages";
             this._btnClearMessages.Size = new System.Drawing.Size(85, 23);
@@ -732,9 +763,11 @@
             // _lstMessages
             // 
             this._lstMessages.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lstMessages.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lstMessages.ForeColor = System.Drawing.Color.Red;
             this._lstMessages.FormattingEnabled = true;
             this._lstMessages.IntegralHeight = false;
+            this._lstMessages.ItemHeight = 15;
             this._lstMessages.Location = new System.Drawing.Point(510, 68);
             this._lstMessages.Name = "_lstMessages";
             this._lstMessages.Size = new System.Drawing.Size(476, 79);
@@ -742,6 +775,7 @@
             // 
             // _btnGoToBin
             // 
+            this._btnGoToBin.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._btnGoToBin.Location = new System.Drawing.Point(719, 321);
             this._btnGoToBin.Name = "_btnGoToBin";
             this._btnGoToBin.Size = new System.Drawing.Size(85, 23);
@@ -752,6 +786,7 @@
             // 
             // _btnPrintSearchResults
             // 
+            this._btnPrintSearchResults.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._btnPrintSearchResults.Location = new System.Drawing.Point(810, 321);
             this._btnPrintSearchResults.Name = "_btnPrintSearchResults";
             this._btnPrintSearchResults.Size = new System.Drawing.Size(85, 23);
@@ -762,6 +797,7 @@
             // 
             // _btnClearSearchResults
             // 
+            this._btnClearSearchResults.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._btnClearSearchResults.Location = new System.Drawing.Point(901, 321);
             this._btnClearSearchResults.Name = "_btnClearSearchResults";
             this._btnClearSearchResults.Size = new System.Drawing.Size(85, 23);
@@ -773,10 +809,10 @@
             // _lblSearchResults
             // 
             this._lblSearchResults.AutoSize = true;
-            this._lblSearchResults.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblSearchResults.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this._lblSearchResults.Location = new System.Drawing.Point(12, 331);
             this._lblSearchResults.Name = "_lblSearchResults";
-            this._lblSearchResults.Size = new System.Drawing.Size(120, 13);
+            this._lblSearchResults.Size = new System.Drawing.Size(112, 15);
             this._lblSearchResults.TabIndex = 11;
             this._lblSearchResults.Text = "Search Results ( 0 )";
             // 
@@ -963,30 +999,30 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(12, 52);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 15);
+            this.label3.Size = new System.Drawing.Size(39, 15);
             this.label3.TabIndex = 20;
             this.label3.Text = "Crane";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(254, 51);
+            this.label9.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(254, 49);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(64, 15);
+            this.label9.Size = new System.Drawing.Size(65, 15);
             this.label9.TabIndex = 20;
             this.label9.Text = "Horizontal";
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(377, 51);
+            this.label10.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(377, 49);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(50, 15);
+            this.label10.Size = new System.Drawing.Size(49, 15);
             this.label10.TabIndex = 20;
             this.label10.Text = "Vertical";
             // 
@@ -994,7 +1030,8 @@
             // 
             this._btnConvertAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._btnConvertAll.Enabled = false;
-            this._btnConvertAll.Location = new System.Drawing.Point(851, 45);
+            this._btnConvertAll.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._btnConvertAll.Location = new System.Drawing.Point(866, 34);
             this._btnConvertAll.Name = "_btnConvertAll";
             this._btnConvertAll.Size = new System.Drawing.Size(105, 23);
             this._btnConvertAll.TabIndex = 43;
@@ -1006,7 +1043,8 @@
             // 
             this._btnConvert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._btnConvert.Enabled = false;
-            this._btnConvert.Location = new System.Drawing.Point(851, 16);
+            this._btnConvert.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._btnConvert.Location = new System.Drawing.Point(866, 5);
             this._btnConvert.Name = "_btnConvert";
             this._btnConvert.Size = new System.Drawing.Size(105, 23);
             this._btnConvert.TabIndex = 42;
@@ -1018,9 +1056,10 @@
             // 
             this._chkBulkMarkAudit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._chkBulkMarkAudit.AutoSize = true;
-            this._chkBulkMarkAudit.Location = new System.Drawing.Point(188, 23);
+            this._chkBulkMarkAudit.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._chkBulkMarkAudit.Location = new System.Drawing.Point(188, 24);
             this._chkBulkMarkAudit.Name = "_chkBulkMarkAudit";
-            this._chkBulkMarkAudit.Size = new System.Drawing.Size(92, 17);
+            this._chkBulkMarkAudit.Size = new System.Drawing.Size(99, 19);
             this._chkBulkMarkAudit.TabIndex = 4;
             this._chkBulkMarkAudit.Text = "Set Audit Flag";
             this._chkBulkMarkAudit.UseVisualStyleBackColor = true;
@@ -1031,9 +1070,10 @@
             // 
             this._chkBulkUnmarkAudit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._chkBulkUnmarkAudit.AutoSize = true;
-            this._chkBulkUnmarkAudit.Location = new System.Drawing.Point(286, 23);
+            this._chkBulkUnmarkAudit.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._chkBulkUnmarkAudit.Location = new System.Drawing.Point(296, 24);
             this._chkBulkUnmarkAudit.Name = "_chkBulkUnmarkAudit";
-            this._chkBulkUnmarkAudit.Size = new System.Drawing.Size(100, 17);
+            this._chkBulkUnmarkAudit.Size = new System.Drawing.Size(110, 19);
             this._chkBulkUnmarkAudit.TabIndex = 50;
             this._chkBulkUnmarkAudit.Text = "Clear Audit Flag";
             this._chkBulkUnmarkAudit.UseVisualStyleBackColor = true;
@@ -1055,18 +1095,19 @@
             this._pnlConversion.Controls.Add(this._chkBulkMarkAudit);
             this._pnlConversion.Controls.Add(this._txtNewComment);
             this._pnlConversion.Controls.Add(this._cmbNewHoldCode);
-            this._pnlConversion.Location = new System.Drawing.Point(15, 396);
+            this._pnlConversion.Location = new System.Drawing.Point(15, 439);
             this._pnlConversion.Name = "_pnlConversion";
-            this._pnlConversion.Size = new System.Drawing.Size(971, 143);
+            this._pnlConversion.Size = new System.Drawing.Size(971, 135);
             this._pnlConversion.TabIndex = 73;
             this._pnlConversion.Visible = false;
             // 
             // _lblNewHoldCode
             // 
             this._lblNewHoldCode.AutoSize = true;
-            this._lblNewHoldCode.Location = new System.Drawing.Point(0, 46);
+            this._lblNewHoldCode.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblNewHoldCode.Location = new System.Drawing.Point(-2, 48);
             this._lblNewHoldCode.Name = "_lblNewHoldCode";
-            this._lblNewHoldCode.Size = new System.Drawing.Size(82, 13);
+            this._lblNewHoldCode.Size = new System.Drawing.Size(91, 15);
             this._lblNewHoldCode.TabIndex = 58;
             this._lblNewHoldCode.Text = "New Hold Code";
             this._lblNewHoldCode.Visible = false;
@@ -1075,10 +1116,11 @@
             // 
             this._cmbNewStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._cmbNewStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cmbNewStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._cmbNewStatus.FormattingEnabled = true;
-            this._cmbNewStatus.Location = new System.Drawing.Point(0, 19);
+            this._cmbNewStatus.Location = new System.Drawing.Point(0, 22);
             this._cmbNewStatus.Name = "_cmbNewStatus";
-            this._cmbNewStatus.Size = new System.Drawing.Size(179, 21);
+            this._cmbNewStatus.Size = new System.Drawing.Size(179, 23);
             this._cmbNewStatus.TabIndex = 51;
             this._cmbNewStatus.SelectedIndexChanged += new System.EventHandler(this._CmbNewStatus_SelectedIndexChanged);
             // 
@@ -1086,9 +1128,10 @@
             // 
             this._lblNewStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._lblNewStatus.AutoSize = true;
-            this._lblNewStatus.Location = new System.Drawing.Point(0, 4);
+            this._lblNewStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblNewStatus.Location = new System.Drawing.Point(-2, 5);
             this._lblNewStatus.Name = "_lblNewStatus";
-            this._lblNewStatus.Size = new System.Drawing.Size(91, 13);
+            this._lblNewStatus.Size = new System.Drawing.Size(98, 15);
             this._lblNewStatus.TabIndex = 50;
             this._lblNewStatus.Text = "New Pallet Status";
             // 
@@ -1096,9 +1139,10 @@
             // 
             this._chkOverwriteComments.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._chkOverwriteComments.AutoSize = true;
-            this._chkOverwriteComments.Location = new System.Drawing.Point(0, 126);
+            this._chkOverwriteComments.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._chkOverwriteComments.Location = new System.Drawing.Point(487, 112);
             this._chkOverwriteComments.Name = "_chkOverwriteComments";
-            this._chkOverwriteComments.Size = new System.Drawing.Size(162, 17);
+            this._chkOverwriteComments.Size = new System.Drawing.Size(182, 19);
             this._chkOverwriteComments.TabIndex = 55;
             this._chkOverwriteComments.Text = "Overwrite Existing Comments";
             this._chkOverwriteComments.UseVisualStyleBackColor = true;
@@ -1107,21 +1151,24 @@
             // _lblRemainingCharacters
             // 
             this._lblRemainingCharacters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this._lblRemainingCharacters.AutoSize = true;
-            this._lblRemainingCharacters.Location = new System.Drawing.Point(443, 106);
+            this._lblRemainingCharacters.BackColor = System.Drawing.SystemColors.Window;
+            this._lblRemainingCharacters.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._lblRemainingCharacters.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblRemainingCharacters.Location = new System.Drawing.Point(445, 109);
             this._lblRemainingCharacters.Name = "_lblRemainingCharacters";
-            this._lblRemainingCharacters.Size = new System.Drawing.Size(25, 13);
+            this._lblRemainingCharacters.Size = new System.Drawing.Size(33, 23);
             this._lblRemainingCharacters.TabIndex = 56;
-            this._lblRemainingCharacters.Text = "(50)";
+            this._lblRemainingCharacters.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this._lblRemainingCharacters.Visible = false;
             // 
             // _lblNewComment
             // 
             this._lblNewComment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._lblNewComment.AutoSize = true;
-            this._lblNewComment.Location = new System.Drawing.Point(0, 88);
+            this._lblNewComment.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._lblNewComment.Location = new System.Drawing.Point(-2, 91);
             this._lblNewComment.Name = "_lblNewComment";
-            this._lblNewComment.Size = new System.Drawing.Size(183, 13);
+            this._lblNewComment.Size = new System.Drawing.Size(213, 15);
             this._lblNewComment.TabIndex = 53;
             this._lblNewComment.Text = "Comment (Required for Hold && Purge)";
             this._lblNewComment.Visible = false;
@@ -1130,11 +1177,11 @@
             // 
             this._txtNewComment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._txtNewComment.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._txtNewComment.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._txtNewComment.Location = new System.Drawing.Point(0, 102);
+            this._txtNewComment.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this._txtNewComment.Location = new System.Drawing.Point(0, 109);
             this._txtNewComment.MaxLength = 50;
             this._txtNewComment.Name = "_txtNewComment";
-            this._txtNewComment.Size = new System.Drawing.Size(437, 21);
+            this._txtNewComment.Size = new System.Drawing.Size(437, 23);
             this._txtNewComment.TabIndex = 54;
             this._txtNewComment.Visible = false;
             this._txtNewComment.WordWrap = false;
@@ -1144,11 +1191,12 @@
             // 
             this._cmbNewHoldCode.DisplayMember = "Description";
             this._cmbNewHoldCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._cmbNewHoldCode.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._cmbNewHoldCode.FormattingEnabled = true;
-            this._cmbNewHoldCode.Location = new System.Drawing.Point(1, 62);
+            this._cmbNewHoldCode.Location = new System.Drawing.Point(1, 65);
             this._cmbNewHoldCode.MaxDropDownItems = 16;
             this._cmbNewHoldCode.Name = "_cmbNewHoldCode";
-            this._cmbNewHoldCode.Size = new System.Drawing.Size(437, 21);
+            this._cmbNewHoldCode.Size = new System.Drawing.Size(437, 23);
             this._cmbNewHoldCode.TabIndex = 57;
             this._cmbNewHoldCode.ValueMember = "HoldCode";
             this._cmbNewHoldCode.Visible = false;
@@ -1187,7 +1235,7 @@
             // _lblSide
             // 
             this._lblSide.BackColor = System.Drawing.Color.White;
-            this._lblSide.Font = new System.Drawing.Font("Arial", 44.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblSide.Font = new System.Drawing.Font("Segoe UI", 40F, System.Drawing.FontStyle.Bold);
             this._lblSide.Location = new System.Drawing.Point(151, 67);
             this._lblSide.Name = "_lblSide";
             this._lblSide.Size = new System.Drawing.Size(90, 78);
@@ -1199,10 +1247,10 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(133, 51);
+            this.label17.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(133, 49);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(32, 15);
+            this.label17.Size = new System.Drawing.Size(31, 15);
             this.label17.TabIndex = 20;
             this.label17.Text = "Side";
             // 
@@ -1211,12 +1259,13 @@
             this._searchResultsGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this._searchResultsGrid.EnableSort = false;
+            this._searchResultsGrid.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._searchResultsGrid.Location = new System.Drawing.Point(15, 350);
             this._searchResultsGrid.MinimumHeight = 74;
             this._searchResultsGrid.Name = "_searchResultsGrid";
             this._searchResultsGrid.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
             this._searchResultsGrid.SelectionMode = SourceGrid.GridSelectionMode.Row;
-            this._searchResultsGrid.Size = new System.Drawing.Size(971, 44);
+            this._searchResultsGrid.Size = new System.Drawing.Size(971, 83);
             this._searchResultsGrid.TabIndex = 19;
             this._searchResultsGrid.TabStop = true;
             this._searchResultsGrid.ToolTipText = "";
@@ -1252,7 +1301,7 @@
             this.Controls.Add(this.label17);
             this.Controls.Add(this.label3);
             this.Name = "StorageView";
-            this.Size = new System.Drawing.Size(1000, 551);
+            this.Size = new System.Drawing.Size(1000, 581);
             ((System.ComponentModel.ISupportInitialize)(this._spnVertical)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._spnHorizontal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._spnCrane)).EndInit();

@@ -21,7 +21,7 @@ namespace Mss.Views
 {
     public partial class InventorySummaryView : XSnapInView
     {
-        private BindingSource _bindingSource = new BindingSource();
+        private readonly BindingSource _bindingSource = new BindingSource();
         private StorageProxy _storageProxy;
         private PitProxy _upperPitProxy;
         private PitProxy _lowerPitProxy;
@@ -29,6 +29,11 @@ namespace Mss.Views
         public InventorySummaryView()
         {
             InitializeComponent();
+
+            _dgvInventory.DataSource = _bindingSource;
+            _dgvInventory.AutoGenerateColumns = false;
+            _dgvInventory.AutoSize = false;
+            _dgvInventory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
         }
 
         protected override void OpenView()
@@ -45,21 +50,19 @@ namespace Mss.Views
             _lowerPitProxy.DataItemChanged += _PitProxy_DataItemChanged;
             _lowerPitProxy.CollectionRefreshed += _PitProxy_CollectionRefreshed;
 
-            _dgvInventory.DataSource = _bindingSource;
-            _dgvInventory.AutoGenerateColumns = false;
-            _dgvInventory.AutoSize = false;
-            _dgvInventory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            _dgvInventory.EnableHeadersVisualStyles = false;
-            _dgvInventory.ColumnHeadersHeightSizeMode =
-                DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            _dgvInventory.ColumnHeadersHeight = 40;
+//             _dgvInventory.EnableHeadersVisualStyles = false;
+            _dgvInventory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _dgvInventory.ColumnHeadersHeight = 30;
+            _dgvInventory.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
 
 
-            _dgvInventory.RowsDefaultCellStyle.BackColor = Color.LightGray;
-            _dgvInventory.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            _dgvInventory.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
 
-            _dgvInventory.DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
-            _dgvInventory.DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
+//             _dgvInventory.RowsDefaultCellStyle.BackColor = Color.LightGray;
+//             _dgvInventory.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+
+//             _dgvInventory.DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
+//             _dgvInventory.DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
 
             DataGridViewTextBoxColumn column;
 
@@ -68,10 +71,10 @@ namespace Mss.Views
                 HeaderText = "SKU",
                 DataPropertyName = "Sku",
                 Name = "SkuColumn",
-                MinimumWidth = 80,
+                MinimumWidth = 110,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -81,7 +84,7 @@ namespace Mss.Views
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -91,7 +94,7 @@ namespace Mss.Views
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -101,7 +104,7 @@ namespace Mss.Views
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -111,7 +114,7 @@ namespace Mss.Views
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -121,27 +124,27 @@ namespace Mss.Views
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
                 HeaderText = "Upper PIT",
                 DataPropertyName = "UpperPitText",
                 Name = "UpperPitColumn",
-                MinimumWidth = 80,
+                MinimumWidth = 110,
                 SortMode = DataGridViewColumnSortMode.Automatic,
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
                 HeaderText = "Lower PIT",
                 DataPropertyName = "LowerPitText",
                 Name = "LowerPitColumn",
-                MinimumWidth = 80,
+                MinimumWidth = 110,
                 SortMode = DataGridViewColumnSortMode.Automatic,
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -151,7 +154,7 @@ namespace Mss.Views
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic,
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -161,7 +164,7 @@ namespace Mss.Views
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic,
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -171,7 +174,7 @@ namespace Mss.Views
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic,
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -181,7 +184,7 @@ namespace Mss.Views
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic,
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -190,8 +193,9 @@ namespace Mss.Views
                 Name = "UnknownColumn",
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
             };
-            _dgvInventory.Columns.Add(column);
+            _ = _dgvInventory.Columns.Add(column);
 
             //var boldHeaderFont = new Font(
             //_dgvInventory.ColumnHeadersDefaultCellStyle.Font,
@@ -201,7 +205,6 @@ namespace Mss.Views
             //{
             //    col.HeaderCell.Style.Font = boldHeaderFont;
             //}
-
 
             _storageProxy.Refresh();
             _upperPitProxy.Refresh();

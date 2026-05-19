@@ -1,23 +1,24 @@
-﻿using System;
+﻿using DacQuest.DFX.Core;
+using DacQuest.DFX.Core.Configuration;
+using DacQuest.DFX.Core.DataItems.Collections;
+using DacQuest.DFX.Core.DataItems.Proxy;
+using DacQuest.DFX.Core.Messaging;
+using DacQuest.DFX.Core.Strings;
+using DacQuest.DFX.Core.SystemEvents;
+using DacQuest.DFX.SnapInViews;
+using Mss.Views;
+using Mss.Collections;
+using Mss.Common;
+using Mss.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text;
 using System.Windows.Forms;
-using DacQuest.DFX.Core.Configuration;
-using DacQuest.DFX.SnapInViews;
-using Mss.Common;
-using Mss.Collections;
-using Mss.Data;
-using DacQuest.DFX.Core;
-using DacQuest.DFX.Core.Messaging;
-using DacQuest.DFX.Core.Strings;
-using DacQuest.DFX.Core.SystemEvents;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using DacQuest.DFX.Core.DataItems.Collections;
-using DacQuest.DFX.Core.DataItems.Proxy;
 
 namespace Mss.Views
 {
@@ -30,8 +31,13 @@ namespace Mss.Views
         private PitProxy _upperPitProxy = null;
         private PitProxy _lowerPitProxy = null;
         private StorageProxy _storageProxy = null;
-        private bool _showAcceptLoadButtons = false;
         private bool _showAbortLoadButtons = false;
+        private bool _showCloseReopenLoadButtons = false;
+        private bool _showAcceptLoadButtons = false;
+        private bool _canCloseA = false;
+        private bool _canReopenA = false;
+        private bool _canCloseB = false;
+        private bool _canReopenB = false;
 
         public SlugsView()
         {
@@ -89,7 +95,7 @@ namespace Mss.Views
                 (Color Fore, Color Back) colors = (Color.Black, Color.White);
                 string text = "Status Legend";
                 Font itemFont = e.Font;
-                itemFont = new Font(itemFont, FontStyle.Bold);
+//                 itemFont = new Font(itemFont, FontStyle.Bold);
                 if (!title)
                 {
                     colors = LoadItem.GetLoadStatusColors(status, transferring, false);
@@ -188,18 +194,23 @@ namespace Mss.Views
             _slugBProxy.DataItemChanged += _SlugB_DataItemChanged;
             _slugBProxy.CollectionRefreshed += _SlugB_CollectionRefreshed;
 
-            _showAcceptLoadButtons = _parameters.AllowAcceptLoad;
-            _btnAcceptLoadA.Visible = _showAcceptLoadButtons;
-            _btnAcceptLoadB.Visible = _showAcceptLoadButtons;
-
             _showAbortLoadButtons = _parameters.AllowAbortLoad;
             _btnAbortLoadA.Visible = _showAbortLoadButtons;
             _btnAbortLoadB.Visible = _showAbortLoadButtons;
 
+            _showCloseReopenLoadButtons = _parameters.AllowCloseLoad;
+            _btnCloseReopenLoadA.Visible = _showCloseReopenLoadButtons;
+            _btnCloseReopenLoadB.Visible = _showCloseReopenLoadButtons;
+
+            _showAcceptLoadButtons = _parameters.AllowAcceptLoad;
+            _btnAcceptLoadA.Visible = _showAcceptLoadButtons;
+            _btnAcceptLoadB.Visible = _showAcceptLoadButtons;
+
             _navigatorBtnReleaseBroadcast.Visible = _parameters.AllowReleaseBroadcast;
 
-            _UpdateAcceptLoadButtons();
             _UpdateAbortLoadButtons();
+            _UpdateCloseLoadButtons();
+            _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
 
 
@@ -492,34 +503,86 @@ namespace Mss.Views
 
         private void _SlugA_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
         {
-            _UpdateAcceptLoadButtons();
             _UpdateAbortLoadButtons();
+            _UpdateCloseLoadButtons();
+            _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
             _UpdateLoadReleaseButton();
         }
 
         private void _SlugA_CollectionRefreshed(object sender, EventArgs eventArgs)
         {
-            _UpdateAcceptLoadButtons();
             _UpdateAbortLoadButtons();
+            _UpdateCloseLoadButtons();
+            _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
             _UpdateLoadReleaseButton();
         }
 
         private void _SlugB_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
         {
-            _UpdateAcceptLoadButtons();
             _UpdateAbortLoadButtons();
+            _UpdateCloseLoadButtons();
+            _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
             _UpdateLoadReleaseButton();
         }
 
         private void _SlugB_CollectionRefreshed(object sender, EventArgs eventArgs)
         {
-            _UpdateAcceptLoadButtons();
             _UpdateAbortLoadButtons();
+            _UpdateCloseLoadButtons();
+            _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
             _UpdateLoadReleaseButton();
+        }
+
+        private void _UpdateAbortLoadButtons()
+        {
+            // This requires some checks. If a load with smaller CSNs needs to be aborted, then both
+            // loads must be aborted.
+            _btnAbortLoadA.Visible = _showAbortLoadButtons;
+            _btnAbortLoadB.Visible = _showAbortLoadButtons;
+            _btnAbortLoadA.Enabled = _showAbortLoadButtons && !_slugAProxy.Cleared;
+            _btnAbortLoadB.Enabled = _showAbortLoadButtons && !_slugBProxy.Cleared;
+        }
+
+        private void _UpdateCloseLoadButtons()
+        {
+            _canCloseA = _slugAProxy.HasOpenLoad;
+            _canReopenA = !_slugAProxy.HasOpenLoad
+                && _slugAProxy.Items.Count(l => l.IsInvalid) < Constant.LoadSize;
+
+            if (_canReopenA)
+            {
+                _btnCloseReopenLoadA.Text = "Reopen Load A";
+                _btnCloseReopenLoadA.Image = Properties.Resources.GreenPlus24;
+            }
+            else
+            {
+                _btnCloseReopenLoadA.Text = "Close Load A  ";
+                _btnCloseReopenLoadA.Image = Properties.Resources.RedMinus24;
+            }
+            _btnCloseReopenLoadA.Visible = _showCloseReopenLoadButtons;
+            _btnCloseReopenLoadA.Enabled = _canCloseA || _canReopenA;
+
+
+            _canCloseB = _slugBProxy.HasOpenLoad;
+            _canReopenB = !_slugBProxy.HasOpenLoad
+                && _slugBProxy.Items.Count(l => l.IsInvalid) < Constant.LoadSize;
+
+            if (_canReopenB)
+            {
+                _btnCloseReopenLoadB.Text = "Reopen Load B";
+                _btnCloseReopenLoadB.Image = Properties.Resources.GreenPlus24;
+            }
+            else
+            {
+                _btnCloseReopenLoadB.Text = "Close Load B  ";
+                _btnCloseReopenLoadB.Image = Properties.Resources.RedMinus24;
+            }
+            _btnCloseReopenLoadB.Visible = _showCloseReopenLoadButtons;
+            _btnCloseReopenLoadB.Enabled = _canCloseB || _canReopenB;
         }
 
         private void _UpdateAcceptLoadButtons()
@@ -563,16 +626,6 @@ namespace Mss.Views
             _navigatorBtnReleaseBroadcast.Visible = _parameters.AllowReleaseBroadcast;
             _navigatorBtnReleaseBroadcast.Enabled = _parameters.AllowReleaseBroadcast
                 && (_slugAProxy.Cleared || _slugBProxy.Cleared);
-        }
-
-        private void _UpdateAbortLoadButtons()
-        {
-            // This requires some checks. If a load with smaller CSNs needs to be aborted, then both
-            // loads must be aborted.
-            _btnAbortLoadA.Enabled = _showAbortLoadButtons && !_slugAProxy.Cleared;
-            _btnAbortLoadB.Enabled = _showAbortLoadButtons && !_slugBProxy.Cleared;
-            _btnAbortLoadA.Visible = _showAbortLoadButtons;
-            _btnAbortLoadB.Visible = _showAbortLoadButtons;
         }
 
         private void _BtnAcceptLoadA_Click(object sender, EventArgs e)
@@ -792,58 +845,85 @@ namespace Mss.Views
 
         }
 
-//         private void _NavigatorBtnReleaseNewLoad_Click(object sender, EventArgs e)
-//         {
-//             try
-//             {
-//                 if (!MesQuery.TryGetPickableLoads(
-//                     out List<Load> pickableLoads,
-//                     out string error))
-//                 {
-//                     _ = MessageBox.Show(
-//                         error,
-//                         "Error",
-//                         MessageBoxButtons.OK,
-//                         MessageBoxIcon.Error);
-//                     return;
-//                 }
+        private void _BtnCloseReopenLoadA_Click(object sender, EventArgs e)
+        {
+            _CloseLoad(_slugAProxy, _canReopenA);
+        }
+
+        private void _BtnCloseReopenLoadB_Click(object sender, EventArgs e)
+        {
+            _CloseLoad(_slugBProxy, _canReopenB);
+        }
+
+        private void _CloseLoad(SlugProxy slugProxy, bool reopenLoad)
+        {
+//             string loadDisplayName = _currentLoadProxy.CollectionConfiguration.FriendlyName;
 // 
-//                 if (!pickableLoads.Any())
-//                 {
-//                     _ = MessageBox.Show(
-//                         "There are no Loads ready for Release.",
-//                         "Error",
-//                         MessageBoxButtons.OK,
-//                         MessageBoxIcon.Error);
-//                     return;
-//                 }
-//                 else if (pickableLoads.First().LoadRequirements == null)
-//                 {
-//                     _ = MessageBox.Show(
-//                         "Load Requirements is NULL!",
-//                         "Error",
-//                         MessageBoxButtons.OK,
-//                         MessageBoxIcon.Error);
-//                     return;
-//                 }
-// //                 if (!_TryReleaseLoad(pickableLoads.First(), out error))
-// //                 {
-// //                     _ = MessageBox.Show(
-// //                         error,
-// //                         "Error",
-// //                         MessageBoxButtons.OK,
-// //                         MessageBoxIcon.Error);
-// //                 }
-//             }
-//             catch (Exception x)
-//             {
-//                 _ = MessageBox.Show(
-//                     x.Message,
-//                     "Exception",
-//                     MessageBoxButtons.OK,
-//                     MessageBoxIcon.Error);
-//             }
-//         }
+// //             if (!_currentLoadProxy.AnyWaiting)
+// //             {
+// //                 _UpdateLimitLoadButton();
+// //                 return;
+// //             }
+
+            CloseLoadConfirmationForm form = new CloseLoadConfirmationForm(
+                slugProxy.SlugLetter,
+                reopenLoad);
+            if (form.ShowDialog(this) == DialogResult.Yes)
+            {
+                ParentForm.Cursor = Cursors.WaitCursor;
+                CloseLoadMessageData responseMessageData;
+                try
+                {
+                    string systemEventMessage = reopenLoad
+                        ? $"The Load on {slugProxy.SlugLetter.SlugDisplayName()} was REOPENED. Additional Broadcast records can be released to this load."
+                        : $"The Load on {slugProxy.SlugLetter.SlugDisplayName()} was CLOSED. No more Broadcast records can be released to this load.";
+                    if (!XMessaging.SyncPublish(
+                        out responseMessageData,
+                        20000,
+                        CloseLoadMessageData.CloseLoadMessageTopic,
+                        new CloseLoadMessageData(
+                            slugProxy.SlugLetter,
+                            reopenLoad,
+                            XSystemEvent.Create(
+                                ViewName,
+                                XSystemEventLevel.Manual,
+                                systemEventMessage)),
+                        XMessageScopes.All,
+                        this))
+                    {
+                        string action = reopenLoad
+                            ? $"REOPEN"
+                            : $"CLOSE";
+                        string error = $"Request to {action} the Load on {slugProxy.SlugLetter.SlugDisplayName()} has timed out. The operation may still have completed correctly.";
+                        XSystemEvent.Publish(
+                            ViewName,
+                            XSystemEventLevel.Error,
+                            error);
+                        _ = MessageBox.Show(
+                            this,
+                            error,
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                finally
+                {
+                    ParentForm.Cursor = Cursors.Default;
+                }
+                if (!string.IsNullOrWhiteSpace(responseMessageData.Error))
+                {
+                    _ = MessageBox.Show(
+                        this,
+                        responseMessageData.Error,
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+            form.Dispose();
+        }
 
         //public override void ViewClosed()
         //{

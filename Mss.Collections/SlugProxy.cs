@@ -13,7 +13,7 @@ namespace Mss.Collections
 
         public List<LoadItem> Items => ProxyList.ToList();
 
-        public bool Cleared => Items.All(l => l.Status == LoadItemStatus.Invalid);
+        public bool Cleared => Items.All(l => l.IsInvalid);
 
         public bool Completed
         {
@@ -57,6 +57,14 @@ namespace Mss.Collections
             return GetSlugInPickSearchOrder()
                 .Where(l => l.Status == LoadItemStatus.Pickable);
         }
+
+        public int WaitingCount => Cleared
+            ? Constant.LoadSize
+            : Items.Count(l => l.Status == LoadItemStatus.Waiting);
+
+        public bool HasOpenLoad => WaitingCount > 0 && WaitingCount < Constant.LoadSize;
+
+        public bool IsInvalid => Items.All(l => l.IsInvalid);
 
     }
 }

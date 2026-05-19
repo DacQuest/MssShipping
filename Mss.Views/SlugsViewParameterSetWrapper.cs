@@ -35,21 +35,21 @@ namespace Mss.Views
             PickListValues = "true,false")]
         public bool AllowRollback => _allowRollback;
 
-        private bool _allowLimitLoad = false;
+        private bool _allowCloseLoad = false;
         [XConfigurationProperty(
             @"",
             false,
             DefaultValue = "false",
             PickListValues = "true,false")]
-        public bool AllowLimitLoad => _allowLimitLoad;
+        public bool AllowCloseLoad => _allowCloseLoad;
 
-        private bool _allowShortLoad = false;
-        [XConfigurationProperty(
-            @"",
-            false,
-            DefaultValue = "false",
-            PickListValues = "true,false")]
-        public bool AllowShortLoad => _allowShortLoad;
+//         private bool _allowShortLoad = false;
+//         [XConfigurationProperty(
+//             @"",
+//             false,
+//             DefaultValue = "false",
+//             PickListValues = "true,false")]
+//         public bool AllowShortLoad => _allowShortLoad;
 
         private bool _allowAcceptLoad = false;
         [XConfigurationProperty(

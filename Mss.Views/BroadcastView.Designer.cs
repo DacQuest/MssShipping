@@ -81,9 +81,9 @@
             this._navigatorLblCount,
             this.toolStripSeparator1,
             this._navigatorBtnRefreshItem,
-            this._navigatorBtnEdit,
-            this._navigatorBtnRecover,
             this._navigatorBtnRelease,
+            this._navigatorBtnRecover,
+            this._navigatorBtnEdit,
             this._navigatorBtnExport});
             this.navigator.Location = new System.Drawing.Point(0, 0);
             this.navigator.Name = "navigator";
@@ -107,7 +107,7 @@
             // 
             // _navigatorBtnRefreshItem
             // 
-            this._navigatorBtnRefreshItem.Image = global::Mss.Views.Properties.Resources.GreenRefresh24;
+            this._navigatorBtnRefreshItem.Image = ((System.Drawing.Image)(resources.GetObject("_navigatorBtnRefreshItem.Image")));
             this._navigatorBtnRefreshItem.Name = "_navigatorBtnRefreshItem";
             this._navigatorBtnRefreshItem.Size = new System.Drawing.Size(74, 28);
             this._navigatorBtnRefreshItem.Text = "Refresh";
@@ -160,10 +160,10 @@
             // _lblTitle
             // 
             this._lblTitle.AutoSize = true;
-            this._lblTitle.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblTitle.Location = new System.Drawing.Point(3, 46);
+            this._lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblTitle.Location = new System.Drawing.Point(3, 35);
             this._lblTitle.Name = "_lblTitle";
-            this._lblTitle.Size = new System.Drawing.Size(88, 19);
+            this._lblTitle.Size = new System.Drawing.Size(117, 30);
             this._lblTitle.TabIndex = 2;
             this._lblTitle.Text = "Broadcast";
             // 

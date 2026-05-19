@@ -2,6 +2,7 @@
 using DacQuest.DFX.Core.Configuration;
 using DacQuest.DFX.Core.DataItems;
 using DacQuest.DFX.Core.DataItems.Collections;
+using DacQuest.DFX.Core.Messaging;
 using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Core.SystemEvents;
 using DevExpress.CodeParser;
@@ -442,6 +443,7 @@ namespace Mss.Data
             _LockAll();
             try
             {
+                _ = _assignmentPit.Remove(palletID);
                 _ = _lowerPit.Remove(palletID);
                 _ = _upperPit.Remove(palletID);
             }
@@ -968,7 +970,7 @@ namespace Mss.Data
             if (!MesInterface.TryFetchPalletItem(
                 OperationCode.AS1,
                 palletID,
-                out bool sendToConsoleArea,
+                out bool sendToTwentyPercentArea,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -987,13 +989,13 @@ namespace Mss.Data
             {
                 palletItem = fetchedPalletItem;
                 Levels availableLevel;
-                if (sendToConsoleArea)
+                if (sendToTwentyPercentArea)
                 {
-                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Console) < Constant.ConsoleAssignmentBufferSize)
+                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Twenty) < Constant.TwentyAssignmentBufferSize)
                     {
-                        SetPitPallet(Levels.None, palletItem, PitCode.Console);
+                        SetPitPallet(Levels.None, palletItem, PitCode.Twenty);
                         moveCommand = Constant.Assignment1MoveCommandForward;
-                        extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
+                        extendedState = $"Routing Pallet {palletID} to the 20% Area.";
                         return true;
                     }
                     moveCommand = Constant.NoMoveCommand;
@@ -1071,7 +1073,7 @@ namespace Mss.Data
             if (!MesInterface.TryFetchPalletItem(
                 OperationCode.AS2,
                 palletID,
-                out bool sendToConsoleArea,
+                out bool sendToTwentyPercentArea,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -1090,13 +1092,13 @@ namespace Mss.Data
             {
                 palletItem = fetchedPalletItem;
                 Levels availableLevel;
-                if (sendToConsoleArea)
+                if (sendToTwentyPercentArea)
                 {
-                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Console) <= Constant.ConsoleAssignmentBufferSize)
+                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Twenty) <= Constant.TwentyAssignmentBufferSize)
                     {
-                        SetPitPallet(Levels.None, palletItem, PitCode.Console);
+                        SetPitPallet(Levels.None, palletItem, PitCode.Twenty);
                         moveCommand = Constant.Assignment1MoveCommandForward;
-                        extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
+                        extendedState = $"Routing Pallet {palletID} to the 20% Area.";
                         return true;
                     }
                     moveCommand = Constant.NoMoveCommand;
@@ -1174,7 +1176,7 @@ namespace Mss.Data
             if (!MesInterface.TryFetchPalletItem(
                 OperationCode.AS3,
                 palletID,
-                out bool sendToConsoleArea,
+                out bool sendToTwentyPercentArea,
                 out PalletItem fetchedPalletItem,
                 out fault))
             {
@@ -1192,11 +1194,11 @@ namespace Mss.Data
             {
                 palletItem = fetchedPalletItem;
                 Levels availableLevel;
-                if (sendToConsoleArea)
+                if (sendToTwentyPercentArea)
                 {
-                    SetPitPallet(Levels.None, palletItem, PitCode.Console);
-                    moveCommand = Constant.Assignment3MoveCommandConsole;
-                    extendedState = $"Routing Pallet {palletID} to 20% Console Area.";
+                    SetPitPallet(Levels.None, palletItem, PitCode.Twenty);
+                    moveCommand = Constant.Assignment3MoveCommandTwenty;
+                    extendedState = $"Routing Pallet {palletID} to the 20% Area.";
                     return true;
                 }
                 else if (palletItem.Status == PalletStatus.Purge
@@ -2943,40 +2945,6 @@ namespace Mss.Data
 
         #region  Trailer Load
 
-        public bool TryAutoReleaseBroadcast(out string error)
-        {
-            error = string.Empty;
-
-            _LockAll();
-            try
-            {
-//                 if (!_systemSettings.AutoReleaseBroadcastEnabled)
-//                 {
-//                     return false;
-//                 }
-// 
-//                 if (!_loadManager.GetTargetLoadForBroadcastRelease(
-//                     _systemSettings.GetItem(),
-//                     out Load targetLoad))
-//                 {
-//                     error = null;
-//                     return false;
-//                 }
-//                 int maxCountToRelease = targetLoad.IsInvalid
-//                     ? Constant.LoadSize
-//                     : targetLoad.WaitingCount;
-//                 _broadcast.GetCurrentBroadcast()
-// 
-// 
-// 
-                return false;
-            }
-            finally
-            {
-                _UnlockAll();
-            }
-        }
-
         public bool IsLoadLoadable(SlugLetter slugLetter)
         {
             _LockAll();
@@ -3002,7 +2970,7 @@ namespace Mss.Data
                 new[] { SlugLetter.A, SlugLetter.B });
 
             int loadNumber;
-            Slug load;
+            Slug slug;
             _LockAll();
             try
             {
@@ -3032,15 +3000,15 @@ namespace Mss.Data
                     _systemSettings.SlugBLoadCompletedOn = Constant.BeforeBeginningOfTime;
                 }
 
-                _ = _slugManager.TryGetSlugByLetter(slugLetter, out load);
-                load.SafeClear(true);
-                load.Touch();
+                _ = _slugManager.TryGetSlugByLetter(slugLetter, out slug);
+                slug.SafeClear(true);
+                slug.Touch();
             }
             finally
             {
                 _UnlockAll();
             }
-            IEnumerable<LoadItem> loadItems = load
+            IEnumerable<LoadItem> loadItems = slug
                 .Where(item => item.Status == LoadItemStatus.Done)
                 .OrderBy(item => item.Broadcast.Csn);
 
@@ -3053,10 +3021,10 @@ namespace Mss.Data
             {
                 return false;
             }
-            _ = load.Lock();
-            load.SafeClear(true);
-            load.Touch();
-            load.Unlock();
+            _ = slug.Lock();
+            slug.SafeClear(true);
+            slug.Touch();
+            slug.Unlock();
             return true;
         }
 
@@ -3393,6 +3361,53 @@ namespace Mss.Data
 
         #region  Command Service
 
+        public bool TryCloseLoad(
+            SlugLetter slugLetter,
+            bool reopenLoad,
+            out string error)
+        {
+            _LockAll();
+            try
+            {
+                if (!_slugManager.TryGetSlugByLetter(slugLetter, out Slug slug))
+                {
+                    error = $"Unknown Slug Letter {slugLetter.Letter()}";
+                    return false;
+                }
+                if (reopenLoad)
+                {
+                    for (int nodeIndex = 0; nodeIndex < Constant.LoadSize; nodeIndex++)
+                    {
+                        LoadItem loadItem = slug[nodeIndex];
+                        if (loadItem.Status == LoadItemStatus.Invalid)
+                        {
+                            loadItem.Status = LoadItemStatus.Waiting;
+                        }
+                        _ = slug.SetAt(loadItem.NodeIndex, loadItem);
+                    }
+                }
+                else
+                {
+                    for (int nodeIndex = 0; nodeIndex < Constant.LoadSize; nodeIndex++)
+                    {
+                        LoadItem loadItem = slug[nodeIndex];
+                        if (loadItem.Status == LoadItemStatus.Waiting)
+                        {
+                            loadItem.Status = LoadItemStatus.Invalid;
+                        }
+                        _ = slug.SetAt(loadItem.NodeIndex, loadItem);
+                    }
+                }
+                slug.Touch();
+                error = null;
+                return true;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
         public bool TryAcceptLoad(SlugLetter slugLetter, out string error)
         {
             _LockAll();
@@ -3427,7 +3442,7 @@ namespace Mss.Data
         }
 
         // Must be called from within _LockAll()
-        private bool _TryAcceptLoad(Slug load, out string errorMessage)
+        private bool _TryAcceptLoad(Slug load, out string error)
         {
             DateTime now = DateTime.Now;
             DateTime firstPalletTimestamp = now;
@@ -3472,20 +3487,74 @@ namespace Mss.Data
                 now,
                 previousRotation,
                 out LA.LoadArchive loadArchive,
-                out errorMessage))
+                out error))
             {
                 return false;
             }
 
             if (!LA.LoadArchive.ArchiveLoadData(
                 loadArchive,
-                out errorMessage))
+                out error))
             {
                 return false;
             }
 
             load.SetLoadable();
             return true;
+        }
+
+        public bool TryAutoReleaseBroadcast(out string error)
+        {
+            error = null;
+            _LockAll();
+            try
+            {
+                if (!_systemSettings.AutoReleaseBroadcastEnabled)
+                {
+                    return false;
+                }
+
+                if (!_slugManager.GetTargetSlugForBroadcastRelease(
+                    _systemSettings.GetItem(),
+                    out Slug targetSlug))
+                {
+                    return false;
+                }
+
+                List<BroadcastItem> releasableBroadcastItems = _broadcast.GetReleasableItems(
+                    _systemSettings.LastCsnReleased,
+                    _systemSettings.LargestRotationReceived);
+
+                int waitingCount = targetSlug.Cleared
+                    ? Constant.LoadSize
+                    : targetSlug.WaitingCount;
+
+                if (!_GetAutoCountToRelease(
+                    releasableBroadcastItems.Count,
+                    waitingCount,
+                    out int countToRelease))
+                {
+                    return false;
+                }
+                // countToRelease will always be <= releasableBroadcastItems.Count
+                if (!_ReleaseBroadcast(
+                    true,
+                    releasableBroadcastItems.Take(countToRelease).ToList(),
+                    targetSlug,
+                    out error))
+                {
+                    return false;
+                }
+                XSystemEvent.Publish(
+                    "AutoReleaseBroadcast",
+                    XSystemEventLevel.Information,
+                    $"{countToRelease} Broadcast Records were automatically released to {targetSlug.SlugLetter.SlugDisplayName()}.");
+                return true;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
         }
 
         public bool TryReleaseBroadcast(
@@ -3497,25 +3566,44 @@ namespace Mss.Data
             try
             {
 
-
-
-
-                if (_ReleaseBroadcast(false, slugLetter, countToRelease, out error))
+                if (!_slugManager.TryGetSlugByLetter(slugLetter, out Slug targetSlug))
                 {
-                    XSystemEvent.Publish(
-                        "ReleaseBroadcast",
-                        XSystemEventLevel.Information,
-                        $"{countToRelease} Broadcast Records Released.");
+                    error = string.Empty;
+                    return false;
                 }
-                else
+
+                List<BroadcastItem> releasableBroadcastItems = _broadcast.GetReleasableItems(
+                    _systemSettings.LastCsnReleased,
+                    _systemSettings.LargestRotationReceived)
+                    .Take(countToRelease)
+                    .ToList();
+
+                if (releasableBroadcastItems.Count < countToRelease)
                 {
-                    if (error.IsNullOrWhiteSpace())
+                    error = $"Unable to release {countToRelease} Broadcast Records. Only {releasableBroadcastItems.Count} records are releasable.";
+                    return false;
+                }
+
+                if (!_ReleaseBroadcast(
+                    false,
+                    releasableBroadcastItems,
+                    targetSlug,
+                    out error))
+                {
+                    if (!error.IsNullOrWhiteSpace())
                     {
                         XSystemEvent.Publish(
                             "ReleaseBroadcast",
                             XSystemEventLevel.Error,
                             "Failed to Release Broadcast: " + error);
                     }
+                }
+                else
+                {
+                    XSystemEvent.Publish(
+                        "ReleaseBroadcast",
+                        XSystemEventLevel.Information,
+                        $"{countToRelease} Broadcast Records manually released to {slugLetter.SlugDisplayName()}.");
                 }
                 return true;
             }
@@ -3528,118 +3616,106 @@ namespace Mss.Data
         // Must be called from within _LockAll()
         private bool _ReleaseBroadcast(
             bool autoRelease,
-            SlugLetter slugLetter,
-            int countToRelease,
+            List<BroadcastItem> releasableBroadcastItems,
+            Slug targetSlug,
             out string error)
         {
-            bool touchBroadcast = false;
-            Slug targetLoad = null;
+            if (releasableBroadcastItems.Count == 0)
+            {
+                error = autoRelease
+                    ? string.Empty
+                    : "There is no Releasable Broadcast!";
+                return false;
+            }
 
+            bool touchCollections = false;
             _LockAll();
             try
             {
-                error = string.Empty;
-                return false;
+                bool firstReleaseToSlug = targetSlug.Cleared;
+                string lastCsnReleased = _systemSettings.LastCsnReleased;
+                int nodeIndex = firstReleaseToSlug
+                    ? 0
+                    : targetSlug.FirstWaitingNodeIndex;
+                foreach (BroadcastItem broadcastItem in releasableBroadcastItems)
+                {
+                    LoadItem loadItem = targetSlug[nodeIndex];
+                    loadItem.Broadcast = broadcastItem;
+                    loadItem.Status = LoadItemStatus.Pending;
+                    _ = targetSlug.SetAt(nodeIndex++, loadItem, true);
 
-//                 string loadName = targetLoad.CollectionConfiguration.Name;
-// 
-// //                 int loadSize = targetLoad.ItemCount;
-//                 List<BroadcastItem> broadcastItems = _broadcast.GetReleasableItems(
-// //                     countToRelease,
-//                     _systemSettings.LastCsnReleased,
-//                     _systemSettings.LargestRotationReceived)
-//                     .Take(countToRelease)
-//                     .ToList();
-//                 if (broadcastItems.Count < countToRelease)
+                    broadcastItem.Status = BroadcastStatus.Shipped;
+                    _broadcast.Update(broadcastItem.Csn, broadcastItem, true);
+
+                    lastCsnReleased = broadcastItem.Csn;
+
+                    touchCollections = true;
+                }
+                for (int index = nodeIndex;  index < Constant.LoadSize; index++)
+                {
+                    LoadItem loadItem = targetSlug[nodeIndex];
+                    loadItem.Status = LoadItemStatus.Waiting;
+                    _ = targetSlug.SetAt(nodeIndex++, loadItem, true);
+                }
+                _systemSettings.LastCsnReleased = lastCsnReleased;
+
+                if (targetSlug.SlugLetter == SlugLetter.A)
+                {
+                    _systemSettings.SlugALoadNumber = _systemSettings.NextLoadNumber;
+                    if (firstReleaseToSlug)
+                    {
+                        _systemSettings.SlugALoadStartedOn = DateTime.Now;
+                    }
+                }
+                else // has to be Slug B
+                {
+                    _systemSettings.SlugBLoadNumber = _systemSettings.NextLoadNumber;
+                    if (firstReleaseToSlug)
+                    {
+                        _systemSettings.SlugBLoadStartedOn = DateTime.Now;
+                    }
+                }
+
+//                 Slug otherSlug = _slugManager.GetOtherSlug(targetSlug);
+//                 if (otherSlug.PresequencedOrGreater)
 //                 {
-//                     if (autoRelease)
-//                     {
-//                         error = null;
-//                     }
-//                     else
-//                     {
-//                         error = $"{countToRelease} Broadcast records were requested for release. Only {broadcastItems.Count} are available.";
-//                     }
-//                     return false;
+//                     targetSlug.ApplyInitialPickableStatuses();
 //                 }
-//                 bool broadcastInhibit = _broadcast.InhibitChangeNotifications;
-//                 _broadcast.InhibitChangeNotifications = true;
-// 
-//                 bool loadInhibit = targetLoad.InhibitChangeNotifications;
-//                 targetLoad.InhibitChangeNotifications = true;
-// 
-//                 int lastBroadcastReleased = 0;
-//                 int broadcastIndex = 0;
-//                 int loadIndex = 0;
-// 
-//                 for (broadcastIndex = 0; broadcastIndex < countToRelease; broadcastIndex++)
-//                 {
-//                     if (broadcastIndex / 10 == 1)
-//                     {
-//                         loadIndex = broadcastIndex + 10;
-//                     }
-//                     else if (broadcastIndex / 10 == 2)
-//                     {
-//                         loadIndex = broadcastIndex - 10;
-//                     }
-//                     else
-//                     {
-//                         loadIndex = broadcastIndex;
-//                     }
-//                     BroadcastItem broadcastItem = broadcastItems[broadcastIndex];
-//                     LoadItem loadItem = targetLoad[loadIndex];
-//                     loadItem.Broadcast = broadcastItem;
-//                     loadItem.Status = LoadItemStatus.Pending;
-//                     targetLoad[loadIndex] = loadItem;
-// 
-//                     broadcastItem.Status = BroadcastStatus.Shipped;
-//                     _broadcast[broadcastItem.Csn] = broadcastItem;
-// 
-//                     lastCsnReleased = broadcastItem.Csn;
-//                 }
-//                 Slug otherLoad = _slugManager.GetOtherSlug(targetLoad);
-//                 if (otherLoad.PresequencedOrGreater)
-//                 {
-//                     targetLoad.ApplyInitialPickableStatuses();
-//                 }
-// 
-//                 _broadcast.InhibitChangeNotifications = broadcastInhibit;
-//                 targetLoad.InhibitChangeNotifications = loadInhibit;
-//                 _systemSettings.LastBroadcastReleased = lastBroadcastReleased;
-// 
-//                 if (loadName == Constant.SlugAName)
-//                 {
-//                     _systemSettings.LoadAFirstPalletTimestamp = Constant.BeginningOfTime;
-//                     _systemSettings.LoadALastPalletTimestamp = Constant.BeginningOfTime;
-//                     _systemSettings.SlugALoadNumber = _systemSettings.NextLoadNumber;
-//                 }
-//                 else // has to be Load B
-//                 {
-//                     _systemSettings.LoadBFirstPalletTimestamp = Constant.BeginningOfTime;
-//                     _systemSettings.LoadBLastPalletTimestamp = Constant.BeginningOfTime;
-//                     _systemSettings.SlugBLoadNumber = _systemSettings.NextLoadNumber;
-//                 }
-// 
-//                 error = string.Empty;
-//                 XMessaging.Publish(
-//                     Constant.CalculateShortagesMessageTopicName,
-//                     XMessageScopes.All);
-//                 touchBroadcast = true;
-//                 return true;
+
+                error = string.Empty;
+                XMessaging.Publish(
+                    Constant.CalculateShortagesMessageTopicName,
+                    XMessageScopes.All);
+
+                return true;
             }
             finally
             {
-                _UnlockAll();
-
-                if (touchBroadcast)
+                if (touchCollections)
                 {
+                    targetSlug.Touch();
                     _broadcast.Touch();
                 }
-                if (targetLoad != null)
-                {
-                    targetLoad.Touch();
-                }
+                _UnlockAll();
             }
+        }
+
+        private bool _GetAutoCountToRelease(
+            int releasableBroadcastCount,
+            int waitingCount,
+            out int countToRelease)
+        {
+            countToRelease = 0;
+            int[] releasableCounts = Utils.GetReleasableCounts(waitingCount);
+            foreach (int releasableCount in releasableCounts)
+            {
+                if (releasableCount > releasableBroadcastCount)
+                {
+                    continue;
+                }
+                countToRelease = releasableCount;
+            }
+            return countToRelease > 0;
         }
 
 //         public bool TryAbortLoad(
@@ -3731,7 +3807,7 @@ namespace Mss.Data
         {
             errorMessage = null;
             List<BroadcastItem> broadcastToRecover = load
-                .Where(l => l.Status > LoadItemStatus.Invalid)
+                .Where(l => l.Status > LoadItemStatus.Waiting)
                 .Select(l => l.Broadcast)
                 .OrderBy(b => b.Csn)
                 .ToList();
@@ -3749,7 +3825,7 @@ namespace Mss.Data
             }
             else
             {
-                errorMessage = $"You are attempting to abort a load which was not the last load released. You must first abort the last load released.";
+                errorMessage = $"You are attempting to abort a load which was not the last load started. You must first abort the last load started.";
                 return false;
             }
             if (load.SlugLetter == SlugLetter.A)
@@ -3769,8 +3845,9 @@ namespace Mss.Data
                         && b.Status == BroadcastStatus.Shipped)
                     .Select(b => b.Csn)
                     .ToList();
-                _RecoverShippedBroadcast(csnListToRecover);
+                _RecoverBroadcast(csnListToRecover);
             }
+            _broadcast.Touch();
             load.Touch();
             XSystemEvent.Publish(
                 load.CollectionName,
@@ -3779,22 +3856,28 @@ namespace Mss.Data
             return true;
         }
 
-        public void RecoverShippedBroadcast(
-            RecoverShippedBroadcastMessageData messageData,
-            out string errorMessage)
+        public bool RecoverBroadcast(
+            RecoverBroadcastMessageData messageData,
+            out string error)
         {
             _LockAll();
             try
             {
-                errorMessage = null;
-
                 List<string> csnListToRecover = _broadcast.Values
                     .Where(b =>
                         b.Csn.IsGreaterThan(_systemSettings.LastCsnReleased, true)
                         && b.Status == BroadcastStatus.Shipped)
                     .Select(b => b.Csn)
                     .ToList();
-                _RecoverShippedBroadcast(csnListToRecover);
+                if (csnListToRecover.Count == 0)
+                {
+                    error = $"There are no recoverable Broadcast records.";
+                    return false;
+                }
+                _RecoverBroadcast(csnListToRecover);
+                _broadcast.Touch();
+                error = null;
+                return true;
             }
             finally
             {
@@ -3803,7 +3886,7 @@ namespace Mss.Data
         }
 
         // Must be called from within _LockAll()
-        private void _RecoverShippedBroadcast(List<string> csnListToRecover)
+        private void _RecoverBroadcast(List<string> csnListToRecover)
         {
             foreach (string csn in csnListToRecover)
             {
@@ -3813,7 +3896,6 @@ namespace Mss.Data
                     _ = _broadcast.Update(csn, broadcastItem, true);
                 }
             }
-            _broadcast.Touch();
         }
 
         public void BulkConvertPalletStatus(
@@ -3927,44 +4009,51 @@ namespace Mss.Data
             {
                 // binItem != null is guaranteed here
                 PalletItem palletItem = binItem.Pallet;
+                PalletStatus newStatus = statusChange.PalletStatus;
 
-                if (statusChange.PalletStatus == PalletStatus.Invalid
-                    || statusChange.PalletStatus == PalletStatus.Unknown)
-                {
-                    error = $"Cannot set Status of Storage Pallet {palletItem.PalletID} to {statusChange.PalletStatus.ToText()}";
-                    return false;
-                }
+//                 if (statusChange.PalletStatus == PalletStatus.Invalid
+//                     || statusChange.PalletStatus == PalletStatus.Unknown)
+//                 {
+//                     error = $"Cannot set Status of Storage Pallet {palletItem.PalletID} to {statusChange.PalletStatus.ToText()}";
+//                     return false;
+//                 }
 
                 if (palletItem.IsStack)
                 {
                     error = $"StatusChange Change ID {statusChange.ChangeID}. Cannot change the Pallet Status of a Stack.";
                     return false;
                 }
-                if (statusChange.PalletStatus == PalletStatus.Hold)
+                if (newStatus != PalletStatus.Purge)
                 {
-                    if (statusChange.HoldCode <= Constant.NoHoldCode)
+                    if (newStatus == PalletStatus.Hold)
                     {
-                        error = $"StatusChange HeaderID {statusChange.ChangeID}. HoldCode not valid for Hold Status.";
-                        return false;
+                        if (statusChange.HoldCode <= Constant.NoHoldCode)
+                        {
+                            error = $"Invalid Hold Code {statusChange.HoldCode}. StatusChange HeaderID {statusChange.ChangeID}.";
+                            return false;
+                        }
+                        else
+                        {
+                            palletItem.HoldCode = statusChange.HoldCode;
+                            //                         if (!statusChange.Comment.IsNullOrWhiteSpace())
+                            //                         {
+                            //                             palletItem.Comment = statusChange.Comment;
+                            //                         }
+                        }
+                    }
+                    else if (newStatus == PalletStatus.OK || newStatus == PalletStatus.Reserved)
+                    {
+                        palletItem.HoldCode = statusChange.HoldCode <= Constant.NoHoldCode
+                            ? Constant.NoHoldCode
+                            : statusChange.HoldCode;
                     }
                     else
                     {
-                        palletItem.HoldCode = statusChange.HoldCode;
+                        error = $"StatusChange HeaderID {statusChange.ChangeID}. Cannot change Pallet Status to {(int)statusChange.PalletStatus}.";
+                        return false;
                     }
                 }
-                else if (statusChange.PalletStatus == PalletStatus.OK
-                    || statusChange.PalletStatus == PalletStatus.Reserved)
-                {
-                    palletItem.HoldCode = statusChange.HoldCode <= Constant.NoHoldCode
-                        ? Constant.NoHoldCode
-                        : statusChange.HoldCode;
-                }
-                else
-                {
-                    error = $"StatusChange HeaderID {statusChange.ChangeID}. Cannot change Pallet Status to {(int)statusChange.PalletStatus}.";
-                    return false;
-                }
-                palletItem.Status = statusChange.PalletStatus;
+                palletItem.Status = newStatus;
                 if (!statusChange.Comment.IsNullOrWhiteSpace())
                 {
                     palletItem.Comment = statusChange.Comment;
@@ -3984,13 +4073,18 @@ namespace Mss.Data
         {
             error = null; // has to default to null for db access reasons
 
+            if (level == Levels.None)
+            {
+                return false;
+            }
+
             Pit pit = level == Levels.Upper
                 ? _upperPit
                 : (Pit)_lowerPit;
 
             if ((!statusChange.JobID.IsNullOrWhiteSpace()
                     && TryFindPitPalletByJobID(level, statusChange.JobID, out PitItem pitItem))
-                || (!statusChange.PalletID.IsNullOrWhiteSpace()
+                || (statusChange.PalletID.ValidPalletID()
                     && pit.TryGetItem(statusChange.PalletID, out pitItem)))
             {
                 // pitItem != null is guaranteed here
@@ -4028,7 +4122,7 @@ namespace Mss.Data
                         {
                             if (statusChange.HoldCode <= Constant.NoHoldCode)
                             {
-                                error = $"Cannot set Status to Hold with invalid Hold Code value {statusChange.HoldCode}.";
+                                error = $"Invalid Hold Code {statusChange.HoldCode}. StatusChange HeaderID {statusChange.ChangeID}.";
                                 return false;
                             }
                             else
@@ -4046,7 +4140,9 @@ namespace Mss.Data
                         else if (newStatus == PalletStatus.OK || newStatus == PalletStatus.Reserved)
                         {
                             palletItem.Status = newStatus;
-                            palletItem.HoldCode = Constant.NoHoldCode;
+                            palletItem.HoldCode = statusChange.HoldCode <= Constant.NoHoldCode
+                                ? Constant.NoHoldCode
+                                : statusChange.HoldCode;
                             if (!statusChange.Comment.IsNullOrWhiteSpace())
                             {
                                 palletItem.Comment = statusChange.Comment;
@@ -4074,7 +4170,7 @@ namespace Mss.Data
                         return false;
                     case PitCode.Upper:
                     case PitCode.Lower:
-                    case PitCode.Console:
+                    case PitCode.Twenty:
                     case PitCode.Unknown:
                     default:
                         palletItem.Status = PalletStatus.Purge;
@@ -4121,11 +4217,13 @@ namespace Mss.Data
                 {
                     case PitCode.Upper:
                     case PitCode.Lower:
-                    case PitCode.Console:
+                    case PitCode.Twenty:
                         if (newStatus == PalletStatus.Purge)
                         {
                             palletItem.Status = newStatus;
-                            palletItem.HoldCode = Constant.NoHoldCode;
+                            palletItem.HoldCode = statusChange.HoldCode <= Constant.NoHoldCode
+                                ? Constant.NoHoldCode
+                                : statusChange.HoldCode;
                             if (!statusChange.Comment.IsNullOrWhiteSpace())
                             {
                                 palletItem.Comment = statusChange.Comment;
@@ -4155,7 +4253,9 @@ namespace Mss.Data
                         else if (newStatus == PalletStatus.OK || newStatus == PalletStatus.Reserved)
                         {
                             palletItem.Status = newStatus;
-                            palletItem.HoldCode = Constant.NoHoldCode;
+                            palletItem.HoldCode = statusChange.HoldCode <= Constant.NoHoldCode
+                                ? Constant.NoHoldCode
+                                : statusChange.HoldCode;
                             if (!statusChange.Comment.IsNullOrWhiteSpace())
                             {
                                 palletItem.Comment = statusChange.Comment;

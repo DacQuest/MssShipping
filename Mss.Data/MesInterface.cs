@@ -36,14 +36,14 @@ namespace Mss.Data
         public static bool TryFetchPalletItem(
             OperationCode operationCode,
             string palletID,
-            out bool sendToConsoleArea,
+            out bool sendToTwentyPercentArea,
             out PalletItem palletItem,
             out string fault)
         {
             return _TryFetchPalletItem(
                 operationCode,
                 palletID,
-                out sendToConsoleArea,
+                out sendToTwentyPercentArea,
                 out palletItem,
                 out fault);
         }
@@ -51,11 +51,11 @@ namespace Mss.Data
         private static bool _TryFetchPalletItem(
             OperationCode operationCode,
             string palletID,
-            out bool sendToConsoleArea,
+            out bool sendToTwentyPercentArea,
             out PalletItem palletItem,
             out string fault)
         {
-            sendToConsoleArea = false;
+            sendToTwentyPercentArea = false;
             palletItem = null;
             fault = string.Empty;
 
@@ -101,8 +101,8 @@ namespace Mss.Data
                     SqlParameter commentParam = command.Parameters.Add("@Comment", SqlDbType.VarChar, 50);
                     commentParam.Direction = ParameterDirection.Output;
 
-                    SqlParameter sendToConsoleAreaParam = command.Parameters.Add("@SendToConsoleArea", SqlDbType.Bit);
-                    sendToConsoleAreaParam.Direction = ParameterDirection.Output;
+                    SqlParameter sendToTwentyPercentAreaParam = command.Parameters.Add("@SendToConsoleArea", SqlDbType.Bit);
+                    sendToTwentyPercentAreaParam.Direction = ParameterDirection.Output;
 
                     try
                     {
@@ -125,7 +125,7 @@ namespace Mss.Data
                             BuiltOn = (DateTime)builtOnParam.Value,
                             Comment = (string)commentParam.Value
                         };
-                        sendToConsoleArea = (bool)sendToConsoleAreaParam.Value;
+                        sendToTwentyPercentArea = (bool)sendToTwentyPercentAreaParam.Value;
                         return true;
                     }
                     catch (Exception x)

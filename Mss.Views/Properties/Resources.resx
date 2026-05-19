@@ -121,11 +121,47 @@
   <data name="BlueSave24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BlueSave24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="DacQuestLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DacQuestLogo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GreenPlus24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GreenPlus24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PurpleRelease48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PurpleRelease48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PurpleRelease24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PurpleRelease24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GreenPlus48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GreenPlus48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RedWhiteProhibited48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RedWhiteProhibited48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PurpleDocumentText24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PurpleDocumentText24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RedWhiteProhibited24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RedWhiteProhibited24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GreenCheck24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GreenCheck24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RedMinus48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RedMinus48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="WarningSystemEvent_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\WarningSystemEvent_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GreenRecycle24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GreenRecycle24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RedMinus24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RedMinus24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DacQuestLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DacQuestLogo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GreenRefresh24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GreenRefresh24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GreenCheckFancy24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GreenCheckFancy24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -133,40 +169,7 @@
   <data name="GreenCheckFancy48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GreenCheckFancy48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GreenPlus24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GreenPlus24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GreenPlus48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GreenPlus48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GreenRecycle24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GreenRecycle24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GreenRefresh24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GreenRefresh24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GreenSearch24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GreenSearch24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PurpleDocumentText24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\PurpleDocumentText24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PurpleRelease24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\PurpleRelease24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PurpleRelease48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\PurpleRelease48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RedMinus24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RedMinus24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RedWhiteProhibited24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RedWhiteProhibited24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RedWhiteProhibited48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RedWhiteProhibited48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="WarningSystemEvent_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\WarningSystemEvent_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

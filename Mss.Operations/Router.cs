@@ -145,7 +145,7 @@ namespace Mss.Operations
                             PitCode.Purge);
                         moveCommand = Constant.RouterMoveCommandForward;
                         extendedState = $"(FAILED SIZING) Forwarding Pallet {CurrentPallet.PalletID} to Purge.";
-                        return false;
+                        return true;
                 }
             }
 

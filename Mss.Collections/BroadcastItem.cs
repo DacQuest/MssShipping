@@ -49,7 +49,7 @@ namespace Mss.Collections
             if (csn.Length < 2)
             {
                 throw new ArgumentException(
-                    "Length of 'csn' must be at least 2 characters long",
+                    "Length of parameter 'csn' must be at least 2 characters long",
                     nameof(csn));
             }
             string rotationText = RotationTextFromCsn(csn);
@@ -122,7 +122,9 @@ namespace Mss.Collections
                         image = Properties.Resources.RoundBlackDash16;
                         break;
                     case BroadcastStatus.OK:
-                        image = Shortage ? Properties.Resources.RoundYellowBangBorder16 : Properties.Resources.RoundGreenCheck16;
+                        image = Shortage
+                            ? Properties.Resources.RoundYellowBangBorder16
+                            : Properties.Resources.RoundGreenCheck16;
                         break;
                 }
                 return image;
