@@ -109,9 +109,9 @@ namespace Mss.Views
                 }
                 btnConnect.Enabled = false;
                 _btnPrintShippingLabel.Enabled = true;
-                if (deviceName.StartsWith("Man"))
+                if (deviceName.Contains("Manual"))
                 {
-                    _btnPrintLoadLabel.Enabled = true;
+                    _btnPrintTrailerLabel.Enabled = true;
                 }
                 btnDisconnect.Enabled = true;
             }
@@ -141,7 +141,7 @@ namespace Mss.Views
             }
             btnConnect.Enabled = true;
             _btnPrintShippingLabel.Enabled = false;
-            _btnPrintLoadLabel.Enabled = false;
+            _btnPrintTrailerLabel.Enabled = false;
             btnDisconnect.Enabled = false;
         }
 

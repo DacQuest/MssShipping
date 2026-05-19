@@ -23,7 +23,7 @@ namespace Mss.Views
     public partial class SearchResultsGrid : Grid
     {
 
-        //         private HoldCodesProxy _holdCodesProxy;
+        private HoldCodesProxy _holdCodesProxy;
 
         public const int BinNumberColumnIndex = 1;
         public const int BinLocationColumnIndex = 2;
@@ -34,27 +34,28 @@ namespace Mss.Views
         public const int BinStatusColumnIndex = 3;
         public const int VehicleRowColumnIndex = 4;
         public const int PalletIDColumnIndex = 5;
+        public const int HoldCodeColumnIndex = 7;
         public const int PalletStatusColumnIndex = 6;
-        public const int SkuColumnIndex = 7;
-        public const int KitSerialColumnIndex = 9;
-        public const int KitCodeColumnIndex = 8;
+        public const int SkuColumnIndex = 8;
+        //public const int KitSerialColumnIndex = 9;
+        public const int JobIDColumnIndex = 9;
         public const int BuiltOnColumnIndex = 10;
         public const int ColumnCount = 11;
 
-        public const int BinNumberColumnWidth = 50;
-        public const int RowColumnWidth = 32;
+        public const int BinNumberColumnWidth = 60;
+        public const int RowColumnWidth = 50;
         //public const int SideColumnWidth = 32;
         //public const int HorizontalColumnWidth = 32;
         //public const int VerticalColumnWidth = 32;
         public const int BinStatusColumnWidth = 120;
-        public const int VehicleRowColumnWidth = 50;
-        public const int PalletIDColumnWidth = 180;
-        public const int PalletStatusColumnWidth = 70;
-        public const int KitSerialColumnWidth = 75;
+        public const int VehicleRowColumnWidth = 55;
+        public const int PalletIDColumnWidth = 90;
+        public const int PalletStatusColumnWidth = 90;
+        public const int JobIDColumnWidth = 115;
         public const int SkuColumnWidth = 75;
-        public const int BinLocationColumnWidth = 74;
-        public const int KitCodeColumnWidth = 74;
-        public const int BuiltOnColumnWidth = 150;
+        public const int BinLocationColumnWidth = 90;
+        public const int HoldCodeColumnWidth = 85;
+        public const int BuiltOnColumnWidth = 155;
 
         private List<BinItem> _searchResults = new List<BinItem>();
         private ISearchResultsGridParent _parent = null;
@@ -78,7 +79,7 @@ namespace Mss.Views
         {
             _parent = parent;
 
-//             XProxyCache.Acquire(Constant.HoldCodesName, out _holdCodesProxy);
+            XProxyCache.Acquire(Constant.HoldCodesName, out _holdCodesProxy);
 
             BorderStyle = BorderStyle.FixedSingle;
 
@@ -183,17 +184,17 @@ namespace Mss.Views
                         Columns[index].Width = PalletStatusColumnWidth;
                         cell.Value = "Status";
                         break;
-                    case KitSerialColumnIndex:
-                        Columns[index].Width = KitSerialColumnWidth;
-                        cell.Value = "Kit Serial";
+                    case HoldCodeColumnIndex:
+                        Columns[index].Width = HoldCodeColumnWidth;
+                        cell.Value = "Hold Code";
                         break;
                     case SkuColumnIndex:
                         Columns[index].Width = SkuColumnWidth;
                         cell.Value = "SKU";
                         break;
-                    case KitCodeColumnIndex:
-                        Columns[index].Width = KitCodeColumnWidth;
-                        cell.Value = "Kit Code";
+                    case JobIDColumnIndex:
+                        Columns[index].Width = JobIDColumnWidth;
+                        cell.Value = "Job ID";
                         break;
                     case BuiltOnColumnIndex:
                         Columns[index].Width = BuiltOnColumnWidth;
@@ -287,35 +288,35 @@ namespace Mss.Views
                                     ? string.Empty
                                     : palletItem.Status.ToText();
                             break;
-//                         case HoldCodeColumnIndex:
-//                             int palletHoldCode = palletItem.HoldCode;
-//                             if (palletHoldCode == Constant.NoHoldCode)
-//                             {
-//                                 searchResult.SearchResultsHoldCodeText = string.Empty;
-//                             }
-//                             else if (_holdCodesProxy.ContainsKey(palletHoldCode))
-//                             {
-//                                 searchResult.SearchResultsHoldCodeText = _holdCodesProxy[palletHoldCode].Description;
-//                             }
-//                             else
-//                             {
-//                                 searchResult.SearchResultsHoldCodeText = palletHoldCode.ToString();
-//                             }
-//                             cell.Value = searchResult.SearchResultsHoldCodeText;
-//                             break;
+                        case HoldCodeColumnIndex:
+                            int palletHoldCode = palletItem.HoldCode;
+                            if (palletHoldCode == Constant.NoHoldCode)
+                            {
+                                searchResult.SearchResultsHoldCodeText = string.Empty;
+                            }
+                            else if (_holdCodesProxy.ContainsKey(palletHoldCode))
+                            {
+                                searchResult.SearchResultsHoldCodeText = _holdCodesProxy[palletHoldCode].Description;
+                            }
+                            else
+                            {
+                                searchResult.SearchResultsHoldCodeText = palletHoldCode.ToString();
+                            }
+                            cell.Value = searchResult.SearchResultsHoldCodeText;
+                            break;
                         case SkuColumnIndex:
                             cell.Value = palletItem.Sku;
                             break;
-                        //                         case JobIDColumnIndex:
-                        //                             if (palletItem.JobID == Constant.NoJobID)
-                        //                             {
-                        //                                 cell.Value = string.Empty;
-                        //                             }
-                        //                             else
-                        //                             {
-                        //                                 cell.Value = palletItem.JobIDText;
-                        //                             }
-                        //                             break;
+                        case JobIDColumnIndex:
+                            if (palletItem.JobID == Constant.NoJobID)
+                            {
+                                cell.Value = string.Empty;
+                            }
+                            else
+                            {
+                                cell.Value = palletItem.JobID;
+                            }
+                            break;
                         case BuiltOnColumnIndex:
                             cell.Value = palletItem.BuiltOn > Constant.BeginningOfTime
                                 ? palletItem.BuiltOn.ToString(Constant.LongDateTimeFormat24)

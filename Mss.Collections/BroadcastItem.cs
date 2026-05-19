@@ -28,6 +28,8 @@ namespace Mss.Collections
 
         public string RotationText => RotationTextFromCsn(Csn);
 
+        public string LabelRotationText => RotationText.Right(4);
+
         public static string MakeCsn(int rotationNumber, string csnSuffix)
         {
             XArgumentChecker.ThrowIfNotContainedIn(

@@ -30,6 +30,7 @@ namespace Mss.Collections
             : string.Empty;
 
         public string StatusText => Status.ToText();
+        public string HoldCodeText => HoldCode.ToText();
 
         public string VehicleRowText => VehicleRow.ToText();
 
