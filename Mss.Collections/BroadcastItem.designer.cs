@@ -71,7 +71,8 @@ namespace Mss.Collections
 
         [XDataItemProperty(
             Comment = "The Pick Mode of this Broadcast.")]
-        public PickMode PickMode
+        public PickMode 
+            PickMode
         {
             get => GetEnum<PickMode>(nameof(PickMode));
             set => SetEnum(nameof(PickMode), value);
