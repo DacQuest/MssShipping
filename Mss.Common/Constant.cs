@@ -126,6 +126,10 @@ namespace Mss.Common
         public const string UpperOutboundClearRoleName = "UpperOutboundClear";
         public const string CraneSemiAutoGetLocationRoleName = "CraneSemiAutoGetLocation";
         public const string CraneSemiAutoPutLocationRoleName = "CraneSemiAutoPutLocation";
+        public const string CraneStack1PickRequestRoleName = "Stack1PickRequest";
+        public const string CraneStack2PickRequestRoleName = "Stack2PickRequest";
+        public const string CranePickedStack1CountRoleName = "PickedStack1Count";
+        public const string CranePickedStack2CountRoleName = "PickedStack2Count";
 
         public const string LoadAUpperLevelCompletedRoleName = "LoadAUpperLevelCompleted";
         public const string LoadALowerLevelCompletedRoleName = "LoadALowerLevelCompleted";
@@ -160,14 +164,14 @@ namespace Mss.Common
         public const int Crane3LowerOutboundLocation = 32001;
         public const int Crane4LowerInboundLocation  = 41001;
         public const int Crane4LowerOutboundLocation = 42001;
-        public const int Crane1UpperInboundLocation  = 11002;
-        public const int Crane1UpperOutboundLocation = 12002;
-        public const int Crane2UpperInboundLocation  = 21002;
-        public const int Crane2UpperOutboundLocation = 22002;
-        public const int Crane3UpperInboundLocation  = 31002;
-        public const int Crane3UpperOutboundLocation = 32002;
-        public const int Crane4UpperInboundLocation  = 41002;
-        public const int Crane4UpperOutboundLocation = 42002;
+        public const int Crane1UpperInboundLocation  = 11003;
+        public const int Crane1UpperOutboundLocation = 12003;
+        public const int Crane2UpperInboundLocation  = 21003;
+        public const int Crane2UpperOutboundLocation = 22003;
+        public const int Crane3UpperInboundLocation  = 31003;
+        public const int Crane3UpperOutboundLocation = 32003;
+        public const int Crane4UpperInboundLocation  = 41003;
+        public const int Crane4UpperOutboundLocation = 42003;
 
         public const int UpperAssignmentBufferSize = 2;
         public const int LowerAssignmentBufferSize = 1;

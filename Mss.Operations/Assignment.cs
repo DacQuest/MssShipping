@@ -52,6 +52,7 @@ namespace Mss.Operations
             base.DoStart();
 
             AssignmentPit.DataItemChanged += _AssignmentPit_DataItemChanged;
+            SystemSettings.DataItemChanged += _SystemSettings_DataItemChanged;
         }
 
         protected override void DoStop()
@@ -59,6 +60,10 @@ namespace Mss.Operations
             if (AssignmentPit != null)
             {
                 AssignmentPit.DataItemChanged -= _AssignmentPit_DataItemChanged;
+            }
+            if (SystemSettings != null)
+            {
+                SystemSettings.DataItemChanged -= _SystemSettings_DataItemChanged;
             }
         }
 
@@ -107,6 +112,14 @@ namespace Mss.Operations
         //==================================================================================
 
         private void _AssignmentPit_DataItemChanged(object sender, XDataItemChangedEventArgs e)
+        {
+            if (CurrentState.Name == AwaitingDestinationState)
+            {
+                RunCurrentStateHandler();
+            }
+        }
+
+        private void _SystemSettings_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
             if (CurrentState.Name == AwaitingDestinationState)
             {

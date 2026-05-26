@@ -42,20 +42,20 @@ namespace Mss.Views
         public const int BuiltOnColumnIndex = 10;
         public const int ColumnCount = 11;
 
-        public const int BinNumberColumnWidth = 60;
-        public const int RowColumnWidth = 50;
+        public const int BinNumberColumnWidth = 40;
+        public const int RowColumnWidth = 40;
         //public const int SideColumnWidth = 32;
         //public const int HorizontalColumnWidth = 32;
         //public const int VerticalColumnWidth = 32;
-        public const int BinStatusColumnWidth = 120;
-        public const int VehicleRowColumnWidth = 55;
-        public const int PalletIDColumnWidth = 90;
-        public const int PalletStatusColumnWidth = 90;
-        public const int JobIDColumnWidth = 115;
+        public const int BinStatusColumnWidth = 110;
+        public const int VehicleRowColumnWidth = 40;
+        public const int PalletIDColumnWidth = 70;
+        public const int PalletStatusColumnWidth = 80;
+        public const int JobIDColumnWidth = 80;
         public const int SkuColumnWidth = 75;
-        public const int BinLocationColumnWidth = 90;
-        public const int HoldCodeColumnWidth = 85;
-        public const int BuiltOnColumnWidth = 155;
+        public const int BinLocationColumnWidth = 70;
+        public const int HoldCodeColumnWidth = 190;
+        public const int BuiltOnColumnWidth = 163;
 
         private List<BinItem> _searchResults = new List<BinItem>();
         private ISearchResultsGridParent _parent = null;
@@ -319,7 +319,7 @@ namespace Mss.Views
                             break;
                         case BuiltOnColumnIndex:
                             cell.Value = palletItem.BuiltOn > Constant.BeginningOfTime
-                                ? palletItem.BuiltOn.ToString(Constant.LongDateTimeFormat24)
+                                ? palletItem.BuiltOn.ToString(Constant.DisplayDateTimeFormat12)
                                 : string.Empty;
                             break;
                     }

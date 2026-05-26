@@ -17,13 +17,15 @@ namespace Mss.ShippingService
         public ServiceHostForm()
         {
             InitializeComponent();
+
+            Text = "MSS Shipping System Service";
         }
 
         private void _ServiceHostForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (XMessageBox.Show(
                 this,
-                "Are you sure you want to shut down the Mississauga Shipping Service?",
+                "Are you sure you want to shut down the MSS Shipping System Service?",
                 "Confirm Shut Down",
                 MessageBoxButtons.OKCancel,
                 MessageBoxIcon.Question,

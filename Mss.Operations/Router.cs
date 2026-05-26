@@ -138,13 +138,17 @@ namespace Mss.Operations
                         }
                         CurrentPallet = palletItem;
                         CurrentPallet.Status = PalletStatus.Purge;
-                        CurrentPallet.Comment = "Failed Sizing Test";
+                        CurrentPallet.Comment = "Failed Height Test";
                         DataLayer.SetPitPallet(
                             Level,
                             CurrentPallet,
                             PitCode.Purge);
                         moveCommand = Constant.RouterMoveCommandForward;
-                        extendedState = $"(FAILED SIZING) Forwarding Pallet {CurrentPallet.PalletID} to Purge.";
+                        extendedState = $"(FAILED HEIGHT TEST) Forwarding Pallet {CurrentPallet.PalletID} to Purge.";
+                        XSystemEvent.Publish(
+                            $"{Level} Router {(int)CraneNumber}",
+                            XSystemEventLevel.Notification,
+                            $"Pallet {CurrentPallet.PalletID} failed the Height Test at {Level} Router {(int)CraneNumber}");
                         return true;
                 }
             }

@@ -566,6 +566,7 @@
             this._lblComment.Name = "_lblComment";
             this._lblComment.Size = new System.Drawing.Size(490, 23);
             this._lblComment.TabIndex = 43;
+            this._lblComment.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this._lblComment.TextChanged += new System.EventHandler(this._lblComment_TextChanged);
             // 
             // _lblBuiltOn

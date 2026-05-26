@@ -37,9 +37,10 @@
             // _btnShutDown
             // 
             this._btnShutDown.BackColor = System.Drawing.SystemColors.Window;
-            this._btnShutDown.Location = new System.Drawing.Point(208, 254);
+            this._btnShutDown.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnShutDown.Location = new System.Drawing.Point(196, 254);
             this._btnShutDown.Name = "_btnShutDown";
-            this._btnShutDown.Size = new System.Drawing.Size(160, 32);
+            this._btnShutDown.Size = new System.Drawing.Size(200, 32);
             this._btnShutDown.TabIndex = 2;
             this._btnShutDown.Text = "Shut Down Shipping Service";
             this._btnShutDown.UseVisualStyleBackColor = false;
@@ -67,7 +68,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "ServiceHostForm";
-            this.Text = "Mississauga Seating Shipping Service";
+            this.Text = "MSS Shipping System Service";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this._ServiceHostForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

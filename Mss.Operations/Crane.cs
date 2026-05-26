@@ -70,6 +70,34 @@ namespace Mss.Operations
             }
         }
 
+        protected string Stack1RequestName = "Stack 1 Request";
+        protected bool Stack1Request
+        {
+            get => GetVariable<bool>(Stack1RequestName);
+            set => SetVariable(Stack1RequestName, value);
+        }
+
+        protected string Stack2RequestName = "Stack 2 Request";
+        protected bool Stack2Request
+        {
+            get => GetVariable<bool>(Stack2RequestName);
+            set => SetVariable(Stack2RequestName, value);
+        }
+
+        protected string PickedStack1CountName = "Picked Stack 1 Count";
+        protected int PickedStack1Count
+        {
+            get => GetVariable<int>(PickedStack1CountName);
+            set => SetVariable(PickedStack1CountName, value);
+        }
+
+        protected string PickedStack2CountName = "Picked Stack 2 Count";
+        protected int PickedStack2Count
+        {
+            get => GetVariable<int>(PickedStack2CountName);
+            set => SetVariable(PickedStack2CountName, value);
+        }
+
         public CraneNumber CraneNumber => _parameters.CraneNumber;
 
         protected string CraneModeName = "Crane Mode";
@@ -575,6 +603,26 @@ namespace Mss.Operations
                 Constant.CraneSemiAutoPutLocationRoleName,
                 _SemiAutoPutLocation_TagValueChanged,
                 XTagDataCaptureUpdateMode.OnChange);
+
+            StartPlcTagCapture(
+                Constant.CraneStack1PickRequestRoleName,
+                _Stack1PickRequest_TagValueChanged,
+                XTagDataCaptureUpdateMode.OnChange);
+
+            StartPlcTagCapture(
+               Constant.CraneStack2PickRequestRoleName,
+               _Stack2PickRequest_TagValueChanged,
+               XTagDataCaptureUpdateMode.OnChange);
+
+            StartPlcTagCapture(
+                Constant.CranePickedStack1CountRoleName,
+                _PickedStack1Count_TagValueChanged,
+                XTagDataCaptureUpdateMode.OnChange);
+
+            StartPlcTagCapture(
+               Constant.CranePickedStack2CountRoleName,
+               _PickedStack2Count_TagValueChanged,
+               XTagDataCaptureUpdateMode.OnChange);
 
             _storage.DataItemChanged += _Storage_DataItemChanged;
             _lowerPit.DataItemChanged += _LowerPit_DataItemChanged;
@@ -1274,6 +1322,14 @@ namespace Mss.Operations
             out object extra)
         {
             extra = null;
+
+            if (!Stack1Request)
+            {
+                getCommand = Constant.NoCraneCommand;
+                extendedState = string.Empty;
+                return false;
+            }
+
             if (!DataLayer.TryFrontStackPick(
                 CraneNumber,
                 UpperOutboundClear,
@@ -1295,6 +1351,14 @@ namespace Mss.Operations
             out object extra)
         {
             extra = null;
+
+            if (!Stack2Request)
+            {
+                getCommand = Constant.NoCraneCommand;
+                extendedState = string.Empty;
+                return false;
+            }
+
             if (!DataLayer.TryRearStackPick(
                 CraneNumber,
                 UpperOutboundClear,
@@ -1515,6 +1579,22 @@ namespace Mss.Operations
                         CurrentPallet = palletItem;
                         CurrentCraneFunction = CraneFunction.Store;
                         PublishStateDetails();
+                    }
+                    else
+                    {
+                        string tagRoleName;
+                        int pickCount;
+                        if (CurrentCraneFunction == CraneFunction.Stack1Pick)
+                        {
+                            tagRoleName = Constant.CranePickedStack1CountRoleName;
+                            pickCount = PickedStack1Count;
+                        }
+                        else
+                        {
+                            tagRoleName = Constant.CranePickedStack2CountRoleName;
+                            pickCount = PickedStack1Count;
+                        }
+                        WritePlc(tagRoleName, ++pickCount);
                     }
                     DataLayer.CompleteStorageGetByLocation(GetCommand);
                     break;
@@ -2030,6 +2110,54 @@ namespace Mss.Operations
                 {
                     RunCurrentStateHandler();
                 }
+            }
+        }
+
+        private void _Stack1PickRequest_TagValueChanged(object sender, XTagDataEventArgs e)
+        {
+            if (e.TagData.TryGetTagValue(out int request))
+            {
+                Stack1Request = request != 0;
+                if (Stack1Request
+                    && CurrentState.Name == AwaitingGetTaskState)
+                {
+                    RunCurrentStateHandler();
+                }
+            }
+        }
+
+        private void _Stack2PickRequest_TagValueChanged(object sender, XTagDataEventArgs e)
+        {
+            if (e.TagData.TryGetTagValue(out int request))
+            {
+                Stack2Request = request != 0;
+                if (Stack2Request
+                    && CurrentState.Name == AwaitingGetTaskState)
+                {
+                    RunCurrentStateHandler();
+                }
+            }
+        }
+
+        private void _PickedStack1Count_TagValueChanged(object sender, XTagDataEventArgs e)
+        {
+            if (e.TagData.TryGetTagValue(out int count))
+            {
+//                 if (CurrentState.Name == MonitoringSemiAutoState)
+//                 {
+//                     RunCurrentStateHandler();
+//                 }
+            }
+        }
+
+        private void _PickedStack2Count_TagValueChanged(object sender, XTagDataEventArgs e)
+        {
+            if (e.TagData.TryGetTagValue(out int count))
+            {
+//                 if (CurrentState.Name == MonitoringSemiAutoState)
+//                 {
+//                     RunCurrentStateHandler();
+//                 }
             }
         }
 
