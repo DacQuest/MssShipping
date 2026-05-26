@@ -102,7 +102,7 @@ namespace Mss.Data
             int SearchCrane5,
             int SearchCranes,
             int SearchFront,
-            int SearchMid,
+            //int SearchMid,
             int SearchRear,
             int SearchVehicleRows,
             bool Audit,
@@ -162,7 +162,7 @@ namespace Mss.Data
                 {
                     rowSearchResults.AddRange(Searches.ByVehicleRow(searchResults, new List<VehicleRow>() { VehicleRow.Row1 }));
                 }
-                if ((SearchVehicleRows & SearchMid) == SearchMid)
+                if ((SearchVehicleRows & SearchRear) == SearchRear)
                 {
                     rowSearchResults.AddRange(Searches.ByVehicleRow(searchResults, new List<VehicleRow>() { VehicleRow.Row2 }));
                 }

@@ -37,10 +37,10 @@ namespace Mss.Views
         public const int SearchCrane5 = 16;
         //         public int _searchCranes = _searchCrane1 + _searchCrane2 + _searchCrane3 + _searchCrane4;
         public int _searchCranes = SearchCrane1 + SearchCrane2 + SearchCrane3 + SearchCrane4 + SearchCrane5;
-        public const int SearchFront = 1;
-        public const int SearchMid = 2;
-        public const int SearchRear = 4;
-        public int _searchRows = SearchFront + SearchMid + SearchRear;
+        public const int SearchFront = (int)VehicleRow.Row1;
+        //public const int SearchMid = 4;
+        public const int SearchRear = (int)VehicleRow.Row2;
+        public int _searchRows = SearchFront + SearchRear;
         public bool _audit = false;
         public bool _pickOnly = false;
         public bool _disabled = false;
@@ -159,12 +159,13 @@ namespace Mss.Views
             _chkOK.Checked = false;
             _chkHold.Checked = false;
             _chkPurge.Checked = false;
-//             _chkStack.Checked = false;
+            //             _chkStack.Checked = false;
             _chkReserved.Checked = false;
+            _chkUnknown.Checked = false;
 
             _chkApplyCrane.Checked = false;
 //             _searchCranes = _searchCrane1 + _searchCrane2 + _searchCrane3 + _searchCrane4;
-            _searchCranes = SearchCrane1 + SearchCrane2 + SearchCrane3;
+            _searchCranes = SearchCrane1 + SearchCrane2 + SearchCrane3 + SearchCrane4;
             _chkCrane1.Checked = true;
             _chkCrane2.Checked = true;
             _chkCrane3.Checked = true;
@@ -172,7 +173,7 @@ namespace Mss.Views
 
             _chkApplyVehicleRow.Checked = false;
 //             _searchRows = _searchRow1 + _searchRow2 + _searchRow3;
-            _searchRows = SearchFront + SearchMid;
+            _searchRows = SearchFront + SearchRear;
             _chkFront.Checked = true;
             _chkRear.Checked = true;
 
@@ -225,6 +226,8 @@ namespace Mss.Views
                 _chkPurge.Checked = false;
 //                 _chkStack.Checked = false;
                 _chkReserved.Checked = false;
+                _chkUnknown.Checked = false;
+
                 _searchPalletStatuses = PalletStatus.Invalid;
             }
             _EnableSearchButton();
@@ -249,9 +252,10 @@ namespace Mss.Views
                 _chkCrane1.Checked = true;
                 _chkCrane2.Checked = true;
                 _chkCrane3.Checked = true;
-//                 chkCrane4.Checked = true;
-//                 _searchCranes = _searchCrane1 + _searchCrane2 + _searchCrane3 + _searchCrane4;
-                _searchCranes = SearchCrane1 + SearchCrane2 + SearchCrane3;
+                _chkCrane4.Checked = true;
+                //                 chkCrane4.Checked = true;
+                //                 _searchCranes = _searchCrane1 + _searchCrane2 + _searchCrane3 + _searchCrane4;
+                _searchCranes = SearchCrane1 + SearchCrane2 + SearchCrane3 + SearchCrane4;
             }
             _EnableSearchButton();
         }
@@ -301,28 +305,52 @@ namespace Mss.Views
         //    _EnableSearchButton();
         //}
 
-//         private void _ChkStackPick_CheckedChanged(object sender, EventArgs e)
-//         {
-//             if (_chkStack.Checked)
-//             {
-//                 _searchPalletStatuses |= PalletStatus.Stack;
-//             }
-//             else
-//             {
-//                 _searchPalletStatuses &= ~PalletStatus.Stack;
-//             }
-//             _EnableSearchButton();
-//         }
+        //         private void _ChkStackPick_CheckedChanged(object sender, EventArgs e)
+        //         {
+        //             if (_chkStack.Checked)
+        //             {
+        //                 _searchPalletStatuses |= PalletStatus.Stack;
+        //             }
+        //             else
+        //             {
+        //                 _searchPalletStatuses &= ~PalletStatus.Stack;
+        //             }
+        //             _EnableSearchButton();
+        //         }
 
-        private void _ChkUnknown_CheckedChanged(object sender, EventArgs e)
+        private void _ChkReserved_CheckedChanged(object sender, EventArgs e)
         {
             if (_chkReserved.Checked)
+            {
+                _searchPalletStatuses |= PalletStatus.Reserved;
+            }
+            else
+            {
+                _searchPalletStatuses &= ~PalletStatus.Reserved;
+            }
+            _EnableSearchButton();
+        }
+        private void _ChkUnknown_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_chkUnknown.Checked)
             {
                 _searchPalletStatuses |= PalletStatus.Unknown;
             }
             else
             {
                 _searchPalletStatuses &= ~PalletStatus.Unknown;
+            }
+            _EnableSearchButton();
+        }
+        private void _ChkPurge_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_chkPurge.Checked)
+            {
+                _searchPalletStatuses |= PalletStatus.Purge;
+            }
+            else
+            {
+                _searchPalletStatuses &= ~PalletStatus.Purge;
             }
             _EnableSearchButton();
         }
@@ -430,7 +458,7 @@ namespace Mss.Views
                 SearchCrane5,
                 _searchCranes,
                 SearchFront,
-                SearchMid,
+                //SearchMid,
                 SearchRear,
                 _searchRows,
                 _audit,
@@ -492,7 +520,7 @@ namespace Mss.Views
                 _chkFront.Checked = true;
                 _chkRear.Checked = true;
 //                 _searchRows = _searchRow1 + _searchRow2 + _searchRow3;
-                _searchRows = SearchFront + SearchMid + SearchRear;
+                _searchRows = SearchFront + SearchRear;
             }
             _EnableSearchButton();
         }
@@ -523,33 +551,59 @@ namespace Mss.Views
             _EnableSearchButton();
         }
 
+        //private void _ChkFront_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    if (_chkFront.Checked)
+        //    {
+        //        _searchRows += SearchFront;
+        //    }
+        //    else
+        //    {
+        //        _searchRows -= SearchFront;
+        //    }
+        //    _EnableSearchButton();
+        //}
+
+
+        //private void _ChkRear_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    if (_chkRear.Checked)
+        //    {
+        //        _searchRows += SearchRear;
+        //    }
+        //    else
+        //    {
+        //        _searchRows -= SearchRear;
+        //    }
+        //    _EnableSearchButton();
+        //}
         private void _ChkFront_CheckedChanged(object sender, EventArgs e)
         {
             if (_chkFront.Checked)
             {
-                _searchRows += SearchFront;
+                _searchRows |= SearchFront;
             }
             else
             {
-                _searchRows -= SearchFront;
+                _searchRows &= ~SearchFront;
             }
+
             _EnableSearchButton();
         }
-
 
         private void _ChkRear_CheckedChanged(object sender, EventArgs e)
         {
             if (_chkRear.Checked)
             {
-                _searchRows += SearchRear;
+                _searchRows |= SearchRear;
             }
             else
             {
-                _searchRows -= SearchRear;
+                _searchRows &= ~SearchRear;
             }
+
             _EnableSearchButton();
         }
-
         private void _ChkEmpty_CheckedChanged(object sender, EventArgs e)
         {
             if (_chkEmpty.Checked)

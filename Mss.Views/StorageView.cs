@@ -1690,7 +1690,7 @@ namespace Mss.Views
                     AdvancedSearchForm.SearchCrane5,
                     _advancedSearchForm._searchCranes,
                     AdvancedSearchForm.SearchFront,
-                    AdvancedSearchForm.SearchMid,
+                    //AdvancedSearchForm.SearchMid,
                     AdvancedSearchForm.SearchRear,
                     _advancedSearchForm._searchRows,
                     _advancedSearchForm._audit,
