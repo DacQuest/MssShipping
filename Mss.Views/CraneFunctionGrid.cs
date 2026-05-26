@@ -62,6 +62,9 @@ namespace Mss.Views
         private int _headerRowHeight = 25;
         private int _dataRowHeight = 25;
 
+        private Font _headerFont = new Font("Segoe UI", 9F, FontStyle.Bold);
+        private Font _dataFont = new Font("Segoe UI", 9F, FontStyle.Regular);
+
         public CraneFunctionGrid()
         {
             InitializeComponent();
@@ -77,7 +80,7 @@ namespace Mss.Views
 
             XProxyCache.Acquire(Constant.SystemSettingsName, out _systemSettingsProxy);
             _systemSettingsProxy.DataItemChanged += _SystemSettings_DataItemChanged;
-            _systemSettingsProxy.CollectionRefreshed += _SystemSettings_CollectionRefreshed;
+//             _systemSettingsProxy.CollectionRefreshed += _SystemSettings_CollectionRefreshed;
 
             XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
             _storageProxy.DataItemChanged += _Storage_DataItemChanged;
@@ -86,11 +89,26 @@ namespace Mss.Views
             BorderStyle = BorderStyle.FixedSingle;
 
             // Set up header attributes
+            //             Font headerFont = new Font("Segoe UI", 9F, FontStyle.Bold);
+
+            DevAge.Drawing.BorderLine rightBorder = new DevAge.Drawing.BorderLine(Color.LightGray, 0);
+            DevAge.Drawing.BorderLine bottomBorder = new DevAge.Drawing.BorderLine(Color.LightGray, 1);
+            DevAge.Drawing.RectangleBorder cellBorder = new DevAge.Drawing.RectangleBorder(rightBorder, bottomBorder);
+
             SourceGrid.Cells.Views.Header boldHeader = new SourceGrid.Cells.Views.Header
             {
-                Font = new Font(Font, FontStyle.Bold),
-                TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter
+//                 Font = new Font(Font, FontStyle.Bold),
+                Font = _headerFont,
+                TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter,
+                Border = cellBorder
             };
+
+//             SourceGrid.Cells.Views.Header boldVariableHeader = new SourceGrid.Cells.Views.Header
+//             {
+// //                 Font = new Font(Font, FontStyle.Bold),
+//                 Font = _headerFont,
+//                 TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter
+//             };
 
             ColumnsCount = ColumnCount;
             FixedColumns = 1;
@@ -124,6 +142,11 @@ namespace Mss.Views
             }
 
             // Set up rows
+            Color foreColor;
+            Color backColor;
+            SystemSettingsItem item = _systemSettingsProxy.GetItem();
+            bool masterSettingEnabled;
+            string rowName = string.Empty;
             FixedRows = 1;
             for (int rowNumber = 1; rowNumber < RowCount; rowNumber++)
             {
@@ -136,7 +159,7 @@ namespace Mss.Views
                 // Row header
                 if (rowNumber <= CraneModeRowIndex)
                 {
-                    string rowName = string.Empty;
+//                     string rowName = string.Empty;
                     switch (rowNumber)
                     {
                         case PalletCountRowIndex:
@@ -159,7 +182,7 @@ namespace Mss.Views
                             break;
                     }
 
-                    cell = new Header(rowName)
+                    cell = new RowHeader(rowName)
                     {
                         View = boldHeader
                     };
@@ -189,14 +212,16 @@ namespace Mss.Views
                 }
                 else
                 {
-                    string rowName = string.Empty;
-                    Color foreColor;
-                    Color backColor;
-                    SystemSettingsItem item = _systemSettingsProxy.GetItem();
-                    bool masterSettingEnabled;
-                    cell = new Cell();
+//                     string rowName = string.Empty;
+//                     Color foreColor;
+//                     Color backColor;
+//                     SystemSettingsItem item = _systemSettingsProxy.GetItem();
+//                     bool masterSettingEnabled;
+                    cell = new Cell()
+                    {
+                        View = new SourceGrid.Cells.Views.Cell()
+                    };
                     cell.AddController(SourceGrid.Cells.Controllers.Unselectable.Default);
-                    cell.View = new SourceGrid.Cells.Views.Cell();
                     switch (rowNumber)
                     {
                         case UpperInboundsRowIndex:
@@ -205,7 +230,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case LowerInboundsRowIndex:
@@ -214,7 +239,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case UpperOutboundsRowIndex:
@@ -223,7 +248,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case LowerOutboundsRowIndex:
@@ -232,7 +257,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case PrioritizeAuditPicksRowIndex:
@@ -241,7 +266,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case AuditPicksRowIndex:
@@ -250,7 +275,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case AutoCompactRowIndex:
@@ -259,7 +284,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case StoresRowIndex:
@@ -268,7 +293,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case LoadPicksRowIndex:
@@ -277,7 +302,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case PurgePicksRowIndex:
@@ -286,7 +311,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                         case StackPicksRowIndex:
@@ -295,7 +320,7 @@ namespace Mss.Views
                             (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                             cell.View.ForeColor = foreColor;
                             cell.View.BackColor = backColor;
-                            cell.View.Font = new Font(Font, FontStyle.Bold);
+                            cell.View.Font = _headerFont;
                             cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                             break;
                     }
@@ -431,6 +456,9 @@ namespace Mss.Views
         {
             ICell cell;
 
+//             Font headerFont = new Font("Segoe UI", 9F, FontStyle.Bold);
+//             Font _dataFont = new Font("Segoe UI", 9F, FontStyle.Regular);
+
             _storageProxy.GetPalletCountPerCrane(
                 out int crane1Count,
                 out int crane2Count,
@@ -439,18 +467,26 @@ namespace Mss.Views
 
             cell = this[PalletCountRowIndex, Crane1ColumnIndex];
             cell.Value = crane1Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[PalletCountRowIndex, Crane1ColumnIndex] = cell;
 
             cell = this[PalletCountRowIndex, Crane2ColumnIndex];
             cell.Value = crane2Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[PalletCountRowIndex, Crane2ColumnIndex] = cell;
 
             cell = this[PalletCountRowIndex, Crane3ColumnIndex];
             cell.Value = crane3Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[PalletCountRowIndex, Crane3ColumnIndex] = cell;
 
             cell = this[PalletCountRowIndex, Crane4ColumnIndex];
             cell.Value = crane4Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[PalletCountRowIndex, Crane4ColumnIndex] = cell;
 
             _storageProxy.GetEmptyLargeBinCountPerCrane(
@@ -461,18 +497,26 @@ namespace Mss.Views
 
             cell = this[EmptyLargeBinCountRowIndex, Crane1ColumnIndex];
             cell.Value = crane1Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[EmptyLargeBinCountRowIndex, Crane1ColumnIndex] = cell;
 
             cell = this[EmptyLargeBinCountRowIndex, Crane2ColumnIndex];
             cell.Value = crane2Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[EmptyLargeBinCountRowIndex, Crane2ColumnIndex] = cell;
 
             cell = this[EmptyLargeBinCountRowIndex, Crane3ColumnIndex];
             cell.Value = crane3Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[EmptyLargeBinCountRowIndex, Crane3ColumnIndex] = cell;
 
             cell = this[EmptyLargeBinCountRowIndex, Crane4ColumnIndex];
             cell.Value = crane4Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[EmptyLargeBinCountRowIndex, Crane4ColumnIndex] = cell;
 
             _storageProxy.GetEmptySmallBinCountPerCrane(
@@ -483,18 +527,26 @@ namespace Mss.Views
 
             cell = this[EmptySmallBinCountRowIndex, Crane1ColumnIndex];
             cell.Value = crane1Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[EmptySmallBinCountRowIndex, Crane1ColumnIndex] = cell;
 
             cell = this[EmptySmallBinCountRowIndex, Crane2ColumnIndex];
             cell.Value = crane2Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[EmptySmallBinCountRowIndex, Crane2ColumnIndex] = cell;
 
             cell = this[EmptySmallBinCountRowIndex, Crane3ColumnIndex];
             cell.Value = crane3Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[EmptySmallBinCountRowIndex, Crane3ColumnIndex] = cell;
 
             cell = this[EmptySmallBinCountRowIndex, Crane4ColumnIndex];
             cell.Value = crane4Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[EmptySmallBinCountRowIndex, Crane4ColumnIndex] = cell;
 
             _storageProxy.GetStackCountPerCrane(
@@ -506,18 +558,26 @@ namespace Mss.Views
 
             cell = this[FrontStackCountRowIndex, Crane1ColumnIndex];
             cell.Value = crane1Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[FrontStackCountRowIndex, Crane1ColumnIndex] = cell;
 
             cell = this[FrontStackCountRowIndex, Crane2ColumnIndex];
             cell.Value = crane2Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[FrontStackCountRowIndex, Crane2ColumnIndex] = cell;
 
             cell = this[FrontStackCountRowIndex, Crane3ColumnIndex];
             cell.Value = crane3Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[FrontStackCountRowIndex, Crane3ColumnIndex] = cell;
 
             cell = this[FrontStackCountRowIndex, Crane4ColumnIndex];
             cell.Value = crane4Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[FrontStackCountRowIndex, Crane4ColumnIndex] = cell;
 
             _storageProxy.GetStackCountPerCrane(
@@ -529,18 +589,26 @@ namespace Mss.Views
 
             cell = this[RearStackCountRowIndex, Crane1ColumnIndex];
             cell.Value = crane1Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[RearStackCountRowIndex, Crane1ColumnIndex] = cell;
 
             cell = this[RearStackCountRowIndex, Crane2ColumnIndex];
             cell.Value = crane2Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[RearStackCountRowIndex, Crane2ColumnIndex] = cell;
 
             cell = this[RearStackCountRowIndex, Crane3ColumnIndex];
             cell.Value = crane3Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[RearStackCountRowIndex, Crane3ColumnIndex] = cell;
 
             cell = this[RearStackCountRowIndex, Crane4ColumnIndex];
             cell.Value = crane4Count;
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             this[RearStackCountRowIndex, Crane4ColumnIndex] = cell;
 
             SystemSettingsItem item = _systemSettingsProxy.GetItem();
@@ -548,6 +616,8 @@ namespace Mss.Views
             cell = this[CraneModeRowIndex, Crane1ColumnIndex];
             CraneMode mode = item.CraneModes[Crane1ColumnIndex - 1];
             cell.Value = mode.ToText();
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             cell.View.BackColor = mode == CraneMode.Manual
                 ? Color.LightGray
                 : mode == CraneMode.SemiAuto
@@ -558,6 +628,8 @@ namespace Mss.Views
             cell = this[CraneModeRowIndex, Crane2ColumnIndex];
             mode = item.CraneModes[Crane2ColumnIndex - 1];
             cell.Value = mode.ToText();
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             cell.View.BackColor = mode == CraneMode.Manual
                 ? Color.LightGray
                 : mode == CraneMode.SemiAuto
@@ -568,6 +640,8 @@ namespace Mss.Views
             cell = this[CraneModeRowIndex, Crane3ColumnIndex];
             mode = item.CraneModes[Crane3ColumnIndex - 1];
             cell.Value = mode.ToText();
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             cell.View.BackColor = mode == CraneMode.Manual
                 ? Color.LightGray
                 : mode == CraneMode.SemiAuto
@@ -578,6 +652,8 @@ namespace Mss.Views
             cell = this[CraneModeRowIndex, Crane4ColumnIndex];
             mode = item.CraneModes[Crane4ColumnIndex - 1];
             cell.Value = mode.ToText();
+            cell.View.Font = _dataFont;
+            cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
             cell.View.BackColor = mode == CraneMode.Manual
                 ? Color.LightGray
                 : mode == CraneMode.SemiAuto
@@ -590,7 +666,7 @@ namespace Mss.Views
             bool masterSettingEnabled;
             for (int columnNumber = 0; columnNumber < ColumnCount; columnNumber++)
             {
-                for (int rowNumber = 3; rowNumber < RowCount; rowNumber++)
+                for (int rowNumber = UpperInboundsRowIndex; rowNumber < RowCount; rowNumber++)
                 {
                     cell = this[rowNumber, columnNumber];
                     if (columnNumber == 0)
@@ -602,6 +678,7 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(masterSettingEnabled, masterSettingEnabled);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
                                 break;
                             case LowerInboundsRowIndex:
                                 masterSettingEnabled = item.LowerInboundsEnabled[Constant.MasterSettingArrayIndex];
@@ -675,6 +752,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.UpperInboundsEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case LowerInboundsRowIndex:
                                 settingEnabled = item.LowerInboundsEnabled[columnNumber];
@@ -682,6 +761,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.LowerInboundsEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case UpperOutboundsRowIndex:
                                 settingEnabled = item.UpperOutboundsEnabled[columnNumber];
@@ -689,6 +770,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.UpperOutboundsEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case LowerOutboundsRowIndex:
                                 settingEnabled = item.LowerOutboundsEnabled[columnNumber];
@@ -696,6 +779,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.LowerOutboundsEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case PrioritizeAuditPicksRowIndex:
                                 settingEnabled = item.PrioritizeAuditPicks[columnNumber];
@@ -703,6 +788,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.PrioritizeAuditPicks[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case AuditPicksRowIndex:
                                 settingEnabled = item.AuditPicksEnabled[columnNumber];
@@ -710,6 +797,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.AuditPicksEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case AutoCompactRowIndex:
                                 settingEnabled = item.AutoCompactStorageEnabled[columnNumber];
@@ -717,6 +806,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.AutoCompactStorageEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case StoresRowIndex:
                                 settingEnabled = item.StoresEnabled[columnNumber];
@@ -724,6 +815,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.StoresEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case LoadPicksRowIndex:
                                 settingEnabled = item.LoadPicksEnabled[columnNumber];
@@ -731,6 +824,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.LoadPicksEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case PurgePicksRowIndex:
                                 settingEnabled = item.PurgePicksEnabled[columnNumber];
@@ -738,6 +833,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.PurgePicksEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                             case StackPicksRowIndex:
                                 settingEnabled = item.StackPicksEnabled[columnNumber];
@@ -745,6 +842,8 @@ namespace Mss.Views
                                 (foreColor, backColor) = GetCellColor(settingEnabled, item.StackPicksEnabled[Constant.MasterSettingArrayIndex]);
                                 cell.View.ForeColor = foreColor;
                                 cell.View.BackColor = backColor;
+                                cell.View.Font = _dataFont;
+                                cell.View.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
                                 break;
                         }
                     }
@@ -760,10 +859,10 @@ namespace Mss.Views
             _Update();
         }
 
-        private void _SystemSettings_CollectionRefreshed(object sender, EventArgs e)
-        {
-            _Update();
-        }
+//         private void _SystemSettings_CollectionRefreshed(object sender, EventArgs e)
+//         {
+//             _Update();
+//         }
 
         private void _Storage_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
@@ -910,7 +1009,7 @@ namespace Mss.Views
                         case CraneNumber.Crane2:
                         case CraneNumber.Crane3:
                         case CraneNumber.Crane4:
-                            message = $"What would you like to do for all {craneNumber.ToText()} settings?";
+                            message = $"What would you like to do for all Crane {(int)craneNumber} settings?";
                             break;
                         case CraneNumber.None:
                         default:
@@ -933,13 +1032,14 @@ namespace Mss.Views
                                 return;
                         }
                     }
-                    Parent.UseWaitCursor = true;
-                    for (int rowNumber = UpperInboundsRowIndex;rowNumber < RowCount; rowNumber++)
+                    for (int rowNumber = UpperInboundsRowIndex; rowNumber < RowCount; rowNumber++)
                     {
                         (string settingName, bool settingValue) = _GetSettingInfo(rowNumber, columnNumber);
-                        _systemSettingsProxy.SetItemProperty(settingName, columnNumber, newSettingValue, this);
+                        if (settingValue != newSettingValue)
+                        {
+                            _systemSettingsProxy.SetItemProperty(settingName, columnNumber, newSettingValue, this);
+                        }
                     }
-                    Parent.UseWaitCursor = false;
                 }
                 else if (m_MouseCellPosition.Row > CraneModeRowIndex)
                 {
@@ -982,7 +1082,7 @@ namespace Mss.Views
                     }
                 }
             }
-            _Update();
+//             _Update();
         }
 
         private void _ContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)

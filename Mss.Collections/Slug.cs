@@ -176,7 +176,7 @@ namespace Mss.Collections
             }
         }
 
-        public bool IsInvalid
+        public bool Cleared
         {
             get
             {
@@ -184,6 +184,24 @@ namespace Mss.Collections
                 try
                 {
                     return this.All(l => l.IsInvalid);
+                }
+                finally
+                {
+                    Unlock();
+                }
+            }
+        }
+
+        public int FirstWaitingNodeIndex
+        {
+            get
+            {
+                _ = Lock();
+                try
+                {
+                    return this
+                        .First(l => l.Status == LoadItemStatus.Waiting)
+                        .NodeIndex;
                 }
                 finally
                 {
@@ -207,6 +225,8 @@ namespace Mss.Collections
                 }
             }
         }
+
+        public bool HasOpenLoad => WaitingCount > 0;
 
         public bool LoadDone
         {

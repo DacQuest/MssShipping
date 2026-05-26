@@ -32,9 +32,9 @@
             this.navigator = new System.Windows.Forms.ToolStrip();
             this.navigatorBtnRefreshItem = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnAddItem = new System.Windows.Forms.ToolStripButton();
-            this.navigatorBtnQuickAdd = new System.Windows.Forms.ToolStripButton();
-            this.navigatorBtnAddSingleEmpty = new System.Windows.Forms.ToolStripButton();
             this.navigatorBtnDelete = new System.Windows.Forms.ToolStripButton();
+            this.navigatorBtnAddSingleEmpty = new System.Windows.Forms.ToolStripButton();
+            this.navigatorBtnQuickAdd = new System.Windows.Forms.ToolStripButton();
             this._lblCollectionName = new System.Windows.Forms.Label();
             this._dgvPit = new System.Windows.Forms.DataGridView();
             this.navigator.SuspendLayout();
@@ -77,14 +77,15 @@
             this.navigatorBtnAddItem.Visible = false;
             this.navigatorBtnAddItem.Click += new System.EventHandler(this._NavigatorBtnAddItem_Click);
             // 
-            // navigatorBtnQuickAdd
+            // navigatorBtnDelete
             // 
-            this.navigatorBtnQuickAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.navigatorBtnQuickAdd.Name = "navigatorBtnQuickAdd";
-            this.navigatorBtnQuickAdd.Size = new System.Drawing.Size(99, 28);
-            this.navigatorBtnQuickAdd.Text = "Quick Add Pallet";
-            this.navigatorBtnQuickAdd.Visible = false;
-            this.navigatorBtnQuickAdd.Click += new System.EventHandler(this._NavigatorBtnQuickAdd_Click);
+            this.navigatorBtnDelete.Image = global::Mss.Views.Properties.Resources.RedMinus24;
+            this.navigatorBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.navigatorBtnDelete.Name = "navigatorBtnDelete";
+            this.navigatorBtnDelete.Size = new System.Drawing.Size(100, 28);
+            this.navigatorBtnDelete.Text = "Delete Pallet";
+            this.navigatorBtnDelete.Visible = false;
+            this.navigatorBtnDelete.Click += new System.EventHandler(this._NavigatorBtnDelete_Click);
             // 
             // navigatorBtnAddSingleEmpty
             // 
@@ -96,23 +97,22 @@
             this.navigatorBtnAddSingleEmpty.Visible = false;
             this.navigatorBtnAddSingleEmpty.Click += new System.EventHandler(this._NavigatorBtnAddSingleEmpty_Click);
             // 
-            // navigatorBtnDelete
+            // navigatorBtnQuickAdd
             // 
-            this.navigatorBtnDelete.Image = global::Mss.Views.Properties.Resources.RedMinus24;
-            this.navigatorBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.navigatorBtnDelete.Name = "navigatorBtnDelete";
-            this.navigatorBtnDelete.Size = new System.Drawing.Size(100, 28);
-            this.navigatorBtnDelete.Text = "Delete Pallet";
-            this.navigatorBtnDelete.Visible = false;
-            this.navigatorBtnDelete.Click += new System.EventHandler(this._NavigatorBtnDelete_Click);
+            this.navigatorBtnQuickAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.navigatorBtnQuickAdd.Name = "navigatorBtnQuickAdd";
+            this.navigatorBtnQuickAdd.Size = new System.Drawing.Size(99, 28);
+            this.navigatorBtnQuickAdd.Text = "Quick Add Pallet";
+            this.navigatorBtnQuickAdd.Visible = false;
+            this.navigatorBtnQuickAdd.Click += new System.EventHandler(this._NavigatorBtnQuickAdd_Click);
             // 
             // _lblCollectionName
             // 
             this._lblCollectionName.AutoSize = true;
-            this._lblCollectionName.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
-            this._lblCollectionName.Location = new System.Drawing.Point(3, 46);
+            this._lblCollectionName.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this._lblCollectionName.Location = new System.Drawing.Point(3, 35);
             this._lblCollectionName.Name = "_lblCollectionName";
-            this._lblCollectionName.Size = new System.Drawing.Size(134, 19);
+            this._lblCollectionName.Size = new System.Drawing.Size(183, 30);
             this._lblCollectionName.TabIndex = 1;
             this._lblCollectionName.Text = "Collection Name";
             // 

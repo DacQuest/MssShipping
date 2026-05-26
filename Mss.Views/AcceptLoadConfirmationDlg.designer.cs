@@ -38,7 +38,8 @@
             // btnYes
             // 
             this.btnYes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnYes.Location = new System.Drawing.Point(219, 69);
+            this.btnYes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnYes.Location = new System.Drawing.Point(174, 69);
             this.btnYes.Name = "btnYes";
             this.btnYes.Size = new System.Drawing.Size(75, 23);
             this.btnYes.TabIndex = 2;
@@ -50,7 +51,8 @@
             // 
             this.btnNo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnNo.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnNo.Location = new System.Drawing.Point(300, 69);
+            this.btnNo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnNo.Location = new System.Drawing.Point(255, 69);
             this.btnNo.Name = "btnNo";
             this.btnNo.Size = new System.Drawing.Size(75, 23);
             this.btnNo.TabIndex = 3;
@@ -62,10 +64,10 @@
             // 
             this._lblMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._lblMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblMessage.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblMessage.Location = new System.Drawing.Point(67, 11);
             this._lblMessage.Name = "_lblMessage";
-            this._lblMessage.Size = new System.Drawing.Size(308, 48);
+            this._lblMessage.Size = new System.Drawing.Size(263, 48);
             this._lblMessage.TabIndex = 0;
             this._lblMessage.Text = "Are you certain that you want to ACCEPT the Load on Slug X?";
             this._lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -85,7 +87,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnNo;
-            this.ClientSize = new System.Drawing.Size(387, 104);
+            this.ClientSize = new System.Drawing.Size(342, 104);
             this.ControlBox = false;
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this._lblMessage);

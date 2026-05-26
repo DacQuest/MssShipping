@@ -17,6 +17,7 @@ using Mss.Common;
 using Mss.Collections;
 using DacQuest.DFX.Core;
 using System.IO;
+using DacQuest.DFX.Core.MessageBox;
 
 namespace Mss.Views
 {
@@ -29,7 +30,7 @@ namespace Mss.Views
         private SystemSettingsProxy _systemSettingsProxy;
         private SlugProxy _slugAProxy;
         private SlugProxy _slugBProxy;
-        private StorageProxy _storageProxy;
+//         private StorageProxy _storageProxy;
 
 
         public BroadcastView()
@@ -49,24 +50,28 @@ namespace Mss.Views
                 Constant.BroadcastName,
                 Constant.CurrentBroadcastQuery,
                 out _broadcastProxy);
-            _broadcastProxy.DataItemChanged += _BroadcastItemChangedHandler;
-            _broadcastProxy.CollectionRefreshed += _BroadcastRefreshedHandler;
+            _broadcastProxy.DataItemChanged += _Broadcast_DataItemChanged;
+            _broadcastProxy.CollectionRefreshed += _Broadcast_CollectionRefreshed;
 
             XProxyCache.Acquire(Constant.SystemSettingsName, out _systemSettingsProxy);
-            _systemSettingsProxy.DataItemChanged += _SystemSettingsChangedHandler;
+            _systemSettingsProxy.DataItemChanged += _SystemSettings_DataItemChanged;
 
             XProxyCache.Acquire(Constant.SlugAName, out _slugAProxy);
             _slugAProxy.DataItemChanged += _SlugAProxy_DataItemChanged;
+            _slugAProxy.CollectionRefreshed += _SlugAProxy_CollectionRefreshed;
 
             XProxyCache.Acquire(Constant.SlugBName, out _slugBProxy);
             _slugBProxy.DataItemChanged += _SlugBProxy_DataItemChanged;
+            _slugBProxy.CollectionRefreshed += _SlugBProxy_CollectionRefreshed;
 
-            XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
-            _storageProxy.DataItemChanged += _StorageChangedHandler;
+            //             XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
+            //             _storageProxy.DataItemChanged += _Storage_DataItemChanged;
 
             _broadcastGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             _broadcastGrid.ColumnHeadersHeight = 30; // Set to desired height in pixels
-            _broadcastGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10, FontStyle.Bold);
+            _broadcastGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+            _broadcastGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
 
             DataGridViewImageColumn imageColumn;
             DataGridViewTextBoxColumn column;
@@ -114,7 +119,7 @@ namespace Mss.Views
                 HeaderText = "VIN",
                 DataPropertyName = "Vin",
                 Name = "VinColumn",
-                MinimumWidth = 120,
+                MinimumWidth = 140,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
             _ = _broadcastGrid.Columns.Add(column);
@@ -150,7 +155,7 @@ namespace Mss.Views
             _ = _broadcastGrid.Columns.Add(column);
 
 //             _navigatorBtnEdit.Visible = _parameters.AllowEdit;
-//             _navigatorBtnRelease.Visible = _parameters.AllowRelease;
+            _navigatorBtnRelease.Visible = _parameters.AllowRelease;
             _navigatorBtnRecover.Visible = _parameters.AllowRecover;
 
             _UpdateGrid();
@@ -163,40 +168,50 @@ namespace Mss.Views
 
         private void _NavigatorBtnRefreshItem_Click(object sender, EventArgs e)
         {
-            _storageProxy.Refresh();
+//             _storageProxy.Refresh();
             _slugAProxy.Refresh();
+            _slugBProxy.Refresh();
             _systemSettingsProxy.Refresh();
             _broadcastProxy.Refresh();
         }
 
-        private void _SystemSettingsChangedHandler(Object sender, XDataItemChangedEventArgs eventArgs)
-        {
-//            _broadcastProxy.Refresh();
-//            _UpdateGrid();
-        }
-
-        private void _StorageChangedHandler(Object sender, XDataItemChangedEventArgs eventArgs)
-        {
-//            _broadcastProxy.Refresh();
-//            _UpdateGrid();
-        }
-
-        private void _BroadcastItemChangedHandler(Object sender, XDataItemChangedEventArgs eventArgs)
-        {
-            _UpdateGrid();
-        }
-
-        private void _BroadcastRefreshedHandler(Object sender, EventArgs eventArgs)
-        {
-            _UpdateGrid();
-        }
-
-        private void _SlugAProxy_DataItemChanged(Object sender, XDataItemChangedEventArgs eventArgs)
+        private void _SystemSettings_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
         {
             _UpdateReleaseButton();
         }
 
-        private void _SlugBProxy_DataItemChanged(Object sender, XDataItemChangedEventArgs eventArgs)
+//         private void _Storage_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
+//         {
+// //            _broadcastProxy.Refresh();
+// //            _UpdateGrid();
+//         }
+
+        private void _Broadcast_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
+        {
+            _UpdateGrid();
+        }
+
+        private void _Broadcast_CollectionRefreshed(object sender, EventArgs eventArgs)
+        {
+            _UpdateGrid();
+        }
+
+        private void _SlugAProxy_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
+        {
+            _UpdateReleaseButton();
+        }
+
+        private void _SlugAProxy_CollectionRefreshed(object sender, EventArgs eventArgs)
+        {
+            _UpdateReleaseButton();
+        }
+
+        private void _SlugBProxy_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
+        {
+            _UpdateReleaseButton();
+        }
+
+        private void _SlugBProxy_CollectionRefreshed(object sender, EventArgs eventArgs)
         {
             _UpdateReleaseButton();
         }
@@ -208,34 +223,30 @@ namespace Mss.Views
 //                _systemSettingsProxy.LargestBroadcastNumberReceived);
             List<BroadcastItem> broadcastItems = _broadcastProxy.Values;
 
-//             Int32 topAvailableCount = _CalculateShortages(_broadcastItems);
-//             Int32 topAvailableCount = _CalculateShortages(broadcastItems);
+//             int topAvailableCount = broadcastItems.TakeWhile(b => !b.Shortage).Count();
 
-            int topAvailableCount = broadcastItems.TakeWhile(b => !b.Shortage).Count();
-
-            topAvailableCount -= topAvailableCount % 6;
+//             topAvailableCount -= topAvailableCount % 6;
 //            if (topAvailableCount % 2 == 1)
 //            {
 //                topAvailableCount--;
 //            }
 
-            if (topAvailableCount > 0)
-            {
-//                lblTitle.Text = String.Format(
-//                    "Broadcast   ( {0} of {1} broadcasts can be shipped )",
-//                    topAvailableCount,
-//                    _broadcastItems.Count);
-                _lblTitle.Text = String.Format(
-                    "Broadcast   ( {0} of {1} broadcasts can be shipped )",
-                    topAvailableCount,
-                    broadcastItems.Count);
-            }
-            else
-            {
-                _lblTitle.Text = "Broadcast   ( No broadcasts can be shipped )";
-            }
+//             if (topAvailableCount > 0)
+//             {
+// //                lblTitle.Text = String.Format(
+// //                    "Broadcast   ( {0} of {1} broadcasts can be shipped )",
+// //                    topAvailableCount,
+// //                    _broadcastItems.Count);
+//                 _lblTitle.Text = String.Format(
+//                     "Broadcast   ( {0} of {1} broadcasts can be shipped )",
+//                     topAvailableCount,
+//                     broadcastItems.Count);
+//             }
+//             else
+//             {
+//                 _lblTitle.Text = "Broadcast   ( No broadcasts can be shipped )";
+//             }
 
-//            navigatorLblCount.Text = String.Format("Count:  {0}", _broadcastItems.Count);
             _navigatorLblCount.Text = String.Format("Count:  {0}", broadcastItems.Count);
 
 //            _bindingSource.DataSource = _broadcastItems;
@@ -311,21 +322,37 @@ namespace Mss.Views
 
         private void _UpdateReleaseButton()
         {
-//             navigatorBtnRelease.Enabled
-//                 = _parameters.AllowRelease
-//                 && ReleasableBroadcastItemCount >= Constant.BroadcastReleaseMultiplier
-//                 && (_slugAProxy.BroadcastReadyCount >= Constant.BroadcastReleaseMultiplier
-//                     || _slugAProxy.Cleared);
+            SlugProxy targetSlugProxy = null;
+            if  (!_parameters.AllowRelease
+                || !_GetTargetSlugForBroadcastRelease(out targetSlugProxy))
+            {
+                _navigatorBtnRelease.Enabled = false;
+                return;
+            }
+            bool enable = false;
+            int waitingCount = targetSlugProxy.Cleared
+                ? Constant.LoadSize
+                : targetSlugProxy.WaitingCount;
+            int releasableBroadcastItemCount = _broadcastProxy.ReleasableBroadcastItemCount;
+            int[] releasableCounts = Utils.GetReleasableCounts(waitingCount);
+            foreach (int releasableCount in releasableCounts)
+            {
+                if (releasableBroadcastItemCount >=  releasableCount)
+                {
+                    enable = true;
+                    break;
+                }
+            }
+            _navigatorBtnRelease.Enabled = enable;
+
         }
 
         private void _UpdateRecoverButton()
         {
-            _navigatorBtnRecover.Enabled
-                = _parameters.AllowRecover
-//                    && _broadcastItems
-                    && _broadcastProxy.Values
-                        .Where(bi => bi.Status == BroadcastStatus.Shipped)
-                        .Count() > 0;
+            _navigatorBtnRecover.Enabled = _parameters.AllowRecover
+                && _broadcastProxy
+                    .Values
+                    .Count(bi => bi.Status == BroadcastStatus.Shipped) > 0;
         }
 
         private void _NavigatorBtnEdit_Click(object sender, EventArgs e)
@@ -345,138 +372,149 @@ namespace Mss.Views
 
         private void _DoRelease()
         {
-//             int releasableCount = ReleasableBroadcastItemCount;
-//             int broadcastReadyCount;
-//             if (_slugAProxy.Cleared)
-//             {
-//                 broadcastReadyCount = Constant.LoadSize;
-//             }
-//             else
-//             {
-//                 broadcastReadyCount = _slugAProxy.BroadcastReadyCount;
-//             }
-// 
-//             if (broadcastReadyCount < releasableCount)
-//             {
-//                 releasableCount = broadcastReadyCount;
-//             }
-// 
-//             if (releasableCount <= 0)
-//             {
-//                 return;
-//             }
-// 
-//             DefineReleaseSizeDlg dialog = new DefineReleaseSizeDlg(releasableCount);
-//             if (dialog.ShowDialog(this) == DialogResult.OK)
-//             {
-//                 ParentForm.Cursor = Cursors.WaitCursor;
-//                 ReleaseBroadcastMessageData responseMessageData;
-//                 try
-//                 {
-//                     ReleaseBroadcastMessageData messageData
-//                         = new ReleaseBroadcastMessageData(
-//                             dialog.ReleaseSize,
-//                             XSystemEvent.Create(
-//                                 "BroadcastView",
-//                                 XSystemEventLevel.Manual,
-//                                 String.Format(
-//                                     "{0} Broadcast Items released to Current Load.",
-//                                     dialog.ReleaseSize)));
-//                     if (!XMessaging.SyncPublish(
-//                         out responseMessageData,
-//                         Constant.BroadcastReleaseTimeoutMilliseconds,
-//                         ReleaseBroadcastMessageData.ReleaseBroadcastMessageTopic,
-//                         messageData,
-//                         XMessageScopes.All,
-//                         this))
+            if (!_GetTargetSlugForBroadcastRelease(out SlugProxy targetSlugProxy))
+            {
+                _navigatorBtnRelease.Enabled = false;
+                return;
+            }
+            int releasableBroadcastCount = ReleasableBroadcastItemCount;
+
+            if (releasableBroadcastCount <= 0)
+            {
+                _navigatorBtnRelease.Enabled = false;
+                return;
+            }
+
+            int waitingCount = targetSlugProxy.WaitingCount;
+            int[] releasableCounts = Utils.GetReleasableCounts(waitingCount);
+            List<int> filteredReleasableCounts = new List<int>();
+            for (int index =  0; index < releasableCounts.Length; index++)
+            {
+                if (releasableCounts[index] <= releasableBroadcastCount)
+                {
+                    filteredReleasableCounts.Add(releasableCounts[index]);
+                }
+            }
+            if (filteredReleasableCounts.Count == 0)
+            {
+                _navigatorBtnRelease.Enabled = false;
+                return;
+            }
+
+            using (SelectBroadcastReleaseCountForm form = new SelectBroadcastReleaseCountForm(
+                targetSlugProxy.SlugLetter,
+                filteredReleasableCounts,
+                releasableBroadcastCount))
+            {
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    ParentForm.Cursor = Cursors.WaitCursor;
+                    ReleaseBroadcastMessageData responseMessageData;
+                    try
+                    {
+                        int countToRelease = form.CountToRelease;
+                        ReleaseBroadcastMessageData messageData
+                            = new ReleaseBroadcastMessageData(
+                                targetSlugProxy.SlugLetter,
+                                countToRelease,
+                                XSystemEvent.Create(
+                                    nameof(BroadcastView),
+                                    XSystemEventLevel.Manual,
+                                    $"{countToRelease} Broadcast Items released to Slug {targetSlugProxy.SlugLetter}."));
+                        if (!XMessaging.SyncPublish(
+                            out responseMessageData,
+                            ReleaseBroadcastMessageData.BroadcastReleaseTimeoutMilliseconds,
+                            ReleaseBroadcastMessageData.ReleaseBroadcastMessageTopicName,
+                            messageData,
+                            XMessageScopes.All,
+                            this))
+                        {
+                            string message = $"Request to release {countToRelease} Broadcast Items to Slug {targetSlugProxy.SlugLetter} has timed out. The operation may still have completed correctly.";
+                            XSystemEvent.Publish(
+                                nameof(BroadcastView),
+                                XSystemEventLevel.Error,
+                                message);
+                            _ = XMessageBox.Show(
+                                this,
+                                message,
+                                "Error",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                    finally
+                    {
+                        ParentForm.Cursor = Cursors.Default;
+                    }
+                    if (!responseMessageData.Error.IsNullOrWhiteSpace())
+                    {
+                        _ = XMessageBox.Show(
+                            this,
+                            responseMessageData.Error,
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+//                     else
 //                     {
-//                         string message = string.Format(
-//                             "Request to release {0} Broadcast Items to the Current Load has timed out. The operation may still have completed correctly.",
-//                             dialog.ReleaseSize);
-//                         XSystemEvent.Publish(
-//                             "BroadcastView",
-//                             XSystemEventLevel.Error,
-//                             message);
-//                         MessageBox.Show(
-//                             this,
-//                             message,
-//                             "Error",
-//                             MessageBoxButtons.OK,
-//                             MessageBoxIcon.Error);
-//                         return;
+//                         if (_parameters.CloseAfterRelease)
+//                         {
+//                             CloseView();
+//                         }
 //                     }
-//                 }
-//                 finally
-//                 {
-//                     ParentForm.Cursor = Cursors.Default;
-//                 }
-//                 if (!String.IsNullOrWhiteSpace(responseMessageData.ErrorMessage))
-//                 {
-//                     MessageBox.Show(
-//                         this,
-//                         responseMessageData.ErrorMessage,
-//                         "Error",
-//                         MessageBoxButtons.OK,
-//                         MessageBoxIcon.Error);
-//                 }
-//                 else
-//                 {
-//                     if (_parameters.CloseAfterRelease)
-//                     {
-//                         CloseView();
-//                     }
-//                 }
-//             }
+                }
+            }
         }
 
 
         private void _DoRecover()
         {
-//             ParentForm.Cursor = Cursors.WaitCursor;
-//             RecoverShippedBroadcastItemsMessageData responseMessageData;
-//             try
-//             {
-//                 RecoverShippedBroadcastItemsMessageData messageData
-//                         = new RecoverShippedBroadcastItemsMessageData(
-//                             XSystemEvent.Create(
-//                                 "BroadcastView",
-//                                 XSystemEventLevel.Manual,
-//                                 "Recovered eligible Broadcast Items."));
-//                 if (!XMessaging.SyncPublish(
-//                     out responseMessageData,
-//                     Constant.BroadcastReleaseTimeoutMilliseconds,
-//                     RecoverShippedBroadcastItemsMessageData.RecoverShippedBroadcastItemsMessageTopic,
-//                     messageData,
-//                     XMessageScopes.All,
-//                     this))
-//                 {
-//                     string message = "Request to recover Broadcast Items has timed out. The operation may still have completed correctly.";
-//                     XSystemEvent.Publish(
-//                         "BroadcastView",
-//                         XSystemEventLevel.Error,
-//                         message);
-//                     MessageBox.Show(
-//                         this,
-//                         message,
-//                         "Error",
-//                         MessageBoxButtons.OK,
-//                         MessageBoxIcon.Error);
-//                     return;
-//                 }
-//             }
-//             finally
-//             {
-//                 ParentForm.Cursor = Cursors.Default;
-//             }
-//             if (responseMessageData.ErrorMessage != null)
-//             {
-//                 MessageBox.Show(
-//                     this,
-//                     responseMessageData.ErrorMessage,
-//                     "Error",
-//                     MessageBoxButtons.OK,
-//                     MessageBoxIcon.Error);
-//             }
+            ParentForm.Cursor = Cursors.WaitCursor;
+            RecoverBroadcastMessageData responseMessageData;
+            try
+            {
+                RecoverBroadcastMessageData messageData
+                        = new RecoverBroadcastMessageData(
+                            XSystemEvent.Create(
+                                nameof(BroadcastView),
+                                XSystemEventLevel.Manual,
+                                "Recovered eligible Broadcast Items."));
+                if (!XMessaging.SyncPublish(
+                    out responseMessageData,
+                    RecoverBroadcastMessageData.RecoverBroadcastTimeoutMilliseconds,
+                    RecoverBroadcastMessageData.RecoverBroadcastMessageTopicName,
+                    messageData,
+                    XMessageScopes.All,
+                    this))
+                {
+                    string message = "Request to recover Broadcast Items has timed out. The operation may still have completed correctly.";
+                    XSystemEvent.Publish(
+                        nameof(BroadcastView),
+                        XSystemEventLevel.Error,
+                        message);
+                    _ = XMessageBox.Show(
+                        this,
+                        message,
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            finally
+            {
+                ParentForm.Cursor = Cursors.Default;
+            }
+            if (responseMessageData.ErrorMessage != null)
+            {
+                _ = XMessageBox.Show(
+                    this,
+                    responseMessageData.ErrorMessage,
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         public int ReleasableBroadcastItemCount
@@ -484,7 +522,6 @@ namespace Mss.Views
             get
             {
                 int count = 0;
-//                foreach (var item in _broadcastItems)
                 foreach (var item in _broadcastProxy.Values)
                 {
                     BroadcastStatus status = item.Status;
@@ -501,6 +538,53 @@ namespace Mss.Views
             }
         }
 
+        private bool _GetTargetSlugForBroadcastRelease(out SlugProxy targetSlugProxy)
+        {
+            targetSlugProxy = null;
+            bool slugAEnabled = _systemSettingsProxy.SlugAEnabled;
+            bool slugBEnabled = _systemSettingsProxy.SlugBEnabled;
+
+            if (!slugAEnabled && !slugBEnabled)
+            {
+                return false;
+            }
+
+            bool slugAEmpty = _slugAProxy.Cleared && slugAEnabled;
+            bool slugBEmtpy = _slugBProxy.Cleared && slugBEnabled;
+
+            if (_slugAProxy.HasOpenLoad)
+            {
+                if (!_systemSettingsProxy.SlugAEnabled)
+                {
+                    return false;
+                }
+                targetSlugProxy = _slugAProxy;
+            }
+            else if (_slugBProxy.HasOpenLoad)
+            {
+                if (!_systemSettingsProxy.SlugBEnabled)
+                {
+                    return false;
+                }
+                targetSlugProxy = _slugBProxy;
+            }
+            else if (slugAEmpty && slugBEmtpy)
+            {
+                targetSlugProxy = _systemSettingsProxy.PreferredSlug == SlugLetter.A
+                    ? _slugAProxy
+                    : _slugBProxy;
+            }
+            else if (slugAEmpty)
+            {
+                targetSlugProxy = _slugAProxy;
+            }
+            else if (slugBEmtpy)
+            {
+                targetSlugProxy = _slugBProxy;
+            }
+            return targetSlugProxy != null;
+        }
+
         //protected override void AutoSubscribe()
         //{
         //}
@@ -514,14 +598,14 @@ namespace Mss.Views
 
             if (_systemSettingsProxy != null)
             {
-                _systemSettingsProxy.DataItemChanged -= _SystemSettingsChangedHandler;
+                _systemSettingsProxy.DataItemChanged -= _SystemSettings_DataItemChanged;
                 XProxyCache.Release(_systemSettingsProxy);
                 _systemSettingsProxy = null;
             }
             if (_broadcastProxy != null)
             {
-                _broadcastProxy.DataItemChanged -= _BroadcastItemChangedHandler;
-                _broadcastProxy.CollectionRefreshed -= _BroadcastRefreshedHandler;
+                _broadcastProxy.DataItemChanged -= _Broadcast_DataItemChanged;
+                _broadcastProxy.CollectionRefreshed -= _Broadcast_CollectionRefreshed;
                 XProxyCache.Release(_broadcastProxy);
                 _broadcastProxy = null;
             }
@@ -531,12 +615,18 @@ namespace Mss.Views
                 XProxyCache.Release(_slugAProxy);
                 _slugAProxy = null;
             }
-            if (_storageProxy != null)
+            if (_slugBProxy != null)
             {
-                _storageProxy.DataItemChanged -= _StorageChangedHandler;
-                XProxyCache.Release(_storageProxy);
-                _storageProxy = null;
+                _slugBProxy.DataItemChanged -= _SlugBProxy_DataItemChanged;
+                XProxyCache.Release(_slugBProxy);
+                _slugBProxy = null;
             }
+//             if (_storageProxy != null)
+//             {
+//                 _storageProxy.DataItemChanged -= _Storage_DataItemChanged;
+//                 XProxyCache.Release(_storageProxy);
+//                 _storageProxy = null;
+//             }
             return true;
         }
 

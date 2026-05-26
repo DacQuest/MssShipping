@@ -9,16 +9,17 @@ using System.Threading.Tasks;
 namespace Mss.Common
 {
     [Serializable]
-    public class RecoverShippedBroadcastMessageData : XMessageData
+    public class RecoverBroadcastMessageData : XMessageData
     {
-        public static readonly string RecoverShippedBroadcastMessageTopicName = "RecoverShippedBroadcastMessageTopic";
+        public static readonly string RecoverBroadcastMessageTopicName = "RecoverBroadcastMessageTopic";
+        public static readonly int RecoverBroadcastTimeoutMilliseconds = 20000;
 
-        public RecoverShippedBroadcastMessageData(string errorMessage)
+        public RecoverBroadcastMessageData(string errorMessage)
         {
             ErrorMessage = errorMessage;
         }
 
-        public RecoverShippedBroadcastMessageData(XSystemEvent systemEvent)
+        public RecoverBroadcastMessageData(XSystemEvent systemEvent)
         {
             SystemEvent = systemEvent;
         }

@@ -48,7 +48,7 @@
             // 
             this._btnAccept.BackColor = System.Drawing.SystemColors.Control;
             this._btnAccept.Enabled = false;
-            this._btnAccept.Font = new System.Drawing.Font("Arial", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnAccept.Font = new System.Drawing.Font("Segoe UI", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._btnAccept.Location = new System.Drawing.Point(151, 638);
             this._btnAccept.Name = "_btnAccept";
             this._btnAccept.Size = new System.Drawing.Size(253, 107);
@@ -83,7 +83,7 @@
             // 
             this._btnReject.BackColor = System.Drawing.SystemColors.Control;
             this._btnReject.Enabled = false;
-            this._btnReject.Font = new System.Drawing.Font("Arial", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnReject.Font = new System.Drawing.Font("Segoe UI", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._btnReject.Location = new System.Drawing.Point(1022, 638);
             this._btnReject.Name = "_btnReject";
             this._btnReject.Size = new System.Drawing.Size(253, 107);
@@ -94,30 +94,30 @@
             // 
             // label1
             // 
-            this.label1.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(577, 575);
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(577, 566);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(114, 23);
+            this.label1.Size = new System.Drawing.Size(114, 32);
             this.label1.TabIndex = 3;
             this.label1.Text = "Pallet ID";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label2
             // 
-            this.label2.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(577, 686);
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(577, 675);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(114, 23);
+            this.label2.Size = new System.Drawing.Size(114, 34);
             this.label2.TabIndex = 5;
             this.label2.Text = "SKU";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label3
             // 
-            this.label3.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(577, 762);
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(577, 752);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(114, 23);
+            this.label3.Size = new System.Drawing.Size(114, 33);
             this.label3.TabIndex = 7;
             this.label3.Text = "Job ID";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -126,7 +126,7 @@
             // 
             this._lblPalletID.BackColor = System.Drawing.SystemColors.Window;
             this._lblPalletID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblPalletID.Font = new System.Drawing.Font("Arial", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblPalletID.Font = new System.Drawing.Font("Segoe UI", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblPalletID.Location = new System.Drawing.Point(581, 598);
             this._lblPalletID.Name = "_lblPalletID";
             this._lblPalletID.Size = new System.Drawing.Size(253, 77);
@@ -137,7 +137,7 @@
             // 
             this._lblSku.BackColor = System.Drawing.SystemColors.Window;
             this._lblSku.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblSku.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblSku.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblSku.Location = new System.Drawing.Point(581, 709);
             this._lblSku.Name = "_lblSku";
             this._lblSku.Size = new System.Drawing.Size(253, 43);
@@ -148,7 +148,7 @@
             // 
             this._lblJobID.BackColor = System.Drawing.SystemColors.Window;
             this._lblJobID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblJobID.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblJobID.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblJobID.Location = new System.Drawing.Point(581, 785);
             this._lblJobID.Name = "_lblJobID";
             this._lblJobID.Size = new System.Drawing.Size(253, 43);
@@ -159,10 +159,10 @@
             // 
             this._lblState.BackColor = System.Drawing.SystemColors.Window;
             this._lblState.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._lblState.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._lblState.Font = new System.Drawing.Font("Segoe UI", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._lblState.Location = new System.Drawing.Point(12, 39);
             this._lblState.Name = "_lblState";
-            this._lblState.Size = new System.Drawing.Size(1412, 45);
+            this._lblState.Size = new System.Drawing.Size(1607, 62);
             this._lblState.TabIndex = 1;
             this._lblState.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 

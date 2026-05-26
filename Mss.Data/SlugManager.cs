@@ -43,10 +43,10 @@ namespace Mss.Data
             try
             {
                 targetSlug = null;
-                bool slugAReady = _slugA.IsInvalid && systemSettingsItem.SlugAEnabled;
-                bool slugBReady = _slugB.IsInvalid && systemSettingsItem.SlugBEnabled;
+                bool slugAReady = _slugA.Cleared && systemSettingsItem.SlugAEnabled;
+                bool slugBReady = _slugB.Cleared && systemSettingsItem.SlugBEnabled;
 
-                if (_slugA.IsOpen)
+                if (_slugA.HasOpenLoad)
                 {
                     if (!systemSettingsItem.SlugAEnabled)
                     {
@@ -54,7 +54,7 @@ namespace Mss.Data
                     }
                     targetSlug = _slugA;
                 }
-                else if (_slugB.IsOpen)
+                else if (_slugB.HasOpenLoad)
                 {
                     if (!systemSettingsItem.SlugBEnabled)
                     {

@@ -28,28 +28,169 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SlugsView));
+            this._lblLoadBNumber = new System.Windows.Forms.Label();
+            this._lblLoadANumber = new System.Windows.Forms.Label();
+            this._slugBGridLower = new Mss.Views.SlugGrid();
+            this.label1 = new System.Windows.Forms.Label();
+            this._btnAbortLoadB = new System.Windows.Forms.Button();
+            this._btnAbortLoadA = new System.Windows.Forms.Button();
+            this._btnAcceptLoadB = new System.Windows.Forms.Button();
+            this._btnAcceptLoadA = new System.Windows.Forms.Button();
+            this._lblSlugBName = new System.Windows.Forms.Label();
+            this._lblSlugAName = new System.Windows.Forms.Label();
+            this._slugAGridUpper = new Mss.Views.SlugGrid();
             this.navigator = new System.Windows.Forms.ToolStrip();
             this.navigatorLegend = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._navigatorBtnRefreshItem = new System.Windows.Forms.ToolStripButton();
             this._navigatorSepReleaseNewLoad = new System.Windows.Forms.ToolStripSeparator();
             this._navigatorBtnReleaseBroadcast = new System.Windows.Forms.ToolStripButton();
-            this._lblSlugAName = new System.Windows.Forms.Label();
-            this._lblSlugBName = new System.Windows.Forms.Label();
-            this._btnAcceptLoadA = new System.Windows.Forms.Button();
-            this._btnAbortLoadA = new System.Windows.Forms.Button();
-            this._btnAcceptLoadB = new System.Windows.Forms.Button();
-            this._btnAbortLoadB = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this._lblLoadANumber = new System.Windows.Forms.Label();
-            this._lblLoadBNumber = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this._slugAGridUpper = new Mss.Views.SlugGrid();
             this._slugAGridLower = new Mss.Views.SlugGrid();
-            this._slugBGridLower = new Mss.Views.SlugGrid();
             this._slugBGridUpper = new Mss.Views.SlugGrid();
+            this.label3 = new System.Windows.Forms.Label();
+            this._btnCloseReopenLoadA = new System.Windows.Forms.Button();
+            this._btnCloseReopenLoadB = new System.Windows.Forms.Button();
             this.navigator.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // _lblLoadBNumber
+            // 
+            this._lblLoadBNumber.AutoSize = true;
+            this._lblLoadBNumber.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this._lblLoadBNumber.Location = new System.Drawing.Point(1112, 50);
+            this._lblLoadBNumber.Name = "_lblLoadBNumber";
+            this._lblLoadBNumber.Size = new System.Drawing.Size(26, 30);
+            this._lblLoadBNumber.TabIndex = 10;
+            this._lblLoadBNumber.Text = "0";
+            // 
+            // _lblLoadANumber
+            // 
+            this._lblLoadANumber.AutoSize = true;
+            this._lblLoadANumber.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this._lblLoadANumber.Location = new System.Drawing.Point(300, 50);
+            this._lblLoadANumber.Name = "_lblLoadANumber";
+            this._lblLoadANumber.Size = new System.Drawing.Size(26, 30);
+            this._lblLoadANumber.TabIndex = 8;
+            this._lblLoadANumber.Text = "0";
+            // 
+            // _slugBGridLower
+            // 
+            this._slugBGridLower.EnableSort = true;
+            this._slugBGridLower.Location = new System.Drawing.Point(822, 495);
+            this._slugBGridLower.Name = "_slugBGridLower";
+            this._slugBGridLower.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
+            this._slugBGridLower.SelectionMode = SourceGrid.GridSelectionMode.Cell;
+            this._slugBGridLower.Size = new System.Drawing.Size(797, 406);
+            this._slugBGridLower.TabIndex = 2;
+            this._slugBGridLower.TabStop = true;
+            this._slugBGridLower.ToolTipText = "";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.label1.Location = new System.Drawing.Point(957, 50);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(161, 30);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Load Number:";
+            // 
+            // _btnAbortLoadB
+            // 
+            this._btnAbortLoadB.Enabled = false;
+            this._btnAbortLoadB.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._btnAbortLoadB.Image = global::Mss.Views.Properties.Resources.RedWhiteProhibited24;
+            this._btnAbortLoadB.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._btnAbortLoadB.Location = new System.Drawing.Point(1247, 47);
+            this._btnAbortLoadB.Name = "_btnAbortLoadB";
+            this._btnAbortLoadB.Size = new System.Drawing.Size(120, 30);
+            this._btnAbortLoadB.TabIndex = 6;
+            this._btnAbortLoadB.Text = "Abort Load B ";
+            this._btnAbortLoadB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._btnAbortLoadB.UseVisualStyleBackColor = true;
+            this._btnAbortLoadB.Visible = false;
+            this._btnAbortLoadB.Click += new System.EventHandler(this._BtnAbortLoadB_Click);
+            // 
+            // _btnAbortLoadA
+            // 
+            this._btnAbortLoadA.Enabled = false;
+            this._btnAbortLoadA.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnAbortLoadA.Image = global::Mss.Views.Properties.Resources.RedWhiteProhibited24;
+            this._btnAbortLoadA.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._btnAbortLoadA.Location = new System.Drawing.Point(435, 47);
+            this._btnAbortLoadA.Name = "_btnAbortLoadA";
+            this._btnAbortLoadA.Size = new System.Drawing.Size(120, 30);
+            this._btnAbortLoadA.TabIndex = 6;
+            this._btnAbortLoadA.Text = "Abort Load A ";
+            this._btnAbortLoadA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._btnAbortLoadA.UseVisualStyleBackColor = true;
+            this._btnAbortLoadA.Visible = false;
+            this._btnAbortLoadA.Click += new System.EventHandler(this._BtnAbortLoadA_Click);
+            // 
+            // _btnAcceptLoadB
+            // 
+            this._btnAcceptLoadB.Enabled = false;
+            this._btnAcceptLoadB.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this._btnAcceptLoadB.Image = global::Mss.Views.Properties.Resources.GreenCheckFancy24;
+            this._btnAcceptLoadB.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._btnAcceptLoadB.Location = new System.Drawing.Point(1499, 47);
+            this._btnAcceptLoadB.Name = "_btnAcceptLoadB";
+            this._btnAcceptLoadB.Size = new System.Drawing.Size(120, 30);
+            this._btnAcceptLoadB.TabIndex = 5;
+            this._btnAcceptLoadB.Text = "Accept Load B";
+            this._btnAcceptLoadB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._btnAcceptLoadB.UseVisualStyleBackColor = true;
+            this._btnAcceptLoadB.Visible = false;
+            this._btnAcceptLoadB.Click += new System.EventHandler(this._BtnAcceptLoadB_Click);
+            // 
+            // _btnAcceptLoadA
+            // 
+            this._btnAcceptLoadA.Enabled = false;
+            this._btnAcceptLoadA.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnAcceptLoadA.Image = global::Mss.Views.Properties.Resources.GreenCheckFancy24;
+            this._btnAcceptLoadA.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._btnAcceptLoadA.Location = new System.Drawing.Point(687, 47);
+            this._btnAcceptLoadA.Name = "_btnAcceptLoadA";
+            this._btnAcceptLoadA.Size = new System.Drawing.Size(120, 30);
+            this._btnAcceptLoadA.TabIndex = 5;
+            this._btnAcceptLoadA.Text = "Accept Load A";
+            this._btnAcceptLoadA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._btnAcceptLoadA.UseVisualStyleBackColor = true;
+            this._btnAcceptLoadA.Visible = false;
+            this._btnAcceptLoadA.Click += new System.EventHandler(this._BtnAcceptLoadA_Click);
+            // 
+            // _lblSlugBName
+            // 
+            this._lblSlugBName.AutoSize = true;
+            this._lblSlugBName.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this._lblSlugBName.Location = new System.Drawing.Point(817, 50);
+            this._lblSlugBName.Name = "_lblSlugBName";
+            this._lblSlugBName.Size = new System.Drawing.Size(78, 30);
+            this._lblSlugBName.TabIndex = 4;
+            this._lblSlugBName.Text = "Slug B";
+            // 
+            // _lblSlugAName
+            // 
+            this._lblSlugAName.AutoSize = true;
+            this._lblSlugAName.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this._lblSlugAName.Location = new System.Drawing.Point(5, 50);
+            this._lblSlugAName.Name = "_lblSlugAName";
+            this._lblSlugAName.Size = new System.Drawing.Size(79, 30);
+            this._lblSlugAName.TabIndex = 3;
+            this._lblSlugAName.Text = "Slug A";
+            // 
+            // _slugAGridUpper
+            // 
+            this._slugAGridUpper.EnableSort = true;
+            this._slugAGridUpper.Location = new System.Drawing.Point(10, 83);
+            this._slugAGridUpper.Name = "_slugAGridUpper";
+            this._slugAGridUpper.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
+            this._slugAGridUpper.SelectionMode = SourceGrid.GridSelectionMode.Cell;
+            this._slugAGridUpper.Size = new System.Drawing.Size(797, 406);
+            this._slugAGridUpper.TabIndex = 1;
+            this._slugAGridUpper.TabStop = true;
+            this._slugAGridUpper.ToolTipText = "";
             // 
             // navigator
             // 
@@ -71,30 +212,26 @@
             // navigatorLegend
             // 
             this.navigatorLegend.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.navigatorLegend.DropDownWidth = 150;
-            this.navigatorLegend.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.navigatorLegend.DropDownWidth = 160;
+            this.navigatorLegend.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.navigatorLegend.IntegralHeight = false;
             this.navigatorLegend.Items.AddRange(new object[] {
             "Status Legend",
             "Invalid",
+            "Waiting",
             "Pending",
             "Pickable",
-            "QC Reserved",
             "Picking",
             "Picked",
-            "Presequencing 1",
-            "Presequencing 2",
             "Presequenced",
-            "Staged",
-            "Kitting",
-            "Kitted",
             "Sequenced",
+            "Transferring",
             "Done",
             "Loadable"});
             this.navigatorLegend.MaxDropDownItems = 16;
             this.navigatorLegend.Name = "navigatorLegend";
             this.navigatorLegend.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.navigatorLegend.Size = new System.Drawing.Size(150, 31);
+            this.navigatorLegend.Size = new System.Drawing.Size(160, 31);
             // 
             // toolStripSeparator1
             // 
@@ -103,7 +240,7 @@
             // 
             // _navigatorBtnRefreshItem
             // 
-            this._navigatorBtnRefreshItem.Image = global::Mss.Views.Properties.Resources.GreenRefresh24;
+            this._navigatorBtnRefreshItem.Image = ((System.Drawing.Image)(resources.GetObject("_navigatorBtnRefreshItem.Image")));
             this._navigatorBtnRefreshItem.Name = "_navigatorBtnRefreshItem";
             this._navigatorBtnRefreshItem.Size = new System.Drawing.Size(74, 28);
             this._navigatorBtnRefreshItem.Text = "Refresh";
@@ -118,146 +255,14 @@
             // 
             // _navigatorBtnReleaseBroadcast
             // 
+            this._navigatorBtnReleaseBroadcast.Font = new System.Drawing.Font("Segoe UI", 9F);
             this._navigatorBtnReleaseBroadcast.Image = global::Mss.Views.Properties.Resources.PurpleRelease24;
             this._navigatorBtnReleaseBroadcast.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._navigatorBtnReleaseBroadcast.Name = "_navigatorBtnReleaseBroadcast";
             this._navigatorBtnReleaseBroadcast.Size = new System.Drawing.Size(129, 28);
             this._navigatorBtnReleaseBroadcast.Text = "Release Broadcast";
+            this._navigatorBtnReleaseBroadcast.Visible = false;
             this._navigatorBtnReleaseBroadcast.Click += new System.EventHandler(this._NavigatorBtnReleaseBroadcast_Click);
-            // 
-            // _lblSlugAName
-            // 
-            this._lblSlugAName.AutoSize = true;
-            this._lblSlugAName.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblSlugAName.Location = new System.Drawing.Point(6, 53);
-            this._lblSlugAName.Name = "_lblSlugAName";
-            this._lblSlugAName.Size = new System.Drawing.Size(118, 24);
-            this._lblSlugAName.TabIndex = 3;
-            this._lblSlugAName.Text = "Slug Name";
-            // 
-            // _lblSlugBName
-            // 
-            this._lblSlugBName.AutoSize = true;
-            this._lblSlugBName.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblSlugBName.Location = new System.Drawing.Point(818, 53);
-            this._lblSlugBName.Name = "_lblSlugBName";
-            this._lblSlugBName.Size = new System.Drawing.Size(118, 24);
-            this._lblSlugBName.TabIndex = 4;
-            this._lblSlugBName.Text = "Slug Name";
-            // 
-            // _btnAcceptLoadA
-            // 
-            this._btnAcceptLoadA.Enabled = false;
-            this._btnAcceptLoadA.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnAcceptLoadA.Image = global::Mss.Views.Properties.Resources.GreenCheckFancy24;
-            this._btnAcceptLoadA.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._btnAcceptLoadA.Location = new System.Drawing.Point(690, 47);
-            this._btnAcceptLoadA.Name = "_btnAcceptLoadA";
-            this._btnAcceptLoadA.Size = new System.Drawing.Size(117, 30);
-            this._btnAcceptLoadA.TabIndex = 5;
-            this._btnAcceptLoadA.Text = "Accept Load A";
-            this._btnAcceptLoadA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this._btnAcceptLoadA.UseVisualStyleBackColor = true;
-            this._btnAcceptLoadA.Visible = false;
-            this._btnAcceptLoadA.Click += new System.EventHandler(this._BtnAcceptLoadA_Click);
-            // 
-            // _btnAbortLoadA
-            // 
-            this._btnAbortLoadA.Enabled = false;
-            this._btnAbortLoadA.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnAbortLoadA.Image = global::Mss.Views.Properties.Resources.RedWhiteProhibited24;
-            this._btnAbortLoadA.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._btnAbortLoadA.Location = new System.Drawing.Point(567, 47);
-            this._btnAbortLoadA.Name = "_btnAbortLoadA";
-            this._btnAbortLoadA.Size = new System.Drawing.Size(117, 30);
-            this._btnAbortLoadA.TabIndex = 6;
-            this._btnAbortLoadA.Text = "Abort Load A ";
-            this._btnAbortLoadA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this._btnAbortLoadA.UseVisualStyleBackColor = true;
-            this._btnAbortLoadA.Visible = false;
-            this._btnAbortLoadA.Click += new System.EventHandler(this._BtnAbortLoadA_Click);
-            // 
-            // _btnAcceptLoadB
-            // 
-            this._btnAcceptLoadB.Enabled = false;
-            this._btnAcceptLoadB.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnAcceptLoadB.Image = global::Mss.Views.Properties.Resources.GreenCheckFancy24;
-            this._btnAcceptLoadB.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._btnAcceptLoadB.Location = new System.Drawing.Point(1502, 47);
-            this._btnAcceptLoadB.Name = "_btnAcceptLoadB";
-            this._btnAcceptLoadB.Size = new System.Drawing.Size(117, 30);
-            this._btnAcceptLoadB.TabIndex = 5;
-            this._btnAcceptLoadB.Text = "Accept Load B";
-            this._btnAcceptLoadB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this._btnAcceptLoadB.UseVisualStyleBackColor = true;
-            this._btnAcceptLoadB.Visible = false;
-            this._btnAcceptLoadB.Click += new System.EventHandler(this._BtnAcceptLoadB_Click);
-            // 
-            // _btnAbortLoadB
-            // 
-            this._btnAbortLoadB.Enabled = false;
-            this._btnAbortLoadB.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._btnAbortLoadB.Image = global::Mss.Views.Properties.Resources.RedWhiteProhibited24;
-            this._btnAbortLoadB.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this._btnAbortLoadB.Location = new System.Drawing.Point(1379, 47);
-            this._btnAbortLoadB.Name = "_btnAbortLoadB";
-            this._btnAbortLoadB.Size = new System.Drawing.Size(117, 30);
-            this._btnAbortLoadB.TabIndex = 6;
-            this._btnAbortLoadB.Text = "Abort Load B ";
-            this._btnAbortLoadB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this._btnAbortLoadB.UseVisualStyleBackColor = true;
-            this._btnAbortLoadB.Visible = false;
-            this._btnAbortLoadB.Click += new System.EventHandler(this._BtnAbortLoadB_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(1047, 57);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(107, 18);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "Load Number:";
-            // 
-            // _lblLoadANumber
-            // 
-            this._lblLoadANumber.AutoSize = true;
-            this._lblLoadANumber.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblLoadANumber.Location = new System.Drawing.Point(333, 56);
-            this._lblLoadANumber.Name = "_lblLoadANumber";
-            this._lblLoadANumber.Size = new System.Drawing.Size(0, 19);
-            this._lblLoadANumber.TabIndex = 8;
-            // 
-            // _lblLoadBNumber
-            // 
-            this._lblLoadBNumber.AutoSize = true;
-            this._lblLoadBNumber.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._lblLoadBNumber.Location = new System.Drawing.Point(1160, 56);
-            this._lblLoadBNumber.Name = "_lblLoadBNumber";
-            this._lblLoadBNumber.Size = new System.Drawing.Size(0, 19);
-            this._lblLoadBNumber.TabIndex = 10;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(216, 57);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(111, 18);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "Load Number :";
-            // 
-            // _slugAGridUpper
-            // 
-            this._slugAGridUpper.EnableSort = true;
-            this._slugAGridUpper.Location = new System.Drawing.Point(10, 83);
-            this._slugAGridUpper.Name = "_slugAGridUpper";
-            this._slugAGridUpper.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
-            this._slugAGridUpper.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this._slugAGridUpper.Size = new System.Drawing.Size(797, 406);
-            this._slugAGridUpper.TabIndex = 1;
-            this._slugAGridUpper.TabStop = true;
-            this._slugAGridUpper.ToolTipText = "";
             // 
             // _slugAGridLower
             // 
@@ -271,18 +276,6 @@
             this._slugAGridLower.TabStop = true;
             this._slugAGridLower.ToolTipText = "";
             // 
-            // _slugBGridLower
-            // 
-            this._slugBGridLower.EnableSort = true;
-            this._slugBGridLower.Location = new System.Drawing.Point(822, 495);
-            this._slugBGridLower.Name = "_slugBGridLower";
-            this._slugBGridLower.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
-            this._slugBGridLower.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this._slugBGridLower.Size = new System.Drawing.Size(797, 406);
-            this._slugBGridLower.TabIndex = 2;
-            this._slugBGridLower.TabStop = true;
-            this._slugBGridLower.ToolTipText = "";
-            // 
             // _slugBGridUpper
             // 
             this._slugBGridUpper.EnableSort = true;
@@ -295,6 +288,48 @@
             this._slugBGridUpper.TabStop = true;
             this._slugBGridUpper.ToolTipText = "";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.label3.Location = new System.Drawing.Point(145, 50);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(161, 30);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "Load Number:";
+            // 
+            // _btnCloseReopenLoadA
+            // 
+            this._btnCloseReopenLoadA.Enabled = false;
+            this._btnCloseReopenLoadA.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnCloseReopenLoadA.Image = global::Mss.Views.Properties.Resources.RedMinus24; 
+            this._btnCloseReopenLoadA.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._btnCloseReopenLoadA.Location = new System.Drawing.Point(561, 47);
+            this._btnCloseReopenLoadA.Name = "_btnCloseReopenLoadA";
+            this._btnCloseReopenLoadA.Size = new System.Drawing.Size(120, 30);
+            this._btnCloseReopenLoadA.TabIndex = 5;
+            this._btnCloseReopenLoadA.Text = "Close Load A  ";
+            this._btnCloseReopenLoadA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._btnCloseReopenLoadA.UseVisualStyleBackColor = true;
+            this._btnCloseReopenLoadA.Visible = false;
+            this._btnCloseReopenLoadA.Click += new System.EventHandler(this._BtnCloseReopenLoadA_Click);
+            // 
+            // _btnCloseReopenLoadB
+            // 
+            this._btnCloseReopenLoadB.Enabled = false;
+            this._btnCloseReopenLoadB.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._btnCloseReopenLoadB.Image = global::Mss.Views.Properties.Resources.RedMinus24;
+            this._btnCloseReopenLoadB.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this._btnCloseReopenLoadB.Location = new System.Drawing.Point(1373, 47);
+            this._btnCloseReopenLoadB.Name = "_btnCloseReopenLoadB";
+            this._btnCloseReopenLoadB.Size = new System.Drawing.Size(120, 30);
+            this._btnCloseReopenLoadB.TabIndex = 5;
+            this._btnCloseReopenLoadB.Text = "Close Load B  ";
+            this._btnCloseReopenLoadB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this._btnCloseReopenLoadB.UseVisualStyleBackColor = true;
+            this._btnCloseReopenLoadB.Visible = false;
+            this._btnCloseReopenLoadB.Click += new System.EventHandler(this._BtnCloseReopenLoadB_Click);
+            // 
             // SlugsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -306,6 +341,8 @@
             this.Controls.Add(this._btnAbortLoadB);
             this.Controls.Add(this._btnAbortLoadA);
             this.Controls.Add(this._btnAcceptLoadB);
+            this.Controls.Add(this._btnCloseReopenLoadB);
+            this.Controls.Add(this._btnCloseReopenLoadA);
             this.Controls.Add(this._btnAcceptLoadA);
             this.Controls.Add(this._lblSlugBName);
             this.Controls.Add(this._lblSlugAName);
@@ -345,5 +382,7 @@
         private System.Windows.Forms.Label _lblLoadBNumber;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ToolStripButton _navigatorBtnReleaseBroadcast;
+        private System.Windows.Forms.Button _btnCloseReopenLoadA;
+        private System.Windows.Forms.Button _btnCloseReopenLoadB;
     }
 }

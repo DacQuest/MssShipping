@@ -49,7 +49,9 @@ namespace Mss.Views
 
             _dgvPit.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             _dgvPit.ColumnHeadersHeight = 30; // Set to desired height in pixels
-            _dgvPit.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10, FontStyle.Bold);
+            _dgvPit.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+            _dgvPit.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
 
 //             DataGridViewImageColumn imageColumn;
             DataGridViewTextBoxColumn column;
@@ -160,7 +162,7 @@ namespace Mss.Views
 
             UpdateTitle(_pitProxy.Count);
 
-            _bindingSource.DataSource = pitItems;
+            _bindingSource.DataSource = pitItems.OrderBy(p => p.PalletID);
             _dgvPit.Update();
         }
 

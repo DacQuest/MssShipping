@@ -93,8 +93,7 @@ namespace Mss.Views
             // Set up header attributes
             SourceGrid.Cells.Views.Header boldHeader = new SourceGrid.Cells.Views.Header
             {
-                //                 Font = new Font(Font, FontStyle.Bold),
-                Font = new Font("Arial", 10F, FontStyle.Bold),
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
                 TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter
             };
 
@@ -169,13 +168,16 @@ namespace Mss.Views
             for (int rowNumber = 1; rowNumber <= _rowCount; rowNumber++)
             {
                 ICell cell = this[rowNumber, 1];
-                cell.View.Font = new Font("Courier New", 12F, FontStyle.Bold);
+//                 cell.View.Font = new Font("Courier New", 12F, FontStyle.Bold);
+                cell.View.Font = new Font("Consolas", 12F, FontStyle.Regular);
 
                 cell = this[rowNumber, 2];
-                cell.View.Font = new Font("Courier New", 12F, FontStyle.Bold);
+//                 cell.View.Font = new Font("Courier New", 12F, FontStyle.Bold);
+                cell.View.Font = new Font("Consolas", 12F, FontStyle.Regular);
 
                 cell = this[rowNumber, 3];
-                cell.View.Font = new Font("Courier New", 12F, FontStyle.Bold);
+//                 cell.View.Font = new Font("Courier New", 12F, FontStyle.Bold);
+                cell.View.Font = new Font("Consolas", 12F, FontStyle.Regular);
             }
         }
 

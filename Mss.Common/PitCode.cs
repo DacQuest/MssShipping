@@ -15,7 +15,7 @@ namespace Mss.Common
         Assigned4 = 4,
         Upper     = 5,
         Lower     = 6,
-        Console   = 7,
+        Twenty    = 7,
         Purge     = 8,
         Stack     = 9
     }

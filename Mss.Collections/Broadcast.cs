@@ -17,17 +17,17 @@ namespace Mss.Collections
     {
         protected override void RegisterCustomQueries()
         {
-            RegisterCustomQuery(Constant.CurrentBroadcastQuery, _CurrentBroadcastsQuery);
+            RegisterCustomQuery(Constant.CurrentBroadcastQuery, _CurrentBroadcastQuery);
         }
 
-        private bool _CurrentBroadcastsQuery(ref List<XDataItem> list)
+        private bool _CurrentBroadcastQuery(ref List<XDataItem> list)
         {
             if (!Open(
                 Constant.SystemSettingsName,
                 out SystemSettings systemSettings))
             {
                 XSystemEvent.Publish(
-                    nameof (_CurrentBroadcastsQuery),
+                    nameof (_CurrentBroadcastQuery),
                     XSystemEventLevel.Error,
                     $"Failed to open the {Constant.SystemSettingsName} collection");
                 return false;
@@ -38,18 +38,21 @@ namespace Mss.Collections
             systemSettings.Unlock();
             systemSettings.Close();
 
-            list = null;
-            _ = Lock();
-            try
-            {
-                list = GetCurrentBroadcastItems(
-                    lastCsnReleased,
-                    largestRotationReceived).ToList<XDataItem>();
-            }
-            finally
-            {
-                Unlock();
-            }
+//             list = null;
+//             _ = Lock();
+//             try
+//             {
+//                 list = GetCurrentBroadcastItems(
+//                     lastCsnReleased,
+//                     largestRotationReceived).ToList<XDataItem>();
+//             }
+//             finally
+//             {
+//                 Unlock();
+//             }
+            list =  GetCurrentBroadcastItems(
+                lastCsnReleased,
+                largestRotationReceived).ToList<XDataItem>();
             return true;
         }
 
@@ -150,14 +153,14 @@ namespace Mss.Collections
             }
         }
 
-        private void _HandleMissingMatchingRow1Csn(string csn, string matchingRow1Csn)
-        {
-            _ = Remove(csn);
-
-            int rotation = BroadcastItem.RotationFromCsn(csn);
-            BroadcastItem missingBroadcastItem = BroadcastItem.CreateMissingBroadcastItem(rotation);
-            this[missingBroadcastItem.Csn] = missingBroadcastItem;
-        }
+//         private void _HandleMissingMatchingRow1Csn(string csn, string matchingRow1Csn)
+//         {
+//             _ = Remove(csn);
+// 
+//             int rotation = BroadcastItem.RotationFromCsn(csn);
+//             BroadcastItem missingBroadcastItem = BroadcastItem.CreateMissingBroadcastItem(rotation);
+//             this[missingBroadcastItem.Csn] = missingBroadcastItem;
+//         }
 
         private List<BroadcastItem> _GetCurrentBroadcastItems(
             string lastCsnReleased,

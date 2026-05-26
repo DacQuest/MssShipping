@@ -203,6 +203,16 @@ namespace Mss.Views.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap RedMinus48 {
+            get {
+                object obj = ResourceManager.GetObject("RedMinus48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap RedWhiteProhibited24 {
             get {
                 object obj = ResourceManager.GetObject("RedWhiteProhibited24", resourceCulture);

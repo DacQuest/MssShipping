@@ -48,12 +48,16 @@ namespace Mss.Services
                 out _slugA,
                 out _slugB);
 
+            SetExtendedServiceStatus("Waiting...");
             return true;
         }
 
         protected override int OnStop()
         {
             // There is no need to call SetServiceStatus() when overriding
+
+            SetExtendedServiceStatus(string.Empty);
+
             _dataLayer.Dispose();
             _dataLayer = null;
 
@@ -76,18 +80,23 @@ namespace Mss.Services
                 XMessageScopes.All);
 
             Subscribe(
-                AcceptLoadMessageData.AcceptLoadMessageTopic,
-                _AcceptLoad_OnMessage,
-                XMessageScopes.All);
-
-            Subscribe(
                 AbortLoadMessageData.AbortLoadMessageTopic,
                 _AbortLoad_OnMessage,
                 XMessageScopes.All);
 
             Subscribe(
-                RecoverShippedBroadcastMessageData.RecoverShippedBroadcastMessageTopicName,
-                _RecoverShippedBroadcast_OnMessage,
+                CloseLoadMessageData.CloseLoadMessageTopic,
+                _CloseLoad_OnMessage,
+                XMessageScopes.All);
+
+            Subscribe(
+                AcceptLoadMessageData.AcceptLoadMessageTopic,
+                _AcceptLoad_OnMessage,
+                XMessageScopes.All);
+
+            Subscribe(
+                RecoverBroadcastMessageData.RecoverBroadcastMessageTopicName,
+                _RecoverBroadcast_OnMessage,
                 XMessageScopes.All);
 
             Subscribe(
@@ -97,14 +106,17 @@ namespace Mss.Services
 
         }
 
-        private void _RecoverShippedBroadcast_OnMessage(
+        private void _RecoverBroadcast_OnMessage(
             object sender,
             XMessageEventArgs e)
         {
-            RecoverShippedBroadcastMessageData md = (RecoverShippedBroadcastMessageData)e.MessageData;
-            SetExtendedServiceStatus("Recovering Shipped Broadcast");
-            _dataLayer.RecoverShippedBroadcast(md, out string error);
-            md.PublishResponse(new RecoverShippedBroadcastMessageData(error));
+            RecoverBroadcastMessageData md = (RecoverBroadcastMessageData)e.MessageData;
+            SetExtendedServiceStatus("Recovering Broadcast...");
+            if (_dataLayer.RecoverBroadcast(md, out string error))
+            {
+                md.SystemEvent?.Publish();
+            }
+            md.PublishResponse(new RecoverBroadcastMessageData(error));
             SetExtendedServiceStatus("Waiting...");
         }
 
@@ -113,18 +125,32 @@ namespace Mss.Services
             XMessageEventArgs e)
         {
             ReleaseBroadcastMessageData md = (ReleaseBroadcastMessageData)e.MessageData;
-            SetExtendedServiceStatus($"Releasing Broadcast to {md.SlugLetter.SlugDisplayName()}");
+            SetExtendedServiceStatus($"Releasing Broadcast to {md.SlugLetter.SlugDisplayName()}...");
             if (_dataLayer.TryReleaseBroadcast(
                 md.SlugLetter,
                 md.CountToRelease,
                 out string error))
             {
-                md.PublishResponse(new ReleaseBroadcastMessageData());
+                md.SystemEvent?.Publish();
             }
-            else
+            md.PublishResponse(new ReleaseBroadcastMessageData(error));
+            SetExtendedServiceStatus("Waiting...");
+        }
+
+        private void _CloseLoad_OnMessage(
+            object sender,
+            XMessageEventArgs eventArgs)
+        {
+            CloseLoadMessageData md = (CloseLoadMessageData)eventArgs.MessageData;
+            string action = md.ReopenLoad
+                ? "Reopening"
+                : "Closing";
+            SetExtendedServiceStatus($"{action} Load on {md.SlugLetter.SlugDisplayName()}...");
+            if (_dataLayer.TryCloseLoad(md.SlugLetter, md.ReopenLoad, out string error))
             {
-                md.PublishResponse(new ReleaseBroadcastMessageData(error));
+                md.SystemEvent?.Publish();
             }
+            md.PublishResponse(new CloseLoadMessageData(md.SlugLetter, error));
             SetExtendedServiceStatus("Waiting...");
         }
 
@@ -133,15 +159,12 @@ namespace Mss.Services
             XMessageEventArgs e)
         {
             AcceptLoadMessageData md = (AcceptLoadMessageData)e.MessageData;
-            SetExtendedServiceStatus($"Accepting {md.SlugLetter.SlugDisplayName()}");
+            SetExtendedServiceStatus($"Accepting Load on {md.SlugLetter.SlugDisplayName()}...");
             if (_dataLayer.TryAcceptLoad(md.SlugLetter, out string error))
             {
-                md.PublishResponse(new AcceptLoadMessageData(md.SlugLetter));
+                md.SystemEvent?.Publish();
             }
-            else
-            {
-                md.PublishResponse(new AcceptLoadMessageData(md.SlugLetter, error));
-            }
+            md.PublishResponse(new AcceptLoadMessageData(md.SlugLetter, error));
             SetExtendedServiceStatus("Waiting...");
         }
 
@@ -150,15 +173,12 @@ namespace Mss.Services
             XMessageEventArgs e)
         {
             AbortLoadMessageData md = (AbortLoadMessageData)e.MessageData;
-            SetExtendedServiceStatus($"Aborting {md.SlugLetter.SlugDisplayName()}");
+            SetExtendedServiceStatus($"Aborting Load on {md.SlugLetter.SlugDisplayName()}...");
             if (_dataLayer.TryAbortLoad(md.SlugLetter, md.AutoRecoverBroadcast, out string error))
             {
-                md.PublishResponse(new AbortLoadMessageData(md.SlugLetter));
+                md.SystemEvent?.Publish();
             }
-            else
-            {
-                md.PublishResponse(new AbortLoadMessageData(md.SlugLetter, error));
-            }
+            md.PublishResponse(new AbortLoadMessageData(md.SlugLetter, error));
             SetExtendedServiceStatus("Waiting...");
         }
 

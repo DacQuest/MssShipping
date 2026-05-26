@@ -56,6 +56,7 @@
     <Compile Include="BroadcastStatus.cs" />
     <Compile Include="CraneFunction.cs" />
     <Compile Include="CraneMode.cs" />
+    <Compile Include="CloseLoadMessageData.cs" />
     <Compile Include="LoadDirectorMode.cs" />
     <Compile Include="LoadDirectorOperatorResponse.cs" />
     <Compile Include="LoadItemStatus.cs" />
@@ -74,7 +75,7 @@
     <Compile Include="PickMode.cs" />
     <Compile Include="PitCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RecoverShippedBroadcastMessageData.cs" />
+    <Compile Include="RecoverBroadcastMessageData.cs" />
     <Compile Include="Ref.cs" />
     <Compile Include="ReleaseBroadcastMessageData.cs" />
     <Compile Include="ReprintLabelMessageData.cs" />

@@ -171,7 +171,7 @@ namespace Mss.Common
 
         public const int UpperAssignmentBufferSize = 2;
         public const int LowerAssignmentBufferSize = 1;
-        public const int ConsoleAssignmentBufferSize = 5;
+        public const int TwentyAssignmentBufferSize = 5;
 
         // Operation Move Commands
         public const int NoMoveCommand = 0;
@@ -181,11 +181,11 @@ namespace Mss.Common
 
         public const int Assignment2MoveCommandLower = 1;
         public const int Assignment2MoveCommandUpper = 2;
-        public const int Assignment2MoveCommandConsole = 3;
+        public const int Assignment2MoveCommandTwenty = 3;
 
         public const int Assignment3MoveCommandLower = 1;
         public const int Assignment3MoveCommandUpper = 2;
-        public const int Assignment3MoveCommandConsole = 3;
+        public const int Assignment3MoveCommandTwenty = 3;
 
         public const int RouterMoveCommandForward = 1;
         public const int RouterMoveCommandToCrane = 2;

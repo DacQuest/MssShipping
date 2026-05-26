@@ -21,7 +21,7 @@ namespace Mss.Views
             if (_systemSettingsProxy != null)
             {
                 _systemSettingsProxy.DataItemChanged -= _SystemSettings_DataItemChanged;
-                _systemSettingsProxy.CollectionRefreshed -= _SystemSettings_CollectionRefreshed;
+//                 _systemSettingsProxy.CollectionRefreshed -= _SystemSettings_CollectionRefreshed;
                 XProxyCache.Release(_systemSettingsProxy);
                 _systemSettingsProxy = null;
             }

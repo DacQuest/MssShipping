@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InventorySummaryView));
             this._dgvInventory = new System.Windows.Forms.DataGridView();
             this.navigator = new System.Windows.Forms.ToolStrip();
@@ -44,13 +45,20 @@
             // 
             this._dgvInventory.AllowUserToAddRows = false;
             this._dgvInventory.AllowUserToDeleteRows = false;
+            this._dgvInventory.AllowUserToResizeColumns = false;
+            this._dgvInventory.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this._dgvInventory.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this._dgvInventory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this._dgvInventory.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this._dgvInventory.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this._dgvInventory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this._dgvInventory.Location = new System.Drawing.Point(10, 38);
             this._dgvInventory.Name = "_dgvInventory";
             this._dgvInventory.ReadOnly = true;
+            this._dgvInventory.RowHeadersVisible = false;
             this._dgvInventory.Size = new System.Drawing.Size(915, 197);
             this._dgvInventory.TabIndex = 0;
             // 
@@ -97,14 +105,14 @@
             // _inventorySummaryToolStripMenuItem
             // 
             this._inventorySummaryToolStripMenuItem.Name = "_inventorySummaryToolStripMenuItem";
-            this._inventorySummaryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this._inventorySummaryToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this._inventorySummaryToolStripMenuItem.Text = "Inventory Summary";
             this._inventorySummaryToolStripMenuItem.Click += new System.EventHandler(this._InventorySummaryToolStripMenuItem_Click);
             // 
             // _fullInventoryToolStripMenuItem
             // 
             this._fullInventoryToolStripMenuItem.Name = "_fullInventoryToolStripMenuItem";
-            this._fullInventoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this._fullInventoryToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this._fullInventoryToolStripMenuItem.Text = "Full Inventory";
             this._fullInventoryToolStripMenuItem.Click += new System.EventHandler(this._FullInventoryToolStripMenuItem_Click);
             // 

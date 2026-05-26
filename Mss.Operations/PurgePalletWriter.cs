@@ -19,7 +19,8 @@ namespace Mss.Operations
             try
             {
                 string sql = string.Format(
-                    //                     @"INSERT INTO PurgePallets (PurgedOn,PalletID,JobID,Comment,) VALUES ('{0}','{1}','{2}','{3}'); SELECT Convert(Int, SCOPE_IDENTITY());",
+//                     @"INSERT INTO {0} (PurgedOn,PalletID,Sku,  JobID, HoldCode,BuiltOn, Comment)
+//                       VALUES          ('{1}',   '{2}',   '{3}','{4}', {5},     '{6}',   '{7}'); SELECT Convert(Int, SCOPE_IDENTITY());",
                     @"INSERT INTO {0} (PurgedOn,PalletID,Sku,  JobID, HoldCode,BuiltOn, Comment)
                       VALUES          ('{1}',   '{2}',   '{3}','{4}', {5},     '{6}',   '{7}');",
                     Constant.PurgePalletsTableName,
@@ -37,8 +38,8 @@ namespace Mss.Operations
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     _ = command.ExecuteNonQuery();
-//                     int PickID = (int)command.ExecuteScalar();
-//                     sql = $"INSERT INTO Pallet_Purge_Queue (Pick_ID) VALUES ({PickID});";
+//                     int PurgeID = (int)command.ExecuteScalar();
+//                     sql = $"INSERT INTO Pallet_Purge_Queue (PurgeID) VALUES ({PurgeID});";
 //                     command.CommandText = sql;
 //                     command.ExecuteNonQuery();
                 }
@@ -50,10 +51,10 @@ namespace Mss.Operations
             catch (Exception x)
             {
                 XSystemEvent.Publish(
-                    "PurgePalletDataWriter",
+                    nameof(WritePurgePallet),
                     XSystemEventLevel.Error,
-                    $"Exception thrown while sending Purge Pallet Data to MES:  PalletID={palletItem.PalletID}; JobID={palletItem.JobID}; Reason={palletItem.Comment}");
-                x.PublishSystemEvent("PurgePalletDataWriter");
+                    $"Exception thrown while archiving Purge Pallet Data:  PalletID={palletItem.PalletID}; JobID={palletItem.JobID}; Reason={palletItem.Comment}");
+                x.PublishSystemEvent(nameof(WritePurgePallet));
             }
         }
     }
