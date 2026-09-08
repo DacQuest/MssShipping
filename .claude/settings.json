@@ -1,0 +1,48 @@
+{
+  "`": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Read(//c/Customers/DacQuest/FrameWorks/DFX20/**)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "PowerShell(git status:*)",
+      "PowerShell(git diff:*)",
+      "PowerShell(git log:*)",
+      "PowerShell(git show:*)",
+      "PowerShell(git branch:*)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new(); Write-Output '=== DFX framework context (auto-injected at session start from C:\\Customers\\DacQuest\\FrameWorks\\DFX20\\Source\\DFX-CONTEXT.md) ==='; Get-Content -Raw -Encoding UTF8 'C:\\Customers\\DacQuest\\FrameWorks\\DFX20\\Source\\DFX-CONTEXT.md'",
+            "timeout": 30,
+            "statusMessage": "Injecting DFX framework context"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File 'C:\\Customers\\MagnaSeating\\Mississauga\\MssShipping\\Source\\.claude\\hooks\\claude-md-reminder.ps1'",
+            "timeout": 30,
+            "statusMessage": "CLAUDE.md freshness check"
+          }
+        ]
+      }
+    ]
+  }
+}

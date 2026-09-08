@@ -52,9 +52,9 @@ namespace Mss.Views
         public const int PalletIDColumnWidth = 70;
         public const int PalletStatusColumnWidth = 80;
         public const int JobIDColumnWidth = 80;
-        public const int SkuColumnWidth = 75;
+        public const int SkuColumnWidth = 90;
         public const int BinLocationColumnWidth = 70;
-        public const int HoldCodeColumnWidth = 190;
+        public const int HoldCodeColumnWidth = 175;
         public const int BuiltOnColumnWidth = 163;
 
         private List<BinItem> _searchResults = new List<BinItem>();
