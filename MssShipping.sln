@@ -39,6 +39,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MirrorSqlScripts", "MirrorSqlScripts", "{69B4569F-F496-4433-919E-9EFFF088D04F}"
 	ProjectSection(SolutionItems) = preProject
 		MirrorSqlScripts\CreateAndExpandAllMirrorTables.sql = MirrorSqlScripts\CreateAndExpandAllMirrorTables.sql
+		MesInterfaceSqlScripts\CreateMesLoadTables.sql = MesInterfaceSqlScripts\CreateMesLoadTables.sql
 		MirrorSqlScripts\InitStorage.sql = MirrorSqlScripts\InitStorage.sql
 	EndProjectSection
 EndProject
