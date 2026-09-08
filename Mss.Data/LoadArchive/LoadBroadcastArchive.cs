@@ -18,13 +18,13 @@ namespace Mss.Data.LoadArchive
         public int ID { get; set; }
         public int LoadItemArchiveID { get; set; }
         public BroadcastStatus Status { get; set; }
+        public int Rotation { get; set; }
         public string Csn { get; set; }
         public string Vin { get; set; }
-        public string Sku { get; set; }
         public string VehicleSku { get; set; }
-        public int RotationNumber { get; set; }
+        public string Sku { get; set; }
         public PickMode PickMode { get; set; }
-        public string PickModeValue { get; set; }
+        public string PickModeKey { get; set; }
         public DateTime ReceivedOn { get; set; }
         public int VehicleRowCount { get; set; }
 

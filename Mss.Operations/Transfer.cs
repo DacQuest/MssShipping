@@ -41,18 +41,18 @@ namespace Mss.Operations
 //             base.RegisterCustomStates();
 //         }
 
-        protected string LoadALevelCompletedName = "Load A Level Completed";
-        protected bool LoadALevelCompleted
+        protected string SlugALevelCompletedName = "Slug A Level Completed";
+        protected bool SlugALevelCompleted
         {
-            get => GetVariable<bool>(LoadALevelCompletedName);
-            set => SetVariable(LoadALevelCompletedName, value);
+            get => GetVariable<bool>(SlugALevelCompletedName);
+            set => SetVariable(SlugALevelCompletedName, value);
         }
 
-        protected string LoadBLevelCompletedName = "Load B Level Completed";
-        protected bool LoadBLevelCompleted
+        protected string SlugBLevelCompletedName = "Slug B Level Completed";
+        protected bool SlugBLevelCompleted
         {
-            get => GetVariable<bool>(LoadBLevelCompletedName);
-            set => SetVariable(LoadBLevelCompletedName, value);
+            get => GetVariable<bool>(SlugBLevelCompletedName);
+            set => SetVariable(SlugBLevelCompletedName, value);
         }
 
         protected Levels Level => _parameters.Level;
@@ -60,28 +60,28 @@ namespace Mss.Operations
         protected override void ProcessParameters(XConfigurationParameterSet parameters)
         {
             _parameters = parameters as TransferParameterSetWrapper;
-            LoadALevelCompletedName = $"Load A {Level.ToText()} Level Completed";
-            LoadBLevelCompletedName = $"Load B {Level.ToText()} Level Completed";
+            SlugALevelCompletedName = $"Slug A {Level.ToText()} Level Completed";
+            SlugBLevelCompletedName = $"Slug B {Level.ToText()} Level Completed";
         }
 
         protected override void DoStart()
         {
             base.DoStart();
 
-            SlugA.DataItemChanged += _LoadA_DataItemChanged;
-            SlugA.Touched += _LoadA_CollectionTouched;
-            SlugB.DataItemChanged += _LoadB_DataItemChanged;
-            SlugB.Touched += _LoadB_CollectionTouched;
+            SlugA.DataItemChanged += _SlugA_DataItemChanged;
+            SlugA.Touched += _SlugA_CollectionTouched;
+            SlugB.DataItemChanged += _SlugB_DataItemChanged;
+            SlugB.Touched += _SlugB_CollectionTouched;
 
             if (Level == Levels.Upper)
             {
                 StartPlcTagCapture(
-                    Constant.LoadAUpperLevelCompletedRoleName,
+                    Constant.SlugAUpperLevelCompletedRoleName,
                     _LevelCompleted_TagChanged,
                     XTagDataCaptureUpdateMode.OnChange);
 
                 StartPlcTagCapture(
-                    Constant.LoadBUpperLevelCompletedRoleName,
+                    Constant.SlugBUpperLevelCompletedRoleName,
                     _LevelCompleted_TagChanged,
                     XTagDataCaptureUpdateMode.OnChange);
             }
@@ -89,13 +89,13 @@ namespace Mss.Operations
             {
                 StartTagDataCapture(
                     Constant.PlcRoleName,
-                    Constant.LoadALowerLevelCompletedRoleName,
+                    Constant.SlugALowerLevelCompletedRoleName,
                     _LevelCompleted_TagChanged,
                     XTagDataCaptureUpdateMode.OnChange);
 
                 StartTagDataCapture(
                     Constant.PlcRoleName,
-                    Constant.LoadBLowerLevelCompletedRoleName,
+                    Constant.SlugBLowerLevelCompletedRoleName,
                     _LevelCompleted_TagChanged,
                     XTagDataCaptureUpdateMode.OnChange);
             }
@@ -105,13 +105,13 @@ namespace Mss.Operations
         {
             if (SlugA != null)
             {
-                SlugA.DataItemChanged -= _LoadA_DataItemChanged;
-                SlugA.Touched -= _LoadA_CollectionTouched;
+                SlugA.DataItemChanged -= _SlugA_DataItemChanged;
+                SlugA.Touched -= _SlugA_CollectionTouched;
             }
             if (SlugB != null)
             {
-                SlugB.DataItemChanged -= _LoadB_DataItemChanged;
-                SlugB.Touched -= _LoadB_CollectionTouched;
+                SlugB.DataItemChanged -= _SlugB_DataItemChanged;
+                SlugB.Touched -= _SlugB_CollectionTouched;
             }
             base.DoStop();
         }
@@ -125,38 +125,38 @@ namespace Mss.Operations
             }
             switch (tagData.ConfigurationItem.RoleName)
             {
-                case Constant.LoadAUpperLevelCompletedRoleName:
-                case Constant.LoadALowerLevelCompletedRoleName:
-                    LoadALevelCompleted = levelCompleted;
+                case Constant.SlugAUpperLevelCompletedRoleName:
+                case Constant.SlugALowerLevelCompletedRoleName:
+                    SlugALevelCompleted = levelCompleted;
                     break;
-                case Constant.LoadBUpperLevelCompletedRoleName:
-                case Constant.LoadBLowerLevelCompletedRoleName:
-                    LoadBLevelCompleted = levelCompleted;
+                case Constant.SlugBUpperLevelCompletedRoleName:
+                case Constant.SlugBLowerLevelCompletedRoleName:
+                    SlugBLevelCompleted = levelCompleted;
                     break;
             }
         }
 
-        private void _LoadA_DataItemChanged(object sender, XDataItemChangedEventArgs e)
+        private void _SlugA_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
-            _ProcessLoadChangeEvent(SlugLetter.A);
+            _ProcessSlugChangeEvent(SlugLetter.A);
         }
 
-        private void _LoadA_CollectionTouched(object sender, EventArgs e)
+        private void _SlugA_CollectionTouched(object sender, EventArgs e)
         {
-            _ProcessLoadChangeEvent(SlugLetter.A);
+            _ProcessSlugChangeEvent(SlugLetter.A);
         }
 
-        private void _LoadB_DataItemChanged(object sender, XDataItemChangedEventArgs e)
+        private void _SlugB_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
-            _ProcessLoadChangeEvent(SlugLetter.B);
+            _ProcessSlugChangeEvent(SlugLetter.B);
         }
 
-        private void _LoadB_CollectionTouched(object sender, EventArgs e)
+        private void _SlugB_CollectionTouched(object sender, EventArgs e)
         {
-            _ProcessLoadChangeEvent(SlugLetter.B);
+            _ProcessSlugChangeEvent(SlugLetter.B);
         }
 
-        private void _ProcessLoadChangeEvent(SlugLetter slugLetter)
+        private void _ProcessSlugChangeEvent(SlugLetter slugLetter)
         {
             if (DataLayer.IsLoadLevelDone(
                 slugLetter,
@@ -164,11 +164,11 @@ namespace Mss.Operations
             {
                 string levelCompletedTagRoleName = slugLetter == SlugLetter.A
                     ? Level == Levels.Upper
-                        ? Constant.LoadAUpperLevelCompletedRoleName
-                        : Constant.LoadALowerLevelCompletedRoleName
+                        ? Constant.SlugAUpperLevelCompletedRoleName
+                        : Constant.SlugALowerLevelCompletedRoleName
                     : Level == Levels.Upper
-                        ? Constant.LoadBUpperLevelCompletedRoleName
-                        : Constant.LoadBLowerLevelCompletedRoleName;
+                        ? Constant.SlugBUpperLevelCompletedRoleName
+                        : Constant.SlugBLowerLevelCompletedRoleName;
 
                 WritePlc(
                     levelCompletedTagRoleName,
@@ -210,6 +210,7 @@ namespace Mss.Operations
 
         protected override bool DoMoveCompleted()
         {
+            DataLayer.RemovePitPallet(CurrentPallet.PalletID);
             if (CachedMoveCommand != Constant.TransferFinalPurgeMoveCommand
                 && CachedMoveCommand != Constant.TransferStackMoveCommand)
             {
@@ -230,21 +231,21 @@ namespace Mss.Operations
         #endregion
 
         //==================================================================================
-//         protected override void DoDispose()
-//         {
-//             base.DoDispose();
-//         }
+        //         protected override void DoDispose()
+        //         {
+        //             base.DoDispose();
+        //         }
         //==================================================================================
 
-//         #region AwaitingTrailerLoadState
-// 
-//         protected readonly string AwaitingTrailerLoadState = "AwaitingTrailerLoad";
-// 
-//         protected virtual void AwaitingTrailerLoadStateHandler()
-//         {
-//         }
-// 
-//         #endregion
+        //         #region AwaitingTrailerLoadState
+        // 
+        //         protected readonly string AwaitingTrailerLoadState = "AwaitingTrailerLoad";
+        // 
+        //         protected virtual void AwaitingTrailerLoadStateHandler()
+        //         {
+        //         }
+        // 
+        //         #endregion
 
     }
 }

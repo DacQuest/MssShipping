@@ -1,4 +1,5 @@
-﻿using Mss.Collections;
+﻿using DacQuest.DFX.Core.Strings;
+using Mss.Collections;
 using Mss.Common;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Mss.Views
     public class InventorySummaryData
     {
         public string Sku { get; private set; }
-        public int Total { get; set; } = 0;
+        public int Total => Crane1 + Crane2 + Crane3 + Crane4 + UpperPit + LowerPit;
         public int Crane1 { get; set; } = 0;
         public int Crane2 { get; set; } = 0;
         public int Crane3 { get; set; } = 0;
@@ -23,27 +24,22 @@ namespace Mss.Views
         public int Reserved { get; set; } = 0;
         public int Purge { get; set; } = 0;
         public int Unknown { get; set; } = 0;
+        public int Pit => UpperPit + LowerPit;
 
-        public string TotalText
-        {
-            get
-            {
-                Total = Crane1 + Crane2 + Crane3 + Crane4;
-                return Total == 0 ? string.Empty : Total.ToString();
-            }
-        }
-
+        public string TotalText => Total == 0 ? string.Empty : Total.ToString();
         public string Crane1Text => Crane1 == 0 ? string.Empty : Crane1.ToString();
         public string Crane2Text => Crane2 == 0 ? string.Empty : Crane2.ToString();
         public string Crane3Text => Crane3 == 0 ? string.Empty : Crane3.ToString();
         public string Crane4Text => Crane4 == 0 ? string.Empty : Crane4.ToString();
         public string UpperPitText => UpperPit == 0 ? string.Empty : UpperPit.ToString();
         public string LowerPitText => LowerPit == 0 ? string.Empty : LowerPit.ToString();
-        public string OKText => OK == 0 ? string.Empty : Total.ToString();
+        public string OKText => OK == 0 ? string.Empty : OK.ToString();
         public string HoldText => Hold == 0 ? string.Empty : Hold.ToString();
         public string ReservedText => Reserved == 0 ? string.Empty : Reserved.ToString();
         public string PurgeText => Purge == 0 ? string.Empty : Purge.ToString();
         public string UnknownText => Unknown == 0 ? string.Empty : Unknown.ToString();
+        public string PitText => Pit == 0 ? string.Empty : Pit.ToString();
+
         public InventorySummaryData(string sku)
         {
             Sku = sku;
@@ -112,10 +108,12 @@ namespace Mss.Views
                     .Count(p =>
                     {
                         PalletItem pallet = p.Pallet;
+                        PalletStatus status = pallet.Status;
                         return p.PitCode.IsAssigned()
-                            && pallet.Status == PalletStatus.OK
-                            && pallet.Sku == sku;
-
+                            && pallet.Sku == sku
+                            && (status == PalletStatus.OK
+                                || status == PalletStatus.Reserved
+                                || status == PalletStatus.Hold);
                     });
                 data.UpperPit += pitCount;
                 pitCount = lowerPitProxy
@@ -123,13 +121,18 @@ namespace Mss.Views
                     .Count(p =>
                     {
                         PalletItem pallet = p.Pallet;
+                        PalletStatus status = pallet.Status;
                         return p.PitCode.IsAssigned()
-                            && pallet.Status == PalletStatus.OK
-                            && pallet.Sku == sku;
-
+                            && pallet.Sku == sku
+                            && (status == PalletStatus.OK
+                                || status == PalletStatus.Reserved
+                                || status == PalletStatus.Hold);
                     });
                 data.LowerPit += pitCount;
-                summaryData.Add(data);
+                if (!data.Sku.IsNullOrWhiteSpace() && data.Total > 0)
+                {
+                    summaryData.Add(data);
+                }
             }
             return summaryData.OrderBy(item => item.Sku).ToList();
         }

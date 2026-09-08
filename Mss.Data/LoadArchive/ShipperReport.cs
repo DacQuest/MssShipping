@@ -26,7 +26,7 @@ namespace Mss.Data.LoadArchive
             xrLblDate.Text = loadArchive.ArchivedOn.ToString("MM/dd/yyyy");
             xrLblTime.Text = loadArchive.ArchivedOn.ToString("HH:mm:ss");
 
-            xrLblTrailerNumber.Text = loadArchive.TrailerID.ToString();
+            xrLblTrailerNumber.Text = loadArchive.TrailerNumber.ToString();
             xrLblShipmentNumber.Text = loadArchive.LoadNumber.ToString();
 
 //             xrLblNetWeight.Text = XConfiguration.GetAlias(Constant.ShipperReportNetWeightAliasName);
@@ -48,18 +48,12 @@ namespace Mss.Data.LoadArchive
             xrLblLowCsn.Text = lowCsn;
             xrLblHighCsn.Text = highCsn;
 //             string barcodeValue = string.Format(
-//                 "T{0}F{1}L{2}P{3}O{4:000000}",
-//                 loadArchive.TrailerID,
+//                 "T{0}F{1}L{2}P{3}",
+//                 loadArchive.TrailerNumber,
 //                 lowCsn,
 //                 highCsn,
-//                 loadArchive.PreviousBroadcastNumber,
-//                 loadArchive.LoadOrder);
-            string barcodeValue = string.Format(
-                "T{0}F{1}L{2}P{3}",
-                loadArchive.TrailerID,
-                lowCsn,
-                highCsn,
-                loadArchive.PreviousRotationNumber);
+//                 loadArchive.PreviousRotationNumber);
+            string barcodeValue = "Not Implemented!";
             xrBarCode.Text = barcodeValue;
             xrLblBarcodeValue.Text = barcodeValue;
 

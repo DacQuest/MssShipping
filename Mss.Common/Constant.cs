@@ -63,7 +63,9 @@ namespace Mss.Common
 
         public const string VehicleRow1CsnSuffix = "F";
         public const string VehicleRow2CsnSuffix = "B";
-        public const string RotationNumberTextFormat = "0000000";
+        public const string SequenceNumberTextFormat = "0000000";
+        public const string RotationNumberTextFormat = "0000";
+        public const int RotationNumberLength = 4;
 
         //Broadcast
         public const string CurrentBroadcastQuery = "CurrentBroadcastQuery";
@@ -88,6 +90,8 @@ namespace Mss.Common
         public const string PalletTypeLoad = "LOAD";
         public const string PalletTypeAudit = "AUDIT";
         public const string PalletTypePurge = "PURGE";
+        public const string PalletTypeRejected = "REJECTED";
+        public const string PalletTypeStack = "STACK";
         public const string PalletTypeStack1 = "STACK1";
         public const string PalletTypeStack2 = "STACK2";
         public const string PalletTypeHotJob = "HOTJOB";
@@ -100,7 +104,7 @@ namespace Mss.Common
         public const int LoadCellCharacterWidth = 25;
         public const string CalculateShortagesMessageTopicName = "CalculateShortages";
 //         public const int LoadAllocatablePositions = 6;
-        public const string NoTrailerID = "";
+        public const string NoTrailerNumber = "??";
         public const string Row1EmptyPalletSku = "ROW1EMPTY";
         public const string Row2EmptyPalletSku = "ROW2EMPTY";
 
@@ -110,6 +114,7 @@ namespace Mss.Common
         // Tag Role Names
         public const string LabelPrinterTesterDeviceSetName = "LabelPrinterTester";
         public const string LabelPrintCommandRoleName = "LabelPrintCommand";
+        public const string ManualLabelPrinterRoleName = "ManualLabelPrinter";
         public const string PalletIDRoleName = "PalletID";
         public const string MoveCommandRoleName = "MoveCommand";
         public const string SoftwareFaultRoleName = "SoftwareFault";
@@ -131,23 +136,16 @@ namespace Mss.Common
         public const string CranePickedStack1CountRoleName = "PickedStack1Count";
         public const string CranePickedStack2CountRoleName = "PickedStack2Count";
 
-        public const string LoadAUpperLevelCompletedRoleName = "LoadAUpperLevelCompleted";
-        public const string LoadALowerLevelCompletedRoleName = "LoadALowerLevelCompleted";
-        public const string LoadBUpperLevelCompletedRoleName = "LoadBUpperLevelCompleted";
-        public const string LoadBLowerLevelCompletedRoleName = "LoadBLowerLevelCompleted";
+        public const string SlugAUpperLevelCompletedRoleName = "SlugAUpperLevelCompleted";
+        public const string SlugALowerLevelCompletedRoleName = "SlugALowerLevelCompleted";
+        public const string SlugBUpperLevelCompletedRoleName = "SlugBUpperLevelCompleted";
+        public const string SlugBLowerLevelCompletedRoleName = "SlugBLowerLevelCompleted";
 
         public const string LowerLevelCompletedRoleName = "LowerLevelCompleted";
         public const string UpperLevelCompletedRoleName = "UpperLevelCompleted";
-        public const string TrailerIDRoleName = "TrailerID";
-        public const string TrailerTypeRoleName = "TrailerType";
-        public const string TrailerLoadedRoleName = "TrailerLoaded";
-
-
-        // Crane Errors and Faults
-        public const int CraneFault           = -1;
-        public const int LocationFullError    = -2;
-        public const int LocationEmptyError   = -3;
-        public const int InvalidLocationError = -4;
+        public const string TrailerNumberRoleName = "TrailerNumber";
+//         public const string TrailerLoadedRoleName = "TrailerLoaded";
+        public const string TrailerLoadTrailerPermissiveName = "LoadTrailerPermissive";
 
         // Cranes
         public const int NoCraneCommand = 0;
@@ -173,9 +171,11 @@ namespace Mss.Common
         public const int Crane4UpperInboundLocation  = 41003;
         public const int Crane4UpperOutboundLocation = 42003;
 
-        public const int UpperAssignmentBufferSize = 2;
         public const int LowerAssignmentBufferSize = 1;
-        public const int TwentyAssignmentBufferSize = 5;
+        public const int UpperAssignmentBufferSize = 2;
+        public const string TwentyPercentAssignmentBufferSizeAliasName = "TwentyPercentAssignmentBufferSize";
+        public const int DefaultTwentyPercentAssignmentBufferSize = 6;
+        public const int MaxTwentyPercentAssignmentBufferSize = 7;
 
         // Operation Move Commands
         public const int NoMoveCommand = 0;
@@ -207,6 +207,7 @@ namespace Mss.Common
         public const int TransferFinalPurgeMoveCommand = 13;
         public const int TransferStackMoveCommand      = 14; //Upper Level only
 
+        public const int LoadTrailerCommand = 1;
 
         public const int DeviceNameLength = 100;
         public const int DisplayNameLength = 100;
@@ -214,9 +215,6 @@ namespace Mss.Common
         public const int TagNameLength = 100;
         public const int PlcTagNameLength = 100;
         public const int StringValueLength = 100;
-        public const int LoadTypeLength = 10;
-
-
 
         public const string AutoDetectedDuplicatePalletIDComment = "Auto-detected duplicate Pallet ID";
         public const int DuplicatePalletIDHoldCode = 256;
@@ -232,15 +230,20 @@ namespace Mss.Common
         public const string StorageViewInitialNodeIndexMessageName = "StorageViewInitialNodeIndex";
         public const string AdminStorageViewName = "AdminStorageView";
 
-
         public const string LD_OperatorResponseName = "LD_OperatorResponse";
         public const string LD_RequestPalletDataName = "LD_RequestPallet";
-        public const string LD_PalletItemName = "LD_PalletItem";
-        public const string LD_IsAutoModeName = "LD_IsAutoMode";
         public const string LD_LoadItemName = "LD_LoadItem";
-        public const string LD_AutoReleaseNonLoadPalletsInManualModeName = "LD_AutoReleaseNonLoadPalletsInManualMode";
+        public const string LD_PalletItemName = "LD_PalletItem";
+        public const string LD_IsStackName = "LD_IsStack";
+        public const string LD_AutoReleaseNonLoadPalletsName = "LD_AutoReleaseNonLoadPallets";
         public const string LD_IsAwaitingOperatorResponseName = "LD_IsAwaitingOperatorResponse";
-        public const string LD_BroadcastSkuMismatchName = "LD_BroadcastSkuMismatch";
+
+        public const string LeftSeatLabelCode = "LH";
+        public const string RightSeatLabelCode = "RH";
+        public const string RearSeatLabelCode = "RR";
+        public const string CenterConsoleLabelCode = "CC";
+
+        public const int LoadLabelSlugLocationNodeIndex = 28;
 
         // === THESE ARRAYS APPLY TO LOADS OF 54 PALLETS ====================================================
 

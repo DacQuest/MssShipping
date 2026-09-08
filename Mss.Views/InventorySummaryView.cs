@@ -158,6 +158,16 @@ namespace Mss.Views
 
             column = new DataGridViewTextBoxColumn
             {
+                HeaderText = "Reserved",
+                DataPropertyName = "ReservedText",
+                Name = "ReservedColumn",
+                MinimumWidth = 80,
+                SortMode = DataGridViewColumnSortMode.Automatic,
+            };
+            _ = _dgvInventory.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
                 HeaderText = "Hold",
                 DataPropertyName = "HoldText",
                 Name = "HoldColumn",
@@ -171,16 +181,6 @@ namespace Mss.Views
                 HeaderText = "Purge",
                 DataPropertyName = "PurgeText",
                 Name = "PurgeColumn",
-                MinimumWidth = 80,
-                SortMode = DataGridViewColumnSortMode.Automatic,
-            };
-            _ = _dgvInventory.Columns.Add(column);
-
-            column = new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Reserved",
-                DataPropertyName = "ReservedText",
-                Name = "ReservedColumn",
                 MinimumWidth = 80,
                 SortMode = DataGridViewColumnSortMode.Automatic,
             };

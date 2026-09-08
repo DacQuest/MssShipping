@@ -11,10 +11,15 @@ namespace Mss.Views
 {
     public partial class ReprintLabelConfirmationForm : Form
     {
-        public ReprintLabelConfirmationForm(string message)
+        public ReprintLabelConfirmationForm(
+            bool shippingLabel,
+            string message)
         {
             InitializeComponent();
 
+            Text = shippingLabel
+                ? "Reprint Shipping Label"
+                : "Reprint Load Label";
             lblMessage.Text = message;
         }
     }

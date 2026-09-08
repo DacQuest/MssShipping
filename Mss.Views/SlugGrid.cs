@@ -1,4 +1,18 @@
-﻿using System;
+﻿using DacQuest.DFX.Core;
+using DacQuest.DFX.Core.DataItems;
+using DacQuest.DFX.Core.DataItems.Collections;
+using DacQuest.DFX.Core.DataItems.Proxy;
+using DacQuest.DFX.Core.MessageBox;
+using DacQuest.DFX.Core.Messaging;
+using DacQuest.DFX.Core.Strings;
+using DacQuest.DFX.DataItemEditors;
+using DevAge.Drawing;
+using Mss.Collections;
+using Mss.Common;
+using Mss.Data;
+using SourceGrid;
+using SourceGrid.Cells;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -6,19 +20,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using DacQuest.DFX.Core;
-using DacQuest.DFX.Core.MessageBox;
-using DacQuest.DFX.Core.Messaging;
-using DacQuest.DFX.Core.Strings;
-using DacQuest.DFX.Core.DataItems;
-using DacQuest.DFX.Core.DataItems.Collections;
-using DacQuest.DFX.Core.DataItems.Proxy;
-using DacQuest.DFX.DataItemEditors;
-using SourceGrid;
-using SourceGrid.Cells;
-using Mss.Collections;
-using Mss.Common;
-using Mss.Data;
 
 namespace Mss.Views
 {
@@ -42,7 +43,7 @@ namespace Mss.Views
         private bool _allowRollback = false;
         private bool _showShortages = false;
         private bool _allowInsertEmpty = false;
-        private int _clickLoadIndex = -1;
+        private int _clickedLoadIndex = -1;
         private bool _flashInverted = false;
         private int _flashDelayedPalletTimeoutSeconds = 0;
 
@@ -76,7 +77,13 @@ namespace Mss.Views
             _showShortages = showShortages;
             _flashDelayedPalletTimeoutSeconds = flashDelayedPalletTimeoutSeconds;
 
-            BorderStyle = BorderStyle.FixedSingle;
+            BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            RectangleBorder splitterBorder = new RectangleBorder(
+                new BorderLine(SystemColors.Control, 1), // Top
+                new BorderLine(Color.Black, 2), // Bottom
+                new BorderLine(SystemColors.Control, 1), // Left
+                new BorderLine(SystemColors.Control, 1)); // Right
+
             string title = $"{level.ToText()} {_slugLetter.ToText()}";
 
             XProxyCache.Acquire(_slugLetter.SlugName(), out _slugProxy);
@@ -95,6 +102,12 @@ namespace Mss.Views
             {
                 Font = new Font("Segoe UI", 11F, FontStyle.Bold),
                 TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter
+            };
+            SourceGrid.Cells.Views.Header splitterHeader = new SourceGrid.Cells.Views.Header
+            {
+                Font = new Font(Font, FontStyle.Bold),
+                TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter,
+                Border = splitterBorder
             };
 
             ColumnsCount = 4;
@@ -138,7 +151,9 @@ namespace Mss.Views
                 // Row header
                 cell = new Header((_rowCount - rowNumber + 1).ToString())
                 {
-                    View = boldHeader
+                    View = (rowNumber == _rowCount / 2)
+                        ? splitterHeader
+                        : boldHeader
                 };
                 cell.Controller.RemoveController(cell.Controller.FindController(typeof(SourceGrid.Cells.Controllers.SortableHeader)));
                 cell.Controller.RemoveController(cell.Controller.FindController(typeof(SourceGrid.Cells.Controllers.Resizable)));
@@ -344,17 +359,21 @@ namespace Mss.Views
                 && m_MouseCellPosition.Row > 0
                 && m_MouseCellPosition.Column > 0)
             {
-                _clickLoadIndex = _ConvertToLoadIndex(m_MouseCellPosition);
-                LoadItem loadItem = _slugProxy.Items[_clickLoadIndex];
+                _clickedLoadIndex = _ConvertToLoadIndex(m_MouseCellPosition);
+                LoadItem loadItem = _slugProxy.Items[_clickedLoadIndex];
 
                 LoadItemStatus status = loadItem.Status;
 
 //                 bool labelReprintPossible = status >= LoadItemStatus.Presequenced
 //                         && status <= LoadItemStatus.Loadable;
-                bool allowReprintLabel = _allowReprintLabel
+                bool allowReprintShippingLabel = _allowReprintLabel
                     && status >= LoadItemStatus.Presequenced
                     && status <= LoadItemStatus.Loadable;
-                contextMenuReprint.Visible = allowReprintLabel;
+                contextMenuReprintShippingLabel.Visible = allowReprintShippingLabel;
+
+                bool allowReprintLoadLabel = _allowReprintLabel
+                    && _slugProxy.LoadLoadable;
+                contextMenuReprintLoadLabel.Visible = allowReprintLoadLabel;
 
                 contextMenuEditItem.Visible = _allowEditItem;
 
@@ -374,7 +393,7 @@ namespace Mss.Views
                 contextMenuInsertEmptyPallet.Visible = allowInsertEmptyPallet;
 
                 // Show Context Menu
-                if (allowReprintLabel
+                if (allowReprintShippingLabel
                     || _allowEditItem
                     || allowRollback
                     || allowInsertEmptyPallet)
@@ -389,16 +408,42 @@ namespace Mss.Views
             LoadItem loadItem = _slugProxy.Items[loadIndex];
 
             using (ReprintLabelConfirmationForm form = new ReprintLabelConfirmationForm(
-                $"Do you want to reprint the label for Pallet {loadItem.Pallet.PalletID}"))
+                true,
+                $"Do you want to reprint the Shipping Label for Pallet {loadItem.Pallet.PalletID}"))
             {
                 if (form.ShowDialog(this) == DialogResult.Yes)
                 {
                     XMessaging.Publish(
-                        ReprintLabelMessageData.ReprintLabelRequest,
-                        new ReprintLabelMessageData(
+                        PrintLabelMessageData.ReprintShippingLabelRequest,
+                        new PrintLabelMessageData(
                             loadItem.SlugLetter,
                             loadItem.SlugLevel,
                             loadItem.NodeIndex),
+                        XMessageScopes.All,
+                        this);
+                }
+            }
+        }
+
+        private void _ReprintLoadLabel()
+        {
+            string smallestRotation = _slugProxy.SmallestRotation;
+            string largestRotation = _slugProxy.LargestRotation;
+            int palletCount = _slugProxy.PalletCount;
+            
+            using (ReprintLabelConfirmationForm form = new ReprintLabelConfirmationForm(
+                false,
+                $"Do you want to reprint the Load Label for Slug {_slugLetter}"))
+            {
+                if (form.ShowDialog(this) == DialogResult.Yes)
+                {
+                    XMessaging.Publish(
+                        PrintLabelMessageData.ReprintLoadLabelRequest,
+                        new PrintLabelMessageData(
+                            _slugProxy.SlugLetter,
+                            smallestRotation,
+                            largestRotation,
+                            palletCount),
                         XMessageScopes.All,
                         this);
                 }
@@ -474,17 +519,21 @@ namespace Mss.Views
         private void _ContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             contextMenu.Hide();
-            if (ReferenceEquals(e.ClickedItem, contextMenuReprint))
+            if (ReferenceEquals(e.ClickedItem, contextMenuReprintShippingLabel))
             {
-                _ReprintShippingLabel(_clickLoadIndex);
+                _ReprintShippingLabel(_clickedLoadIndex);
+            }
+            else if (ReferenceEquals(e.ClickedItem, contextMenuReprintShippingLabel))
+            {
+                _ReprintLoadLabel();
             }
             else if (ReferenceEquals(e.ClickedItem, contextMenuEditItem))
             {
-                _EditItem(_clickLoadIndex);
+                _EditItem(_clickedLoadIndex);
             }
             else if (ReferenceEquals(e.ClickedItem, contextMenuRollback))
             {
-                _Rollback(_clickLoadIndex);
+                _Rollback(_clickedLoadIndex);
             }
 //             else if (ReferenceEquals(e.ClickedItem, contextMenuInsertEmptyPallet))
 //             {
@@ -501,5 +550,6 @@ namespace Mss.Views
 //                 RefreshItem(loadItem, true);
 //             }
         }
+
     }
 }

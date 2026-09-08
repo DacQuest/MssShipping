@@ -4,8 +4,10 @@ using DacQuest.DFX.Core.DataItems.Collections;
 using DacQuest.DFX.Core.DataItems.Proxy;
 using DacQuest.DFX.Core.MessageBox;
 using DacQuest.DFX.Core.Strings;
+using DacQuest.DFX.Core.SystemEvents;
 using DacQuest.DFX.SnapInViews;
 using DevExpress.Data.Selection;
+using DevExpress.XtraGauges.Core.Customization;
 using Mss.Collections;
 using Mss.Common;
 using System;
@@ -25,8 +27,24 @@ namespace Mss.Views
         private PitViewParameterSetWrapper _parameters;
         private PitProxy _pitProxy;
         private HoldCodesProxy _holdCodesProxy;
-
+        private List<PitItem> _selectedPitItems = new List<PitItem>();
+        private Font _rowHeaderFont = new Font("Segoe UI", 9, FontStyle.Bold);
         private readonly string _palletIDColumnName = "PalletIDColumn";
+
+        private GridHeaderIndex _gridHeaderIndex = GridHeaderIndex.Pallet;
+        private bool[] _columnSortAscending = { true, true, true, true, true, true, true, true };
+
+        private enum GridHeaderIndex
+        {
+            PitCode = 0,
+            Row,
+            Pallet,
+            Sku,
+            JobID,
+            Status,
+            HoldCode,
+            Added
+        }
 
         public PitView()
         {
@@ -36,14 +54,13 @@ namespace Mss.Views
             _dgvPit.AutoGenerateColumns = false;
             _dgvPit.AutoSize = false;
             _dgvPit.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-
         }
 
         protected override void OpenView()
         {
             XProxyCache.Acquire(_parameters.CollectionName, out _pitProxy);
-            _pitProxy.DataItemChanged += _PalletsProxy_DataItemChanged;
-            _pitProxy.CollectionRefreshed += _PalletsProxy_CollectionRefreshed;
+            _pitProxy.DataItemChanged += _PitProxy_DataItemChanged;
+            _pitProxy.CollectionRefreshed += _PitProxy_CollectionRefreshed;
 
             XProxyCache.Acquire(Constant.HoldCodesName, out _holdCodesProxy);
 
@@ -70,16 +87,6 @@ namespace Mss.Views
                 DataPropertyName = "PitCode",
                 Name = "PitCodeColumn",
                 MinimumWidth = 120,
-                SortMode = DataGridViewColumnSortMode.Automatic
-            };
-            _ = _dgvPit.Columns.Add(column);
-
-            column = new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Added On",
-                DataPropertyName = "SetOnText",
-                Name = "SetOnColumn",
-                MinimumWidth = 160,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
             _ = _dgvPit.Columns.Add(column);
@@ -139,44 +146,157 @@ namespace Mss.Views
                 HeaderText = "Hold Code",
                 DataPropertyName = "HoldCodeDescription",
                 Name = "HoldCodeColumn",
-                MinimumWidth = 200,
+                MinimumWidth = 250,
+                SortMode = DataGridViewColumnSortMode.Automatic
+            };
+            _ = _dgvPit.Columns.Add(column);
+
+            column = new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Added",
+                DataPropertyName = "SetOnText",
+                Name = "SetOnColumn",
+                MinimumWidth = 160,
                 SortMode = DataGridViewColumnSortMode.Automatic,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
             };
             _ = _dgvPit.Columns.Add(column);
 
-            _UpdateGrid();
+            _RefreshGrid();
 
-            navigatorBtnAddItem.Visible = _parameters.AllowAdding;
-            navigatorBtnDelete.Visible = _parameters.AllowDeleting;
+            _navigatorBtnAddItem.Visible = _parameters.AllowAdding;
+            _navigatorBtnDelete.Visible = _parameters.AllowDeleting;
 //             navigatorBtnQuickAdd.Visible = _parameters.AllowEditing
 //                 && _parameters.CollectionName == Constant.InboundPitName;
-            navigatorBtnAddSingleEmpty.Visible = false;
+            _navigatorBtnAddSingleEmpty.Visible = false;
         }
 
-        private void _UpdateGrid()
+        private void _RefreshGrid()
         {
-            List<PitItem> pitItems = _pitProxy.Values;
-
+            _UpdateTitle(_pitProxy.Count);
             PitItem.SetHoldCodes(_holdCodesProxy.Values.ToDictionary(h => h.HoldCode, h => h.Description));
+            IEnumerable<PitItem> pitItems = _pitProxy.Values;
 
-            UpdateTitle(_pitProxy.Count);
+            switch (_gridHeaderIndex)
+            {
+                case GridHeaderIndex.PitCode:
+                    pitItems = _columnSortAscending[(int)_gridHeaderIndex]
+                        ? pitItems.OrderBy(p => p.PitCode.ToString())
+                        : pitItems.OrderByDescending(p => p.PitCode.ToString());
+                    break;
+                case GridHeaderIndex.Added:
+                    pitItems = _columnSortAscending[(int)_gridHeaderIndex]
+                        ? pitItems.OrderBy(p => p.SetOn)
+                        : pitItems.OrderByDescending(p => p.SetOn);
+                    break;
+                case GridHeaderIndex.Row:
+                    pitItems = _columnSortAscending[(int)_gridHeaderIndex]
+                        ? pitItems.OrderBy(p => p.Pallet.VehicleRow)
+                        : pitItems.OrderByDescending(p => p.Pallet.VehicleRow);
+                    break;
+                case GridHeaderIndex.Sku:
+                    pitItems = _columnSortAscending[(int)_gridHeaderIndex]
+                        ? pitItems.OrderBy(p => p.Pallet.Sku)
+                        : pitItems.OrderByDescending(p => p.Pallet.Sku);
+                    break;
+                case GridHeaderIndex.JobID:
+                    pitItems = _columnSortAscending[(int)_gridHeaderIndex]
+                        ? pitItems.OrderBy(p => p.Pallet.JobID)
+                        : pitItems.OrderByDescending(p => p.Pallet.JobID);
+                    break;
+                case GridHeaderIndex.Status:
+                    pitItems = _columnSortAscending[(int)_gridHeaderIndex]
+                        ? pitItems.OrderBy(p => p.Pallet.Status)
+                        : pitItems.OrderByDescending(p => p.Pallet.Status);
+                    break;
+                case GridHeaderIndex.HoldCode:
+                    pitItems = _columnSortAscending[(int)_gridHeaderIndex]
+                        ? pitItems.OrderBy(p => p.Pallet.HoldCode)
+                        : pitItems.OrderByDescending(p => p.Pallet.HoldCode);
+                    break;
+                case GridHeaderIndex.Pallet:
+                default:
+                    pitItems = _columnSortAscending[(int)_gridHeaderIndex]
+                        ? pitItems.OrderBy(p => p.PalletID)
+                        : pitItems.OrderByDescending(p => p.PalletID);
+                    break;
+            }
 
-            _bindingSource.DataSource = pitItems.OrderBy(p => p.PalletID);
+            _dgvPit.SuspendLayout();
+//             _bindingSource.DataSource = pitItems.OrderBy(p => p.PalletID);
+            if (pitItems.Count() == 0)
+            {
+                pitItems = null;
+            }
+            _bindingSource.DataSource = pitItems;
+
+
+
+            List<PitItem> selectedPitItems = _selectedPitItems.ToList();
+            List<string> selectedPalletIDs = selectedPitItems.Select(e => e.PalletID).ToList();
+
+            List<DataGridViewRow> selectedRows = new List<DataGridViewRow>();
+
+            foreach (DataGridViewRow row in _dgvPit.Rows)
+            {
+                PitItem pitItem = (PitItem)row.DataBoundItem;
+                if (selectedPalletIDs.Contains(pitItem.PalletID))
+                {
+                    selectedRows.Add(row);
+                }
+            }
+            if (_dgvPit.Rows.Count == 0)
+            {
+                //selectedRow.Selected = true;
+                //_currentEvent = selectedRow.DataBoundItem as XSystemEventMessageData;
+//                _selectedEvents.Clear();
+            }
+            else if (_dgvPit.Rows.Count == 1)
+            {
+                _dgvPit.Rows[0].Selected = true;
+//                _selectedEvents.Clear();
+//                selectedEvents.Add((XSystemEventMessageData)dgvSystemEvents.Rows[0].DataBoundItem);
+            }
+            else
+            {
+                List<PitItem> pitItemsToRemove = new List<PitItem>();
+                foreach (PitItem pitItem in selectedPitItems)
+                {
+                    if (!selectedRows.Any(r => ((PitItem)r.DataBoundItem).PalletID == pitItem.PalletID))
+                    {
+                        pitItemsToRemove.Add(pitItem);
+                    }
+                }
+                foreach (PitItem removeItem in pitItemsToRemove)
+                {
+                    _ = selectedPitItems.Remove(removeItem);
+                }
+                foreach (DataGridViewRow row in _dgvPit.Rows)
+                {
+                    row.Selected = false;
+                }
+                foreach (DataGridViewRow row in selectedRows)
+                {
+                    row.Selected = true;
+                }
+            }
+
             _dgvPit.Update();
+            _dgvPit.ResumeLayout();
+            _navigatorBtnDelete.Enabled = selectedRows.Count > 0;
         }
 
-        private void _PalletsProxy_DataItemChanged(object sender, XDataItemChangedEventArgs e)
+        private void _PitProxy_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
-            _UpdateGrid();
+            _RefreshGrid();
         }
 
-        private void _PalletsProxy_CollectionRefreshed(object sender, EventArgs e)
+        private void _PitProxy_CollectionRefreshed(object sender, EventArgs e)
         {
-            _UpdateGrid();
+            _RefreshGrid();
         }
 
-        public void UpdateTitle(int rowCount)
+        private void _UpdateTitle(int rowCount)
         {
             string collectionName = _parameters.DisplayName;
             _lblCollectionName.Text = rowCount == 1
@@ -224,7 +344,7 @@ namespace Mss.Views
                     }
                 }
             }
-            navigatorBtnDelete.Enabled = false;
+            _navigatorBtnDelete.Enabled = false;
         }
 
         private void _NavigatorBtnRefreshItem_Click(object sender, EventArgs e)
@@ -286,8 +406,8 @@ namespace Mss.Views
         {
             if (_pitProxy != null)
             {
-                _pitProxy.DataItemChanged -= _PalletsProxy_DataItemChanged;
-                _pitProxy.CollectionRefreshed -= _PalletsProxy_CollectionRefreshed;
+                _pitProxy.DataItemChanged -= _PitProxy_DataItemChanged;
+                _pitProxy.CollectionRefreshed -= _PitProxy_CollectionRefreshed;
                 _pitProxy.Close();
                 _pitProxy = null;
             }
@@ -344,7 +464,65 @@ namespace Mss.Views
 
         private void _DgvPit_SelectionChanged(object sender, EventArgs e)
         {
-            navigatorBtnDelete.Enabled = _dgvPit.SelectedRows.Count > 0;
+            _selectedPitItems.Clear();
+
+            if (_dgvPit.SelectedRows.Count > 0 )
+            {
+                _selectedPitItems.AddRange(_dgvPit
+                    .SelectedRows
+                    .Cast<DataGridViewRow>()
+                    .Select(p => (PitItem)p.DataBoundItem));
+            }
+
+            _navigatorBtnDelete.Enabled = _selectedPitItems.Count > 0;
+        }
+
+        private void _DgvPit_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left
+                || e.RowIndex >= 0)
+            {
+                return;
+            }
+            int index = (int)_gridHeaderIndex;
+            if (index == e.ColumnIndex)
+            {
+                _columnSortAscending[index] = !_columnSortAscending[index];
+            }
+            _gridHeaderIndex = (GridHeaderIndex)e.ColumnIndex;
+
+            _RefreshGrid();
+        }
+
+        public override void ViewClosed()
+        {
+            _rowHeaderFont?.Dispose();
+            base.ViewClosed();
+        }
+
+        private void _DgvPit_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            DataGridView grid = (DataGridView)sender;
+            string rowNum = (e.RowIndex + 1).ToString();
+
+            StringFormat centerFormat = new StringFormat
+            {
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                grid.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(
+                rowNum,
+                _rowHeaderFont,
+                SystemBrushes.ControlText,
+                headerBounds,
+                centerFormat);
         }
 
         //public override void ViewClosed()

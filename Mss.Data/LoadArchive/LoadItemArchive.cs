@@ -23,6 +23,7 @@ namespace Mss.Data.LoadArchive
         public LoadItemStatus Status { get; set; }
         public CraneNumber CraneNumber { get; set; }
 //        public bool InsertEmpty { get; set; }
+        public DateTime PickedOn { get; set; }
 
         [LeftJoin("PalletArchive", nameof(ID), "LoadItemArchiveID")]
         public LoadPalletArchive Pallet { get; set; }

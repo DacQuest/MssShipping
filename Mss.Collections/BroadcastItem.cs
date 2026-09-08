@@ -2,6 +2,7 @@ using DacQuest.DFX.Core;
 using DacQuest.DFX.Core.DataItems;
 using DacQuest.DFX.Core.Strings;
 using Mss.Common;
+using SourceGrid.Exporter;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -22,22 +23,26 @@ namespace Mss.Collections
 
         public bool IsBackBroadcast => Csn.EndsWith(Constant.VehicleRow2CsnSuffix);
 
-        public bool IsAutoSkip => AutoSkipFromRotation(Rotation);
+        public bool IsAutoSkip => AutoSkipFromRotation(Sequence);
+
+        public int Sequence => SequenceFromCsn(Csn);
+
+        public string SequenceText => SequenceTextFromCsn(Csn);
 
         public int Rotation => RotationFromCsn(Csn);
 
         public string RotationText => RotationTextFromCsn(Csn);
 
-        public string LabelRotationText => RotationText.Right(4);
+//         public string LabelRotationText => SequenceText.Right(4);
 
-        public static string MakeCsn(int rotationNumber, string csnSuffix)
+        public static string MakeCsn(int sequenceNumber, string csnSuffix)
         {
             XArgumentChecker.ThrowIfNotContainedIn(
                 csnSuffix,
                 nameof(csnSuffix),
                 new string[] { Constant.VehicleRow1CsnSuffix, Constant.VehicleRow2CsnSuffix });
 
-            return $"{rotationNumber.ToString(Constant.RotationNumberTextFormat)}{csnSuffix}";
+            return $"{sequenceNumber.ToString(Constant.SequenceNumberTextFormat)}{csnSuffix}";
         }
 
         public static bool AutoSkipFromRotation(int rotation)
@@ -46,7 +51,7 @@ namespace Mss.Collections
             return mod == 0 || mod > Constant.MaxRotation;
         }
 
-        public static int RotationFromCsn(string csn)
+        public static int SequenceFromCsn(string csn)
         {
             if (csn.Length < 2)
             {
@@ -54,19 +59,27 @@ namespace Mss.Collections
                     "Length of parameter 'csn' must be at least 2 characters long",
                     nameof(csn));
             }
-            string rotationText = RotationTextFromCsn(csn);
-            if (!rotationText.All(c => char.IsDigit(c)))
-            {
-                throw new ArgumentException(
+            string sequenceText = SequenceTextFromCsn(csn);
+            return sequenceText.All(c => char.IsDigit(c))
+                ? int.Parse(sequenceText)
+                : throw new ArgumentException(
                     "All but last character of 'csn' must a digit",
                     nameof(csn));
-            }
-            return int.Parse(rotationText);
+        }
+
+        public static string SequenceTextFromCsn(string csn)
+        {
+            return csn.Left(csn.Length - 1);
         }
 
         public static string RotationTextFromCsn(string csn)
         {
-            return csn.Left(csn.Length - 1);
+            return SequenceTextFromCsn(csn).Right(Constant.RotationNumberLength);
+        }
+
+        public static int RotationFromCsn(string csn)
+        {
+            return int.Parse(RotationTextFromCsn(csn));
         }
 
         public static BroadcastItem CreateMissingBroadcastItem(int rotation)
@@ -108,11 +121,11 @@ namespace Mss.Collections
 
         public string StatusText => Status.ToText();
 
-        public Image StatusImage
+        public System.Drawing.Image StatusImage
         {
             get
             {
-                Image image = Properties.Resources.RoundRedBang16;
+                System.Drawing.Image image = Properties.Resources.RoundRedBang16;
                 switch (Status)
                 {
                     case BroadcastStatus.Invalid:
@@ -142,7 +155,7 @@ namespace Mss.Collections
             _ = details.Append($"\r\n{spaces}SKU:   {Sku}");
             _ = details.Append($"\r\n{spaces}VIN:   {Vin}");
             _ = details.Append($"\r\n{spaces}Pick Mode:   {PickMode.ToText()}");
-            _ = details.Append($"\r\n{spaces}Rotation:   {Rotation}");
+            _ = details.Append($"\r\n{spaces}Rotation:   {Sequence}");
             _ = details.Append($"\r\n{spaces}Vehicle SKU:   {VehicleSku}");
             _ = details.Append($"\r\n{spaces}ReceivedOn:   {ReceivedOnText}");
             _ = details.Append($"\r\n{spaces}Vehicle Row Count:   {VehicleRowCount}");

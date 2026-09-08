@@ -21,96 +21,92 @@ namespace Mss.Data.LoadArchive
     {
         [Key, Identity]
         public int ID { get; set; }
-        public int LoadNumber { get; set; }
-        public string TrailerID { get; set; }
-        public int PalletCount { get; set; }
         public DateTime ArchivedOn { get; set; } = Constant.BeginningOfTime;
-        public int PreviousRotationNumber { get; set; }
-//         public DateTime StartedOn { get; set; } = Constant.BeginningOfTime;
-//         public DateTime DoneOn { get; set; } = Constant.BeginningOfTime;
-//         public DateTime LoadedOn { get; set; } = Constant.BeginningOfTime;
-        public DateTime FirstPalletTimestamp { get; set; } = Constant.BeginningOfTime;
-        public DateTime LastPalletTimestamp { get; set; } = Constant.BeginningOfTime;
-        public DateTime LoadDoneTimestamp { get; set; } = Constant.BeginningOfTime;
+        public int LoadNumber { get; set; }
+        public string SlugLetter { get; set; }
+        public DateTime StartedOn { get; set; } = Constant.BeginningOfTime;
+        public DateTime CompletedOn { get; set; } = Constant.BeginningOfTime;
+        public int PalletCount { get; set; }
+        public string FirstCsn { get; set; }
+        public string LastCsn { get; set; }
+        public string TrailerNumber { get; set; }
 
         [LeftJoin("LoadItemArchive", "ID", "LoadArchiveID")]
         public List<LoadItemArchive> LoadItems { get; set; }
 
-        [NotMapped]
-        public string ShipDate => LoadDoneTimestamp.ToString("MM/dd/yyyy");
-        [NotMapped]
-        public string ShipTime => LoadDoneTimestamp.ToString("HH:mm:ss");
-        [NotMapped]
-        public int PickTimeMinutes
-        {
-            get
-            {
-                if (FirstPalletTimestamp == Constant.BeginningOfTime
-                    || LastPalletTimestamp == Constant.BeginningOfTime
-                    || LastPalletTimestamp <= FirstPalletTimestamp)
-                {
-                    return 0;
-                }
-                return (int)(LastPalletTimestamp - FirstPalletTimestamp).TotalMinutes;
-            }
-        }
-        [NotMapped]
-        public string FormattedPickTimeMinutes => PickTimeMinutes == 0 ? "" : $"{PickTimeMinutes}";
-
-        [NotMapped]
-        public int SmallestRotationNumber
-        {
-            get
-            {
-                IEnumerable<LoadBroadcastArchive> broadcasts = LoadItems.Select(l => l.Broadcast);
-                return LoadItems
-                    .Where(l => l.Broadcast.RotationNumber > 0)
-                    .Select(l => l.Broadcast)
-                    .Min(b => b.RotationNumber);
-            }
-        }
-
-        [NotMapped]
-        public int LargestRotationNumber
-        {
-            get
-            {
-                IEnumerable<LoadBroadcastArchive> broadcasts = LoadItems.Select(l => l.Broadcast);
-                return LoadItems
-                    .Select(l => l.Broadcast)
-                    .Max(b => b.RotationNumber);
-            }
-        }
+//         [NotMapped]
+//         public string ShipDate => LoadDoneTimestamp.ToString("MM/dd/yyyy");
+//         [NotMapped]
+//         public string ShipTime => LoadDoneTimestamp.ToString("HH:mm:ss");
+//         [NotMapped]
+//         public int PickTimeMinutes
+//         {
+//             get
+//             {
+//                 if (FirstPalletTimestamp == Constant.BeginningOfTime
+//                     || LastPalletTimestamp == Constant.BeginningOfTime
+//                     || LastPalletTimestamp <= FirstPalletTimestamp)
+//                 {
+//                     return 0;
+//                 }
+//                 return (int)(LastPalletTimestamp - FirstPalletTimestamp).TotalMinutes;
+//             }
+//         }
+//         [NotMapped]
+//         public string FormattedPickTimeMinutes => PickTimeMinutes == 0 ? "" : $"{PickTimeMinutes}";
+// 
+//         [NotMapped]
+//         public int SmallestRotationNumber
+//         {
+//             get
+//             {
+//                 IEnumerable<LoadBroadcastArchive> broadcasts = LoadItems.Select(l => l.Broadcast);
+//                 return LoadItems
+//                     .Where(l => l.Broadcast.RotationNumber > 0)
+//                     .Select(l => l.Broadcast)
+//                     .Min(b => b.RotationNumber);
+//             }
+//         }
+// 
+//         [NotMapped]
+//         public int LargestRotationNumber
+//         {
+//             get
+//             {
+//                 IEnumerable<LoadBroadcastArchive> broadcasts = LoadItems.Select(l => l.Broadcast);
+//                 return LoadItems
+//                     .Select(l => l.Broadcast)
+//                     .Max(b => b.RotationNumber);
+//             }
+//         }
 
         public static bool BuildLoadArchive(
-            Slug load,
+            Slug slug,
             int loadNumber,
-            string trailerID,
-            DateTime firstPalletTimestamp,
-            DateTime lastPalletTimestamp,
-            DateTime loadDoneTimestamp,
-            DateTime now,
-            int previousBroadcastNumber,
+            DateTime startedOn,
+            DateTime completedOn,
+            string trailerNumber,
             out LoadArchive loadArchive,
             out string error)
         {
-            load.Lock();
+            _ = slug.Lock();
             try
             {
                 loadArchive = new LoadArchive
                 {
+                    ArchivedOn = DateTime.Now,
                     LoadNumber = loadNumber,
-                    TrailerID = trailerID,
-                    PalletCount = load.Count(l => l.Status == LoadItemStatus.Done),
-                    ArchivedOn = now,
-                    PreviousRotationNumber = previousBroadcastNumber,
-                    FirstPalletTimestamp = firstPalletTimestamp,
-                    LastPalletTimestamp = lastPalletTimestamp,
-                    LoadDoneTimestamp = loadDoneTimestamp,
+                    SlugLetter = slug.SlugLetter.ToString(),
+                    StartedOn = startedOn,
+                    CompletedOn = completedOn,
+                    PalletCount = slug.Count(l => l.Status == LoadItemStatus.Done),
+                    FirstCsn = slug.SmallestCsnOnDoneLoad,
+                    LastCsn = slug.LargestCsnOnDoneLoad,
+                    TrailerNumber = trailerNumber,
                     LoadItems = new List<LoadItemArchive>()
                 };
 
-                IEnumerable<LoadItem> loadItems = load
+                IEnumerable<LoadItem> loadItems = slug
                     .Where(l => l.Status == LoadItemStatus.Done)
                     .OrderBy(l => l.Broadcast.Csn);
                 foreach (LoadItem loadItem in loadItems)
@@ -120,6 +116,7 @@ namespace Mss.Data.LoadArchive
                         LoadIndex = loadItem.NodeIndex,
                         Status = loadItem.Status,
                         CraneNumber = loadItem.Crane,
+                        PickedOn = loadItem.PickedOn
 //                         InsertEmpty = loadItem.InsertEmpty,
                     };
 
@@ -127,13 +124,13 @@ namespace Mss.Data.LoadArchive
                     LoadBroadcastArchive broadcast = new LoadBroadcastArchive
                     {
                         Status = broadcastItem.Status,
-                        RotationNumber = broadcastItem.Rotation,
+                        Rotation = broadcastItem.Sequence,
                         Csn = broadcastItem.Csn,
-                        Sku = broadcastItem.Sku,
-                        VehicleSku = broadcastItem.VehicleSku,
                         Vin = broadcastItem.Vin,
+                        VehicleSku = broadcastItem.VehicleSku,
+                        Sku = broadcastItem.Sku,
                         PickMode = broadcastItem.PickMode,
-                        PickModeValue = broadcastItem.PickModeKey,
+                        PickModeKey = broadcastItem.PickModeKey,
                         ReceivedOn = broadcastItem.ReceivedOn,
                         VehicleRowCount = broadcastItem.VehicleRowCount
                     };
@@ -145,8 +142,8 @@ namespace Mss.Data.LoadArchive
                         PalletID = palletItem.PalletID,
                         Status = palletItem.Status,
                         HoldCode = palletItem.HoldCode,
-                        JobID = palletItem.JobID,
                         Sku = palletItem.Sku,
+                        JobID = palletItem.JobID,
                         BuiltOn = palletItem.BuiltOn,
                         Comment = palletItem.Comment
                     };
@@ -165,13 +162,13 @@ namespace Mss.Data.LoadArchive
             }
             finally
             {
-                load.Unlock();
+                slug.Unlock();
             }
         }
 
         public static bool ArchiveLoadData(
             LoadArchive loadArchive,
-            out string errorMessage)
+            out string error)
         {
             try
             {
@@ -184,7 +181,7 @@ namespace Mss.Data.LoadArchive
                     LoadPalletArchiveRepository palletRepository = new LoadPalletArchiveRepository(connection);
                     if (!loadRepository.Insert(loadArchive))
                     {
-                        errorMessage = $"Failed to insert record into LoadArchive table for Load {loadArchive.LoadNumber}.";
+                        error = $"Failed to insert record into LoadArchive table for Load {loadArchive.LoadNumber}.";
                         return false;
                     }
                     foreach (LoadItemArchive loadItemArchive in loadArchive.LoadItems)
@@ -192,7 +189,7 @@ namespace Mss.Data.LoadArchive
                         loadItemArchive.LoadArchiveID = loadArchive.ID;
                         if (!loadItemRepository.Insert(loadItemArchive))
                         {
-                            errorMessage = $"Failed to insert record into LoadItemArchive table for CSN {loadItemArchive.Broadcast.Csn}.";
+                            error = $"Failed to insert record into LoadItemArchive table for CSN {loadItemArchive.Broadcast.Csn}.";
                             return false;
                         }
                         int loadItemArchiveID = loadItemArchive.ID;
@@ -200,32 +197,27 @@ namespace Mss.Data.LoadArchive
                         broadcastArchive.LoadItemArchiveID = loadItemArchiveID;
                         if (!broadcastRepository.Insert(broadcastArchive))
                         {
-                            errorMessage = $"Failed to insert record into LoadBroadArchive table for CSN {broadcastArchive.Csn}.";
+                            error = $"Failed to insert record into LoadBroadArchive table for CSN {broadcastArchive.Csn}.";
                             return false;
                         }
                         LoadPalletArchive palletArchive = loadItemArchive.Pallet;
                         palletArchive.LoadItemArchiveID = loadItemArchiveID;
                         if (!palletRepository.Insert(palletArchive))
                         {
-                            errorMessage = $"Failed to insert record into LoadPalletArchive table for Pallet {palletArchive.PalletID}.";
+                            error = $"Failed to insert record into LoadPalletArchive table for Pallet {palletArchive.PalletID}.";
                             return false;
                         }
                     }
                 }
-                errorMessage = string.Empty;
+                error = string.Empty;
                 return true;
             }
             catch (Exception x)
             {
                 x.PublishSystemEvent("Archive Load Data");
-                errorMessage = x.Message;
+                error = x.Message;
                 return false;
             }
-            finally
-            {
-
-            }
-
         }
     }
 }

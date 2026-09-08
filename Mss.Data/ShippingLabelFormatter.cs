@@ -14,8 +14,8 @@ namespace Mss.Data
     public static class ShippingLabelFormatter
     {
         public static string LabelVin = "VIN";
-        public static string LabelRotation = "ROTATION";
         public static string LabelVehicleLocation = "VEHICLE_LOCATION";
+        public static string LabelRotation = "ROTATION";
         public static string LabelBarcode = "SHIPPING_LABEL_BARCODE";
 //         public static string LabelTriangleData = "TRIANGLE_DATA";
 
@@ -24,7 +24,7 @@ namespace Mss.Data
             string vehicleLocation)
         {
             BroadcastItem broadcastItem = loadItem.Broadcast;
-            string rotation = loadItem.Broadcast.LabelRotationText;
+            string rotation = loadItem.Broadcast.RotationText;
             string barcode = $"{rotation}-{vehicleLocation}";
             return new XLabelDataPairs(Constant.ShippingLabelName)
             {

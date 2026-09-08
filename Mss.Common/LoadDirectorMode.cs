@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Mss.Common
 {
-    [Flags]
-    public enum LoadDirectorMode
-    {
-        Manual = 0,
-        Auto = 1
-    }
+//     [Flags]
+//     public enum LoadDirectorMode
+//     {
+//         Manual = 0,
+//         Auto = 1
+//     }
 }

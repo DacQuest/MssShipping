@@ -171,6 +171,7 @@ namespace Mss.Data
                         .Where(q => q.BroadcastHeader != null)
                         .Select(q => q.BroadcastHeader.HeaderID)
                         .Distinct()
+                        .OrderBy(id => id)
                         .ToList();
 
                     // Fetch all relevant headers with their details in one call
@@ -218,7 +219,7 @@ namespace Mss.Data
                         }
 
                         bool outOfOrder = false;
-                        int lastRotationReleased = BroadcastItem.RotationFromCsn(lastCsnReleased); ;
+                        int lastRotationReleased = BroadcastItem.SequenceFromCsn(lastCsnReleased);
                         int rotationNumber = header.Rotation;
                         if (rotationNumber != largestRotationReceived + 1)
                         {
@@ -342,9 +343,9 @@ namespace Mss.Data
                         {
                             broadcastItems.Add(row2BroadcastItem);
                         }
-                        if (row1BroadcastItem.Rotation > largestRotationReceived)
+                        if (row1BroadcastItem.Sequence > largestRotationReceived)
                         {
-                            largestRotationReceived = row1BroadcastItem.Rotation;
+                            largestRotationReceived = row1BroadcastItem.Sequence;
                         }
                         pendingItem.Processed = true;
                         pendingItem.ProcessedOn = DateTime.Now;

@@ -52,11 +52,12 @@ namespace Mss.Views
         {
             this.components = new System.ComponentModel.Container();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.contextMenuReprint = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuEditItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuReprintShippingLabel = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuRollback = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuInsertEmptyPallet = new System.Windows.Forms.ToolStripMenuItem();
             this._flashTimer = new System.Windows.Forms.Timer(this.components);
+            this.contextMenuReprintLoadLabel = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,41 +65,53 @@ namespace Mss.Views
             // 
             this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contextMenuEditItem,
-            this.contextMenuReprint,
+            this.contextMenuReprintShippingLabel,
+            this.contextMenuReprintLoadLabel,
             this.contextMenuRollback,
             this.contextMenuInsertEmptyPallet});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(194, 70);
+            this.contextMenu.Size = new System.Drawing.Size(194, 92);
             this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this._ContextMenu_ItemClicked);
-            // 
-            // contextMenuReprint
-            // 
-            this.contextMenuReprint.Name = "contextMenuReprint";
-            this.contextMenuReprint.Size = new System.Drawing.Size(193, 22);
-            this.contextMenuReprint.Text = "Reprint Shipping Label";
             // 
             // contextMenuEditItem
             // 
             this.contextMenuEditItem.Name = "contextMenuEditItem";
             this.contextMenuEditItem.Size = new System.Drawing.Size(193, 22);
             this.contextMenuEditItem.Text = "Edit Load Item";
+            this.contextMenuEditItem.Visible = false;
+            // 
+            // contextMenuReprintShippingLabel
+            // 
+            this.contextMenuReprintShippingLabel.Name = "contextMenuReprintShippingLabel";
+            this.contextMenuReprintShippingLabel.Size = new System.Drawing.Size(193, 22);
+            this.contextMenuReprintShippingLabel.Text = "Reprint Shipping Label";
+            this.contextMenuReprintShippingLabel.Visible = false;
             // 
             // contextMenuRollback
             // 
             this.contextMenuRollback.Name = "contextMenuRollback";
             this.contextMenuRollback.Size = new System.Drawing.Size(193, 22);
-            this.contextMenuRollback.Text = "Rollback Load Item";
+            this.contextMenuRollback.Text = "Rollback Pick";
+            this.contextMenuRollback.Visible = false;
             // 
             // contextMenuInsertEmptyPallet
             // 
             this.contextMenuInsertEmptyPallet.Name = "contextMenuInsertEmptyPallet";
             this.contextMenuInsertEmptyPallet.Size = new System.Drawing.Size(193, 22);
             this.contextMenuInsertEmptyPallet.Text = "Insert Empty Pallet";
+            this.contextMenuInsertEmptyPallet.Visible = false;
             // 
             // _flashTimer
             // 
             this._flashTimer.Interval = 500;
             this._flashTimer.Tick += new System.EventHandler(this._flashTimer_Tick);
+            // 
+            // contextMenuReprintLoadLabel
+            // 
+            this.contextMenuReprintLoadLabel.Name = "contextMenuReprintLoadLabel";
+            this.contextMenuReprintLoadLabel.Size = new System.Drawing.Size(193, 22);
+            this.contextMenuReprintLoadLabel.Text = "Reprint Load Label";
+            this.contextMenuReprintLoadLabel.Visible = false;
             // 
             // SlugGrid
             // 
@@ -111,10 +124,11 @@ namespace Mss.Views
         #endregion
 
         private System.Windows.Forms.ContextMenuStrip contextMenu;
-        private System.Windows.Forms.ToolStripMenuItem contextMenuReprint;
+        private System.Windows.Forms.ToolStripMenuItem contextMenuReprintShippingLabel;
         private System.Windows.Forms.ToolStripMenuItem contextMenuRollback;
         private System.Windows.Forms.ToolStripMenuItem contextMenuEditItem;
         private System.Windows.Forms.ToolStripMenuItem contextMenuInsertEmptyPallet;
         private System.Windows.Forms.Timer _flashTimer;
+        private System.Windows.Forms.ToolStripMenuItem contextMenuReprintLoadLabel;
     }
 }

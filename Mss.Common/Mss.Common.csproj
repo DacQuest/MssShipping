@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbortLoadMessageData.cs" />
+    <Compile Include="TrailerNumberMessageData.cs" />
     <Compile Include="AcceptLoadMessageData.cs" />
     <Compile Include="BinSize.cs" />
     <Compile Include="BinStatus.cs" />
@@ -78,7 +79,7 @@
     <Compile Include="RecoverBroadcastMessageData.cs" />
     <Compile Include="Ref.cs" />
     <Compile Include="ReleaseBroadcastMessageData.cs" />
-    <Compile Include="ReprintLabelMessageData.cs" />
+    <Compile Include="PrintLabelMessageData.cs" />
     <Compile Include="RollbackLoadItemMessageData.cs" />
     <Compile Include="SkuCountByStatus.cs" />
     <Compile Include="Utils.cs" />

@@ -23,6 +23,12 @@ namespace Mss.Operations
 {
     public class Crane : XSimpleOperation
     {
+        // Crane Errors and Faults
+        public const int CraneFaultResponse = -1;
+        public const int LocationFullErrorResponse = -2;
+        public const int LocationEmptyErrorResponse = -3;
+        public const int InvalidLocationErrorResponse = -4;
+
         public delegate bool PickFunc(
             out int getCommand,
             out string extendedState,
@@ -163,14 +169,14 @@ namespace Mss.Operations
             set => SetVariable(LastCraneFunctionName, value);
         }
 
-        protected readonly string GetCommandName = "Get Command";
+        protected readonly string GetCommandName = "Cached Get Command";
         protected int GetCommand
         {
             get => GetVariable<int>(GetCommandName);
             set => SetVariable(GetCommandName, value);
         }
 
-        protected readonly string PutCommandName = "Put Command";
+        protected readonly string PutCommandName = "Cached Put Command";
         protected int PutCommand
         {
             get => GetVariable<int>(PutCommandName);
@@ -1482,9 +1488,9 @@ namespace Mss.Operations
             }
         }
 
-        protected bool LocationEmptyError => CraneCommand == Constant.LocationEmptyError;
+        protected bool LocationEmptyError => CraneCommand == LocationEmptyErrorResponse;
 
-        protected bool InvalidLocationError => CraneCommand == Constant.InvalidLocationError;
+        protected bool InvalidLocationError => CraneCommand == InvalidLocationErrorResponse;
 
         protected bool GetCompleted =>
             CraneCommand == Constant.NoCraneCommand
@@ -1592,7 +1598,7 @@ namespace Mss.Operations
                         else
                         {
                             tagRoleName = Constant.CranePickedStack2CountRoleName;
-                            pickCount = PickedStack1Count;
+                            pickCount = PickedStack2Count;
                         }
                         WritePlc(tagRoleName, ++pickCount);
                     }
@@ -1845,7 +1851,7 @@ namespace Mss.Operations
             ClearCraneFault();
         }
 
-        protected bool LocationFullError => CraneCommand == Constant.LocationFullError;
+        protected bool LocationFullError => CraneCommand == LocationFullErrorResponse;
 
         protected bool PalletUnloadedFromCrane => !PalletID.ValidPalletID() && !PalletOnCrane;
 
@@ -1896,9 +1902,20 @@ namespace Mss.Operations
 
         private Levels _LevelFromOutboundLocation(int outboundLocation)
         {
-            return outboundLocation % 2 == 0
-                ? Levels.Upper
-                : Levels.Lower;
+            switch (outboundLocation)
+            {
+                case Constant.Crane1LowerOutboundLocation:
+                case Constant.Crane2LowerOutboundLocation:
+                case Constant.Crane3LowerOutboundLocation:
+                case Constant.Crane4LowerOutboundLocation:
+                    return Levels.Lower;
+                case Constant.Crane1UpperOutboundLocation:
+                case Constant.Crane2UpperOutboundLocation:
+                case Constant.Crane3UpperOutboundLocation:
+                case Constant.Crane4UpperOutboundLocation:
+                    return Levels.Upper;
+            }
+            return Levels.None;
         }
 
         #endregion
@@ -1948,10 +1965,10 @@ namespace Mss.Operations
                 }
                 CraneCommand = craneCommand;
                 string currentStateName = CurrentState.Name;
-                if (CraneCommand == Constant.CraneFault)
+                if (CraneCommand == CraneFaultResponse)
                 {
                     ClearCraneFault();
-                    TelemetrySetCraneFaulted($"Received Crane Fault Response ({Constant.CraneFault}) from Crane");
+                    TelemetrySetCraneFaulted($"Received Crane Fault Response ({CraneFaultResponse}) from Crane");
                 }
                 else if (CraneCommand <= Constant.NoCraneCommand // No command OR LocationFull (-2) OR LocationEmpty (-3) OR InvalidLocation (-4)
                     && (currentStateName == AwaitingGetCompletedState
@@ -2143,10 +2160,7 @@ namespace Mss.Operations
         {
             if (e.TagData.TryGetTagValue(out int count))
             {
-//                 if (CurrentState.Name == MonitoringSemiAutoState)
-//                 {
-//                     RunCurrentStateHandler();
-//                 }
+                PickedStack1Count = count;
             }
         }
 
@@ -2154,10 +2168,7 @@ namespace Mss.Operations
         {
             if (e.TagData.TryGetTagValue(out int count))
             {
-//                 if (CurrentState.Name == MonitoringSemiAutoState)
-//                 {
-//                     RunCurrentStateHandler();
-//                 }
+                PickedStack2Count = count;
             }
         }
 

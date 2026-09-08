@@ -5,6 +5,7 @@ using DacQuest.DFX.Core.DataItems.Collections;
 using DacQuest.DFX.Core.Messaging;
 using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Core.SystemEvents;
+using DevExpress.Charts.Native;
 using DevExpress.CodeParser;
 using DevExpress.XtraCharts.Native;
 using DevExpress.XtraReports.UI;
@@ -210,10 +211,10 @@ namespace Mss.Data
                 _broadcast.PurgeOldBroadcast();
                 foreach (BroadcastItem broadcastItem in broadcastItems)
                 {
-                    _ = _broadcast.Update(broadcastItem.Csn, broadcastItem, false);
-                    if (broadcastItem.Rotation > largestRotationReceived)
+                    _ = _broadcast.Update(broadcastItem.Csn, broadcastItem, true);
+                    if (broadcastItem.Sequence > largestRotationReceived)
                     {
-                        largestRotationReceived = broadcastItem.Rotation;
+                        largestRotationReceived = broadcastItem.Sequence;
                     }
                     touch = true;
                 }
@@ -617,7 +618,7 @@ namespace Mss.Data
             XSystemEvent.Publish(
                 slug.CollectionConfiguration.Name,
                 XSystemEventLevel.Error,
-                fault + " Operation faulted.");
+                "Operation faulted: " + fault);
             return false;
         }
 
@@ -832,6 +833,7 @@ namespace Mss.Data
                     return false;
                 }
                 loadItem.Status = LoadItemStatus.Done;
+                loadItem.Transferring = false;
                 BroadcastItem broadcast = loadItem.Broadcast;
                 broadcast.Shortage = false;
                 loadItem.Broadcast = broadcast;
@@ -959,6 +961,30 @@ namespace Mss.Data
             }
         }
 
+        public static int TwentyPercentBufferSize
+        {
+            get
+            {
+                if (!XConfiguration.TryGetAlias(Constant.TwentyPercentAssignmentBufferSizeAliasName, out string sizeText))
+                {
+                    sizeText = Constant.DefaultTwentyPercentAssignmentBufferSize.ToString();
+                }
+                if (!int.TryParse(sizeText, out int size))
+                {
+                    size = Constant.DefaultTwentyPercentAssignmentBufferSize;
+                }
+                if (size < 1)
+                {
+                    size = 1;
+                }
+                else if (size > Constant.MaxTwentyPercentAssignmentBufferSize)
+                {
+                    size = Constant.MaxTwentyPercentAssignmentBufferSize;
+                }
+                return size;
+            }
+        }
+
         // Must be called from within _LockAll()
         private bool _ProcessPalletAtAssignment1(
             string palletID,
@@ -991,7 +1017,7 @@ namespace Mss.Data
                 Levels availableLevel;
                 if (sendToTwentyPercentArea)
                 {
-                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Twenty) < Constant.TwentyAssignmentBufferSize)
+                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Twenty) < TwentyPercentBufferSize)
                     {
                         SetPitPallet(Levels.None, palletItem, PitCode.Twenty);
                         moveCommand = Constant.Assignment1MoveCommandForward;
@@ -1094,10 +1120,10 @@ namespace Mss.Data
                 Levels availableLevel;
                 if (sendToTwentyPercentArea)
                 {
-                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Twenty) <= Constant.TwentyAssignmentBufferSize)
+                    if (_assignmentPit.Values.Count(p => p.PitCode == PitCode.Twenty) <= TwentyPercentBufferSize)
                     {
                         SetPitPallet(Levels.None, palletItem, PitCode.Twenty);
-                        moveCommand = Constant.Assignment1MoveCommandForward;
+                        moveCommand = Constant.Assignment2MoveCommandTwenty;
                         extendedState = $"Routing Pallet {palletID} to the 20% Area.";
                         return true;
                     }
@@ -1155,7 +1181,7 @@ namespace Mss.Data
                     return true;
                 }
                 moveCommand = Constant.NoMoveCommand;
-                extendedState = $"Pallet {palletID} does not currently have a Destination.";
+                extendedState = $"Pallet {palletID} does not currently have an available Destination.";
                 fault = string.Empty;
                 return false;
             }
@@ -1359,7 +1385,7 @@ namespace Mss.Data
                             if (loadItem.Status != LoadItemStatus.Picked)
                             {
                                 palletItem = loadItem.Pallet;
-                                string error = $"({loadItem.Coordinates})  Load Pallet {palletID} arrived at {level} Router {(int)craneNumber} with a Load Item Status of {loadItem.Status.ToText()}. It should be {LoadItemStatus.Picked.ToText()}. Operation faulted.";
+                                string error = $"Operation faulted:  ({loadItem.Coordinates})  Load Pallet {palletID} arrived at {level} Router {(int)craneNumber} with a Load Item Status of {loadItem.Status.ToText()}. It should be {LoadItemStatus.Picked.ToText()}.";
                                 XSystemEvent.Publish(
                                     $"{level} Router {(int)craneNumber}",
                                     XSystemEventLevel.Error,
@@ -1986,18 +2012,12 @@ namespace Mss.Data
                 if (!_systemSettings.CanDoLoadPick(craneNumber, pickableItem.SlugLevel)
                     || (pickableItem.SlugLevel == Levels.Lower && !lowerOutboundClear)
                     || (pickableItem.SlugLevel == Levels.Upper && !upperOutboundClear)
-                    || !_CanPickToSlug(pickableItem.SlugLetter))
+                    || !_CanPickToSlug(pickableItem.SlugLetter)
+                    || pickableItem.Broadcast.Shortage)
                 {
                     continue;
                 }
-//                 if (pickableItem.SlugLevel == Levels.Lower && !lowerOutboundClear)
-//                 {
-//                     continue;
-//                 }
-//                 if (pickableItem.SlugLevel == Levels.Upper && !upperOutboundClear)
-//                 {
-//                     continue;
-//                 }
+
                 if (!_slugManager.TryGetSlugByLetter(pickableItem.SlugLetter, out Slug slug))
                 {
                     XSystemEvent.Publish(
@@ -2535,11 +2555,64 @@ namespace Mss.Data
             string palletID,
             out PalletItem palletItem,
             out LoadItem loadItem,
-            out int moveCommand,
-            out string extendedState,
             out string fault)
         {
-            throw new NotImplementedException("DataLayer.ProcessPalletAtLoadDirector");
+            palletItem = null;
+            loadItem = null;
+
+            if (!MesInterface.TryFetchPalletItem(
+                operationCode,
+                palletID,
+                out PalletItem fetchedPalletItem,
+                out fault))
+            {
+                return false;
+            }
+
+            _LockAll();
+            try
+            {
+                if (!_slugManager.TryGetSlugByPalletID(
+                    palletID,
+                    out Slug slug,
+                    out loadItem))
+                {
+                    if (TryGetPitItem(level, palletID, out PitItem pitItem))
+                    {
+                        palletItem = pitItem.Pallet;
+                        if (palletItem.IsStack && level == Levels.Lower)
+                        {
+                            RemovePitPallet(palletID);
+                        }
+                        SetPitPallet(level, palletItem, PitCode.Purge);
+                        return false;
+                    }
+                    else
+                    {
+                        palletItem = fetchedPalletItem;
+                        SetPitPallet(level, palletItem, PitCode.Purge);
+                        return false;
+                    }
+                }
+                if (fetchedPalletItem.Status == PalletStatus.Purge)
+                {
+                    RollBackLoadPick(palletID, false);
+                    palletItem = fetchedPalletItem;
+                    SetPitPallet(level, palletItem, PitCode.Purge);
+                    return false;
+                }
+                if (loadItem.SlugLevel != level)
+                {
+                    fault = $"Pallet {palletID} on the wrong level";
+                    return false;
+                }
+                palletItem = loadItem.Pallet;
+                return true;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
         }
 
         #endregion
@@ -2872,15 +2945,21 @@ namespace Mss.Data
                         extendedState = $"(STACK) Moving Stack {palletID} to Empty Pallet Lane.";
                         return true;
                     }
-                    moveCommand = Constant.TransferFinalPurgeMoveCommand;
-                    extendedState = $"(UNEXPECTED) Moving unexpected Pallet {palletID} to Final Purge.";
-                    return true;
+//                     moveCommand = Constant.TransferFinalPurgeMoveCommand;
+//                     extendedState = $"(UNEXPECTED) Moving unexpected Pallet {palletID} to Final Purge.";
+//                     return true;
+                    moveCommand = Constant.NoMoveCommand;
+                    extendedState = string.Empty;
+                    fault = $"Unexpected Pallet {palletID} has no valid destination.";
+                    return false;
                 }
                 if (loadItem.SlugLevel != level)
                 {
                     fault = $"Pallet {palletID} on the wrong level";
                     return false;
                 }
+                loadItem.Transferring = true;
+                slug[loadItem.NodeIndex] = loadItem;
                 palletItem = loadItem.Pallet;
                 moveCommand = loadItem.TransferMoveCommand;
                 extendedState = $"Transferring Pallet {palletID} to {slug.CollectionConfiguration.FriendlyName}, Lane {loadItem.SlugLane}";
@@ -2945,13 +3024,27 @@ namespace Mss.Data
 
         #region  Trailer Load
 
+        public bool IsLoadInvalid(SlugLetter slugLetter)
+        {
+            _LockAll();
+            try
+            {
+                return _slugManager.TryGetSlugByLetter(slugLetter, out Slug slug)
+                    && slug.Cleared;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
         public bool IsLoadLoadable(SlugLetter slugLetter)
         {
             _LockAll();
             try
             {
-                return _slugManager.TryGetSlugByLetter(slugLetter, out Slug load)
-                    && load.LoadLoadable;
+                return _slugManager.TryGetSlugByLetter(slugLetter, out Slug slug)
+                    && slug.LoadLoadable;
             }
             finally
             {
@@ -2959,161 +3052,42 @@ namespace Mss.Data
             }
         }
 
-        public bool FinalizeLoad(
+        public bool TryAutoAcceptLoad(
             SlugLetter slugLetter,
-            string trailerID,
-            out string error)
+            string trailerNumber,
+            out string smallestRotation,
+            out string largestRotation,
+            out int palletCount)
         {
-            XArgumentChecker.ThrowIfNotContainedIn(
-                slugLetter,
-                nameof(slugLetter),
-                new[] { SlugLetter.A, SlugLetter.B });
+            smallestRotation = string.Empty;
+            largestRotation = string.Empty;
+            palletCount = 0;
 
-            int loadNumber;
-            Slug slug;
             _LockAll();
             try
             {
-                loadNumber = slugLetter == SlugLetter.A
-                    ? _systemSettings.SlugALoadNumber
-                    : _systemSettings.SlugBLoadNumber;
-//             }
-//             finally
-//             {
-//                 _UnlockAll();
-//             }
-// 
-// 
-//             _LockAll();
-//             try
-//             {
-                if (slugLetter == SlugLetter.A)
-                {
-                    _systemSettings.SlugALoadNumber = Constant.NoLoadNumber;
-                    _systemSettings.SlugALoadStartedOn = Constant.BeforeBeginningOfTime;
-                    _systemSettings.SlugALoadCompletedOn = Constant.BeforeBeginningOfTime;
-                }
-                else
-                {
-                    _systemSettings.SlugBLoadNumber = Constant.NoLoadNumber;
-                    _systemSettings.SlugBLoadStartedOn = Constant.BeforeBeginningOfTime;
-                    _systemSettings.SlugBLoadCompletedOn = Constant.BeforeBeginningOfTime;
-                }
+                XArgumentChecker.ThrowIfNotContainedIn(
+                    slugLetter,
+                    nameof(slugLetter),
+                    new[] { SlugLetter.A, SlugLetter.B });
 
-                _ = _slugManager.TryGetSlugByLetter(slugLetter, out slug);
-                slug.SafeClear(true);
-                slug.Touch();
-            }
-            finally
-            {
-                _UnlockAll();
-            }
-            IEnumerable<LoadItem> loadItems = slug
-                .Where(item => item.Status == LoadItemStatus.Done)
-                .OrderBy(item => item.Broadcast.Csn);
-
-            if (!_SendLoadDataToMes(
-                loadNumber,
-                loadItems,
-                DateTime.Now,
-                trailerID,
-                out error))
-            {
-                return false;
-            }
-            _ = slug.Lock();
-            slug.SafeClear(true);
-            slug.Touch();
-            slug.Unlock();
-            return true;
-        }
-
-        // Must be called from within _LockAll()
-        private bool _SendLoadDataToMes(
-            int loadNumber,
-            IEnumerable<LoadItem> loadItems,
-            DateTime now,
-            string trailerID,
-            out string error)
-        {
-            string connectionString = XConfiguration.GetConnectionString(Constant.MesConnectionStringName);
-            SqlConnection connection = new SqlConnection(connectionString);
-            connection.Open();
-
-            try
-            {
-                string sql = string.Format(
-                    @"INSERT INTO SHIP_ManifestHdr (ManifestID, Trailer_Nbr, Ship_DT) VALUES ('{0}','{1}','{2}'); SELECT Convert(BigInt, SCOPE_IDENTITY());",
-                    loadNumber,
-                    trailerID,
-                    now.ToString(Constant.LongDateTimeFormat24));
-
-                using (SqlCommand command = new SqlCommand(sql, connection))
-                {
-                    int Hdr_Data_ID = (int)command.ExecuteScalar();
-
-                    //                     IEnumerable<LoadItem> loadItems = load
-                    //                         .Where(item => item.Status == LoadItemStatus.Done)
-                    //                         .OrderBy(item => item.Broadcast.Csn);
-
-                    foreach (LoadItem loadItem in loadItems)
-                    {
-                        BroadcastItem broadcast = loadItem.Broadcast;
-                        PalletItem pallet = loadItem.Pallet;
-
-                        if (pallet.Sku != Constant.Row1EmptyPalletSku
-                            && pallet.Sku != Constant.Row2EmptyPalletSku)
-                        {
-                            sql = string.Format(
-                                @"INSERT INTO SHIP_ManifestDtl (ShipHdrID, PalletNbr, Job_ID, SKU, Vin_Ref_Nbr, Brdcst_Nbr) VALUES ({0},'{1}','{2}','{3}','{4}',{5});",
-                                Hdr_Data_ID,
-                                pallet.PalletID,
-                                pallet.JobID,
-                                pallet.Sku,
-                                broadcast.Vin,
-                                broadcast.Rotation);
-                            command.CommandText = sql;
-                            _ = command.ExecuteNonQuery();
-                        }
-                    }
-
-                    sql = $"INSERT INTO SHIP_ManifestQueue (ShipHdrID) VALUES ({Hdr_Data_ID});";
-                    command.CommandText = sql;
-                    _ = command.ExecuteNonQuery();
-                }
-                error = null;
-                return true;
-            }
-            catch (Exception x)
-            {
-                x.PublishSystemEvent(nameof(_SendLoadDataToMes));
-                error = x.Message;
-                return false;
-            }
-        }
-
-        public bool TryAutoAcceptLoad(SlugLetter slugLetter)
-        {
-            _LockAll();
-            try
-            {
                 if (!_systemSettings.AutoAcceptLoadsEnabled)
                 {
                     return false;
                 }
 
-                if (!_slugManager.TryGetSlugByLetter(slugLetter, out Slug load)
-                    || !load.LoadDone)
-                {
-                    return false;
-                }
-
-                if (!_TryAcceptLoad(load, out string error))
+                if (!TryAcceptLoad(
+                    slugLetter,
+                    trailerNumber,
+                    out smallestRotation,
+                    out largestRotation,
+                    out palletCount,
+                    out string error))
                 {
                     if (!error.IsNullOrEmpty())
                     {
                         XSystemEvent.Publish(
-                            "AutoAcceptLoad",
+                            nameof(TryAutoAcceptLoad),
                             XSystemEventLevel.Error,
                             $" {slugLetter.SlugDisplayName()} Auto Accept Error: {error}.");
                     }
@@ -3126,6 +3100,492 @@ namespace Mss.Data
                 _UnlockAll();
             }
         }
+
+        public bool TryAcceptLoad(
+            SlugLetter slugLetter,
+            string trailerNumber,
+            out string smallestRotation,
+            out string largestRotation,
+            out int palletCount,
+            out string error)
+        {
+            smallestRotation = string.Empty;
+            largestRotation = string.Empty;
+            palletCount = 0;
+
+            _LockAll();
+            try
+            {
+                if (!_slugManager.TryGetSlugByLetter(slugLetter, out Slug slug))
+                {
+                    error = $"Slug letter '{slugLetter.ToText()}' not found!";
+                    XSystemEvent.Publish(
+                        "AcceptLoad",
+                        XSystemEventLevel.Error,
+                        error);
+                    return false;
+                }
+
+                if (!slug.LoadDone)
+                {
+                    error = $"Cannot ACCEPT {slugLetter.SlugDisplayName()} when it is not Done.";
+                    XSystemEvent.Publish(
+                        slugLetter.SlugDisplayName(),
+                        XSystemEventLevel.Error,
+                        error);
+                    return false;
+                }
+
+                if (!_TryArchiveLoad(
+                    slug,
+                    trailerNumber,
+                    out DateTime startedOn,
+                    out DateTime completedOn,
+                    out error))
+                {
+                    return false;
+                }
+
+                string smallestCsn = slug.SmallestCsnOnDoneLoad;
+                string largestCsn = slug.LargestCsnOnDoneLoad;
+                if (!_SendLoadToMes(
+                    slugLetter,
+                    trailerNumber,
+                    smallestCsn,
+                    largestCsn,
+                    out error))
+                {
+                    return false;
+                }
+
+                smallestRotation = BroadcastItem.RotationTextFromCsn(smallestCsn);
+                largestRotation = BroadcastItem.RotationTextFromCsn(largestCsn);
+                palletCount = slug.DonePalletCount;
+
+                slug.SetLoadable();
+                return true;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+        // Must be called from within _LockAll()
+        private bool _TryArchiveLoad(
+            Slug slug,
+            string trailerNumber,
+            out DateTime startedOn,
+            out DateTime completedOn,
+//             out string smallestRotation,
+//             out string largestRotation,
+//             out int palletCount,
+            out string error)
+        {
+            int loadNumber;
+            if (slug.SlugLetter == SlugLetter.A)
+            {
+                loadNumber = _systemSettings.SlugALoadNumber;
+                startedOn = _systemSettings.SlugALoadStartedOn;
+                completedOn = _systemSettings.SlugALoadCompletedOn;
+            }
+            else
+            {
+                loadNumber = _systemSettings.SlugBLoadNumber;
+                startedOn = _systemSettings.SlugBLoadStartedOn;
+                completedOn = _systemSettings.SlugBLoadCompletedOn;
+            }
+
+//             smallestRotation = BroadcastItem.RotationTextFromCsn(slug.SmallestCsnOnDoneLoad);
+//             largestRotation = BroadcastItem.RotationTextFromCsn(slug.LargestCsnOnDoneLoad);
+//             palletCount = slug.DonePalletCount;
+
+            if (!LA.LoadArchive.BuildLoadArchive(
+                slug,
+                loadNumber,
+                startedOn,
+                completedOn,
+                trailerNumber,
+                out LA.LoadArchive loadArchive,
+                out error))
+            {
+                return false;
+            }
+
+            if (!LA.LoadArchive.ArchiveLoadData(
+                loadArchive,
+                out error))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        // Must be called from within _LockAll()
+        private bool _SendLoadToMes(
+            SlugLetter slugLetter,
+            string trailerNumber,
+            string smallestCsn,
+            string largestCsn,
+            out string error)
+        {
+            XArgumentChecker.ThrowIfNotContainedIn(
+                slugLetter,
+                nameof(slugLetter),
+                new[] { SlugLetter.A, SlugLetter.B });
+
+            int loadNumber;
+            DateTime startedOn;
+            DateTime completedOn;
+            Slug slug;
+            IEnumerable<LoadItem> loadItems;
+            _LockAll();
+            try
+            {
+                if (slugLetter == SlugLetter.A)
+                {
+                    loadNumber = _systemSettings.SlugALoadNumber;
+                    startedOn = _systemSettings.SlugALoadStartedOn;
+                    completedOn = _systemSettings.SlugALoadCompletedOn;
+                    slug = _slugA;
+                }
+                else
+                {
+                    loadNumber = _systemSettings.SlugBLoadNumber;
+                    startedOn = _systemSettings.SlugBLoadStartedOn;
+                    completedOn = _systemSettings.SlugBLoadCompletedOn;
+                    slug = _slugB;
+                }
+
+                loadItems = slug
+                    .Where(item => item.Status == LoadItemStatus.Done)
+                    .OrderBy(item => item.Broadcast.Csn);
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+
+            if (!_WriteLoadDataToMes(
+                loadNumber,
+                slugLetter.ToString(),
+                startedOn,
+                completedOn,
+                smallestCsn,
+                largestCsn,
+                loadItems,
+                trailerNumber,
+                out error))
+            {
+                return false;
+            }
+//             _ = slug.Lock();
+//             slug.SafeClear(true);
+//             slug.Touch();
+//             slug.Unlock();
+            return true;
+        }
+
+        // Must be called from within _LockAll()
+        //         private bool _TryAcceptLoad(
+        //             Slug slug,
+        //             string trailerNumber,
+        //             out string error)
+        //         {
+        //             DateTime now = DateTime.Now;
+        //             DateTime startedOn = now;
+        //             DateTime completedOn = now;
+        //             int loadNumber;
+        //             if (slug.SlugLetter == SlugLetter.A)
+        //             {
+        //                 loadNumber = _systemSettings.SlugALoadNumber;
+        //                 startedOn = _systemSettings.SlugALoadStartedOn;
+        //                 completedOn = _systemSettings.SlugALoadCompletedOn;
+        //             }
+        //             else
+        //             {
+        //                 loadNumber = _systemSettings.SlugBLoadNumber;
+        //                 startedOn = _systemSettings.SlugBLoadStartedOn;
+        //                 completedOn = _systemSettings.SlugBLoadCompletedOn;
+        //             }
+        // 
+        //             string smallestCsn = slug.SmallestCsnOnDoneLoad;
+        //             string largestCsn = slug.LargestCsnOnDoneLoad;
+        //             int palletCount = slug.DonePalletCount;
+        // 
+        //             if (!LA.LoadArchive.BuildLoadArchive(
+        //                 slug,
+        //                 loadNumber,
+        //                 startedOn,
+        //                 completedOn,
+        //                 trailerNumber,
+        //                 out LA.LoadArchive loadArchive,
+        //                 out error))
+        //             {
+        //                 return false;
+        //             }
+        // 
+        //             if (!LA.LoadArchive.ArchiveLoadData(
+        //                 loadArchive,
+        //                 out error))
+        //             {
+        //                 return false;
+        //             }
+        // 
+        //             slug.SetLoadable();
+        //             return true;
+        //         }
+
+        // Must be called from within _LockAll()
+
+        private bool _WriteLoadDataToMes(
+            int loadNumber,
+            string slugLetter,
+            DateTime startedOn,
+            DateTime completedOn,
+            string smallestCsn,
+            string largestCsn,
+            IEnumerable<LoadItem> loadItems,
+            string trailerNumber,
+            out string error)
+        {
+            string connectionString = XConfiguration.GetConnectionString(Constant.MesConnectionStringName);
+
+            try
+            {
+                int headerID;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string sql = string.Format(
+                        "INSERT INTO SHIP_LoadHeader (LoadNo, Slug, StartedDTTM, FinishedDTTM, PalletCount, StartCSN, StopCSN, TrailerNo) "
+                            + " VALUES (              {0},    '{1}','{2}',       '{3}',        {4},         '{5}',    '{6}',   '{7}'); "
+                            + " SELECT Convert(BigInt, SCOPE_IDENTITY());",
+                        loadNumber,
+                        slugLetter[0],
+                        startedOn.ToString("G"),
+                        completedOn.ToString("G"),
+                        loadItems.Count(),
+                        smallestCsn,
+                        largestCsn,
+                        trailerNumber);
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        headerID = (int)command.ExecuteScalar();
+
+                        foreach (LoadItem loadItem in loadItems)
+                        {
+                            BroadcastItem broadcast = loadItem.Broadcast;
+                            PalletItem pallet = loadItem.Pallet;
+
+                            if (pallet.Sku != Constant.Row1EmptyPalletSku
+                                && pallet.Sku != Constant.Row2EmptyPalletSku)
+                            {
+                                sql = string.Format(
+                                    "INSERT INTO SHIP_LoadDetail (HeaderID, VIN,  VehicleRow, PalletSKU, JobID) "
+                                        + " VALUES (              {0},      '{1}',{2},        '{3}',     '{4}');",
+                                    headerID,
+                                    broadcast.Vin,
+                                    (int)pallet.VehicleRow,
+                                    pallet.Sku,
+                                    pallet.JobID);
+                                command.CommandText = sql;
+                                _ = command.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                    using (SqlCommand command = new SqlCommand("INSERT INTO [SHIP_LoadQueue] (HeaderID) VALUES (@HeaderID)", connection))
+                    {
+                        _ = command.Parameters.AddWithValue("@HeaderID", headerID);
+                        _ = command.ExecuteNonQuery();
+                    }
+                    error = null;
+                    return true;
+                }
+            }
+            catch (Exception x)
+            {
+                x.PublishSystemEvent(nameof(_WriteLoadDataToMes));
+                error = x.Message;
+                return false;
+            }
+        }
+
+        public bool TryFinalizeLoad(
+            SlugLetter slugLetter,
+            out string fault)
+        {
+            XArgumentChecker.ThrowIfNotContainedIn(
+                slugLetter,
+                nameof(slugLetter),
+                new[] { SlugLetter.A, SlugLetter.B });
+
+//             int loadNumber;
+//             Slug slug;
+            _LockAll();
+            try
+            {
+                Slug slug;
+                if (slugLetter == SlugLetter.A)
+                {
+//                     loadNumber = _systemSettings.SlugALoadNumber;
+                    slug = _slugA;
+                }
+                else
+                {
+//                     loadNumber = _systemSettings.SlugBLoadNumber;
+                    slug = _slugB;
+                }
+                if (!slug.LoadLoadable)
+                {
+                    fault = $"Attempted to Finalize Load that was not set to Loadable";
+                    return false;
+                }
+//             }
+//             finally
+//             {
+//                 _UnlockAll();
+//             }
+// 
+//             try
+//             {
+//                 string connectionString = XConfiguration.GetConnectionString(Constant.MesConnectionStringName);
+//                 using (SqlConnection connection = new SqlConnection(connectionString))
+//                 {
+//                     connection.Open();
+//                     int headerID = 0;
+//                     using (SqlCommand command = new SqlCommand("SELECT [HeaderID] FROM [SHIP_LoadHeader] WHERE [LoadNo] = @Loado", connection))
+//                     {
+//                         _ = command.Parameters.AddWithValue("@LoadNo", loadNumber);
+//                         var result = command.ExecuteScalar();
+//                         if (result == null)
+//                         {
+//                             fault = $"Unable to insert record into the SHIP_LoadQueue table for Load Number {loadNumber}. It was not found in the SHIP_LoadHeader table.";
+//                             XSystemEvent.Publish(
+//                                 nameof(TryFinalizeLoad),
+//                                 XSystemEventLevel.Error,
+//                                 fault);
+//                                 return false;
+//                         }
+//                         headerID = Convert.ToInt32(result);
+//                     }
+//                     using (SqlCommand command = new SqlCommand("INSERT INTO [SHIP_LoadQueue] (HeaderID) VALUES (@HeaderID)", connection))
+//                     {
+//                         _ = command.Parameters.AddWithValue("@HeaderID", headerID);
+//                         _ = command.ExecuteNonQuery();
+//                     }
+//                 }
+//             }
+//             catch (Exception x)
+//             {
+//                 x.PublishSystemEvent(nameof(TryFinalizeLoad));
+//                 fault = x.Message;
+//                 return false;
+//             }
+// 
+//             _LockAll();
+//             try
+//             {
+                if (slugLetter == SlugLetter.A)
+                {
+                    _systemSettings.SlugALoadStartedOn = Constant.BeforeBeginningOfTime;
+                    _systemSettings.SlugALoadCompletedOn = Constant.BeforeBeginningOfTime;
+                    slug = _slugA;
+                }
+                else
+                {
+                    _systemSettings.SlugBLoadStartedOn = Constant.BeforeBeginningOfTime;
+                    _systemSettings.SlugBLoadCompletedOn = Constant.BeforeBeginningOfTime;
+                    slug = _slugB;
+                }
+                slug.SafeClear(true);
+                slug.Touch();
+                fault = string.Empty;
+                return true;
+            }
+            finally
+            {
+                _UnlockAll();
+            }
+        }
+
+//         public bool FinalizeLoad(
+//             SlugLetter slugLetter) //,
+// //             string trailerNumber,
+// //             out string smallestRotation,
+// //             out string largestRotation,
+// //             out int palletCount,
+// //             out string error)
+//         {
+//             XArgumentChecker.ThrowIfNotContainedIn(
+//                 slugLetter,
+//                 nameof(slugLetter),
+//                 new[] { SlugLetter.A, SlugLetter.B });
+// 
+// //             int loadNumber;
+// //             DateTime startedOn;
+// //             DateTime completedOn;
+// //             Slug slug;
+// //             string smallestCsn;
+// //             string largestCsn;
+// //             IEnumerable<LoadItem> loadItems;
+//             _LockAll();
+//             try
+//             {
+//                 if (slugLetter == SlugLetter.A)
+//                 {
+// //                     loadNumber = _systemSettings.SlugALoadNumber;
+// //                     startedOn = _systemSettings.SlugALoadStartedOn;
+//                     _systemSettings.SlugALoadStartedOn = Constant.BeforeBeginningOfTime;
+// //                     completedOn = _systemSettings.SlugALoadCompletedOn;
+//                     _systemSettings.SlugALoadCompletedOn = Constant.BeforeBeginningOfTime;
+//                     slug = _slugA;
+//                 }
+//                 else
+//                 {
+// //                     loadNumber = _systemSettings.SlugBLoadNumber;
+// //                     startedOn = _systemSettings.SlugBLoadStartedOn;
+//                     _systemSettings.SlugBLoadStartedOn = Constant.BeforeBeginningOfTime;
+// //                     completedOn = _systemSettings.SlugBLoadCompletedOn;
+//                     _systemSettings.SlugBLoadCompletedOn = Constant.BeforeBeginningOfTime;
+// //                     slug = _slugB;
+//                 }
+// 
+// //                 smallestCsn = slug.SmallestCsnOnDoneLoad;
+// //                 largestCsn = slug.LargestCsnOnDoneLoad;
+// //                 loadItems = slug
+// //                     .Where(item => item.Status == LoadItemStatus.Done)
+// //                     .OrderBy(item => item.Broadcast.Csn);
+// //                 smallestRotation = BroadcastItem.RotationTextFromCsn(smallestCsn).Right(4);
+// //                 largestRotation = BroadcastItem.RotationTextFromCsn(largestCsn).Right(4);
+// //                 palletCount = loadItems.Count();
+//             }
+//             finally
+//             {
+//                 _UnlockAll();
+//             }
+// 
+//             if (!_SendLoadDataToMes(
+//                 loadNumber,
+//                 slugLetter.ToString(),
+//                 startedOn,
+//                 completedOn,
+//                 smallestCsn,
+//                 largestCsn,
+//                 loadItems,
+//                 trailerNumber,
+//                 out error))
+//             {
+//                 return false;
+//             }
+//             _ = slug.Lock();
+//             slug.SafeClear(true);
+//             slug.Touch();
+//             slug.Unlock();
+//             return true;
+//         }
 
         #endregion
 
@@ -3151,135 +3611,134 @@ namespace Mss.Data
                 Dictionary<string, int> skuCounts = _storage.GetPickableSkuCounts(
                     out List<PalletPickModeKeys> reservedPalletKeys);
 
-                if (!_slugManager.TryGetPrimarySlug(
+                if (_slugManager.TryGetPrimarySlug(
                     _systemSettings.GetItem(),
                     out primarySlug,
                     out secondarySlug))
                 {
-                    return;
-                }
-
-                IEnumerable<LoadItem> primaryItems = primarySlug.GetLoadInPickSearchOrder();
-                foreach (LoadItem loadItem in primaryItems)
-                {
-                    bool shortage = false;
-                    LoadItemStatus status = loadItem.Status;
-                    if (status == LoadItemStatus.Waiting
-                        || status == LoadItemStatus.Pending
-                        || status == LoadItemStatus.Pickable)
+                    IEnumerable<LoadItem> primaryItems = primarySlug.GetLoadInPickSearchOrder();
+                    foreach (LoadItem loadItem in primaryItems)
                     {
-                        BroadcastItem broadcast = loadItem.Broadcast;
-                        if (broadcast.PickMode == PickMode.ByPalletID)
+                        bool shortage = false;
+                        LoadItemStatus status = loadItem.Status;
+                        if (status == LoadItemStatus.Waiting   //??? Waiting?
+                            || status == LoadItemStatus.Pending
+                            || status == LoadItemStatus.Pickable)
                         {
-                            PalletPickModeKeys match = reservedPalletKeys
-                                .FirstOrDefault(k => k.PalletID == broadcast.PickModeKey);
-                            shortage = match == null;
-                            if (!shortage)
+                            BroadcastItem broadcast = loadItem.Broadcast;
+                            if (broadcast.PickMode == PickMode.ByPalletID)
                             {
-                                _ = reservedPalletKeys.Remove(match);
+                                PalletPickModeKeys match = reservedPalletKeys
+                                    .FirstOrDefault(k => k.PalletID == broadcast.PickModeKey);
+                                shortage = match == null;
+                                if (!shortage)
+                                {
+                                    _ = reservedPalletKeys.Remove(match);
+                                }
                             }
-                        }
-                        else if (broadcast.PickMode == PickMode.ByJobID)
-                        {
-                            PalletPickModeKeys match = reservedPalletKeys
-                                .FirstOrDefault(k => k.JobID == broadcast.PickModeKey);
-                            shortage = match == null;
-                            if (!shortage)
+                            else if (broadcast.PickMode == PickMode.ByJobID)
                             {
-                                _ = reservedPalletKeys.Remove(match);
-                            }
-                        }
-                        else
-                        {
-                            string sku = loadItem.Broadcast.Sku;
-                            if (!skuCounts.TryGetValue(sku, out int count))
-                            {
-                                shortage = true;
+                                PalletPickModeKeys match = reservedPalletKeys
+                                    .FirstOrDefault(k => k.JobID == broadcast.PickModeKey);
+                                shortage = match == null;
+                                if (!shortage)
+                                {
+                                    _ = reservedPalletKeys.Remove(match);
+                                }
                             }
                             else
                             {
-                                if (--count < 0)
+                                string sku = loadItem.Broadcast.Sku;
+                                if (!skuCounts.TryGetValue(sku, out int count))
                                 {
                                     shortage = true;
-                                    _ = skuCounts.Remove(sku);
                                 }
                                 else
                                 {
-                                    skuCounts[sku] = count;
+                                    if (--count < 0)
+                                    {
+                                        shortage = true;
+                                        _ = skuCounts.Remove(sku);
+                                    }
+                                    else
+                                    {
+                                        skuCounts[sku] = count;
+                                    }
                                 }
                             }
                         }
+                        if (loadItem.Broadcast.Shortage != shortage)
+                        {
+                            BroadcastItem broadcast = loadItem.Broadcast;
+                            broadcast.Shortage = shortage;
+                            loadItem.Broadcast = broadcast;
+                            _ = primarySlug.SetAt(loadItem.NodeIndex, loadItem, true);
+                            touchPrimary = true;
+                        }
                     }
-                    if (loadItem.Broadcast.Shortage != shortage)
-                    {
-                        BroadcastItem broadcast = loadItem.Broadcast;
-                        broadcast.Shortage = shortage;
-                        loadItem.Broadcast = broadcast;
-                        _ = primarySlug.SetAt(loadItem.NodeIndex, loadItem, true);
-                        touchPrimary = true;
-                    }
-                }
 
-                IEnumerable<LoadItem> secondaryItems = secondarySlug.GetLoadInPickSearchOrder();
-                foreach (LoadItem loadItem in secondaryItems)
-                {
-                    bool shortage = false;
-                    LoadItemStatus status = loadItem.Status;
-                    if (status == LoadItemStatus.Waiting
-                        || status == LoadItemStatus.Pending
-                        || status == LoadItemStatus.Pickable)
+                    IEnumerable<LoadItem> secondaryItems = secondarySlug.GetLoadInPickSearchOrder();
+                    foreach (LoadItem loadItem in secondaryItems)
                     {
-                        BroadcastItem broadcast = loadItem.Broadcast;
-                        if (broadcast.PickMode == PickMode.ByPalletID)
+                        bool shortage = false;
+                        LoadItemStatus status = loadItem.Status;
+                        if (status == LoadItemStatus.Waiting   //??? Waiting?
+                            || status == LoadItemStatus.Pending
+                            || status == LoadItemStatus.Pickable)
                         {
-                            PalletPickModeKeys match = reservedPalletKeys
-                                .FirstOrDefault(k => k.PalletID == broadcast.PickModeKey);
-                            shortage = match == null;
-                            if (!shortage)
+                            BroadcastItem broadcast = loadItem.Broadcast;
+                            if (broadcast.PickMode == PickMode.ByPalletID)
                             {
-                                _ = reservedPalletKeys.Remove(match);
+                                PalletPickModeKeys match = reservedPalletKeys
+                                    .FirstOrDefault(k => k.PalletID == broadcast.PickModeKey);
+                                shortage = match == null;
+                                if (!shortage)
+                                {
+                                    _ = reservedPalletKeys.Remove(match);
+                                }
                             }
-                        }
-                        else if (broadcast.PickMode == PickMode.ByJobID)
-                        {
-                            PalletPickModeKeys match = reservedPalletKeys
-                                .FirstOrDefault(k => k.JobID == broadcast.PickModeKey);
-                            shortage = match == null;
-                            if (!shortage)
+                            else if (broadcast.PickMode == PickMode.ByJobID)
                             {
-                                _ = reservedPalletKeys.Remove(match);
-                            }
-                        }
-                        else
-                        {
-                            string sku = loadItem.Broadcast.Sku;
-                            if (!skuCounts.TryGetValue(sku, out int count))
-                            {
-                                shortage = true;
+                                PalletPickModeKeys match = reservedPalletKeys
+                                    .FirstOrDefault(k => k.JobID == broadcast.PickModeKey);
+                                shortage = match == null;
+                                if (!shortage)
+                                {
+                                    _ = reservedPalletKeys.Remove(match);
+                                }
                             }
                             else
                             {
-                                if (--count < 0)
+                                string sku = loadItem.Broadcast.Sku;
+                                if (!skuCounts.TryGetValue(sku, out int count))
                                 {
                                     shortage = true;
-                                    _ = skuCounts.Remove(sku);
                                 }
                                 else
                                 {
-                                    skuCounts[sku] = count;
+                                    if (--count < 0)
+                                    {
+                                        shortage = true;
+                                        _ = skuCounts.Remove(sku);
+                                    }
+                                    else
+                                    {
+                                        skuCounts[sku] = count;
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (loadItem.Broadcast.Shortage != shortage)
-                    {
-                        BroadcastItem broadcast = loadItem.Broadcast;
-                        broadcast.Shortage = shortage;
-                        loadItem.Broadcast = broadcast;
-                        _ = secondarySlug.SetAt(loadItem.NodeIndex, loadItem, true);
-                        touchSecondary = true;
+                        if (loadItem.Broadcast.Shortage != shortage)
+                        {
+                            BroadcastItem broadcast = loadItem.Broadcast;
+                            broadcast.Shortage = shortage;
+                            loadItem.Broadcast = broadcast;
+                            _ = secondarySlug.SetAt(loadItem.NodeIndex, loadItem, true);
+                            touchSecondary = true;
+                        }
                     }
                 }
+
 
                 List<BroadcastItem> broadcastItems = _broadcast
                     .GetCurrentBroadcastItems(
@@ -3408,154 +3867,59 @@ namespace Mss.Data
             }
         }
 
-        public bool TryAcceptLoad(SlugLetter slugLetter, out string error)
-        {
-            _LockAll();
-            try
-            {
-                if (!_slugManager.TryGetSlugByLetter(slugLetter, out Slug load))
-                {
-                    error = $"Slug letter '{slugLetter.ToText()}' not found!";
-                    XSystemEvent.Publish(
-                        "AcceptLoad",
-                        XSystemEventLevel.Error,
-                        error);
-                    return false;
-                }
-
-                if (!load.LoadDone)
-                {
-                    error = $"Cannot ACCEPT {slugLetter.SlugDisplayName()} when it is not Done.";
-                    XSystemEvent.Publish(
-                        slugLetter.SlugDisplayName(),
-                        XSystemEventLevel.Error,
-                        error);
-                    return false;
-                }
-
-                return _TryAcceptLoad(load, out error);
-            }
-            finally
-            {
-                _UnlockAll();
-            }
-        }
-
-        // Must be called from within _LockAll()
-        private bool _TryAcceptLoad(Slug load, out string error)
-        {
-            DateTime now = DateTime.Now;
-            DateTime firstPalletTimestamp = now;
-            DateTime lastPalletTimestamp = now;
-            DateTime loadDoneTimestamp = now;
-            int loadNumber;
-            if (load.SlugLetter == SlugLetter.A)
-            {
-                loadNumber = _systemSettings.SlugALoadNumber;
-//                 firstPalletTimestamp = _systemSettings.LoadAFirstPalletTimestamp;
-//                 lastPalletTimestamp = _systemSettings.LoadALastPalletTimestamp;
-//                 loadDoneTimestamp = _systemSettings.LoadADoneTimestamp;
-                firstPalletTimestamp = now;
-                lastPalletTimestamp = now;
-                loadDoneTimestamp = now;
-            }
-            else
-            {
-                loadNumber = _systemSettings.SlugBLoadNumber;
-//                 firstPalletTimestamp = _systemSettings.LoadBFirstPalletTimestamp;
-//                 lastPalletTimestamp = _systemSettings.LoadBLastPalletTimestamp;
-//                 loadDoneTimestamp = _systemSettings.LoadBDoneTimestamp;
-                firstPalletTimestamp = now;
-                lastPalletTimestamp = now;
-                loadDoneTimestamp = now;
-            }
-
-//             int smallestRotation = load.SmallestRotationOnDoneLoad;
-//             int largestRotation = load.LargestRotationOnDoneLoad;
-//             int previousRotation = _systemSettings.LargestRotationLoadedOnTrailer;
-            int smallestRotation = 0;
-            int largestRotation = 0;
-            int previousRotation = 0;
-
-            if (!LA.LoadArchive.BuildLoadArchive(
-                load,
-                loadNumber,
-                Constant.NoTrailerID,
-                firstPalletTimestamp,
-                lastPalletTimestamp,
-                loadDoneTimestamp,
-                now,
-                previousRotation,
-                out LA.LoadArchive loadArchive,
-                out error))
-            {
-                return false;
-            }
-
-            if (!LA.LoadArchive.ArchiveLoadData(
-                loadArchive,
-                out error))
-            {
-                return false;
-            }
-
-            load.SetLoadable();
-            return true;
-        }
-
-        public bool TryAutoReleaseBroadcast(out string error)
-        {
-            error = null;
-            _LockAll();
-            try
-            {
-                if (!_systemSettings.AutoReleaseBroadcastEnabled)
-                {
-                    return false;
-                }
-
-                if (!_slugManager.GetTargetSlugForBroadcastRelease(
-                    _systemSettings.GetItem(),
-                    out Slug targetSlug))
-                {
-                    return false;
-                }
-
-                List<BroadcastItem> releasableBroadcastItems = _broadcast.GetReleasableItems(
-                    _systemSettings.LastCsnReleased,
-                    _systemSettings.LargestRotationReceived);
-
-                int waitingCount = targetSlug.Cleared
-                    ? Constant.LoadSize
-                    : targetSlug.WaitingCount;
-
-                if (!_GetAutoCountToRelease(
-                    releasableBroadcastItems.Count,
-                    waitingCount,
-                    out int countToRelease))
-                {
-                    return false;
-                }
-                // countToRelease will always be <= releasableBroadcastItems.Count
-                if (!_ReleaseBroadcast(
-                    true,
-                    releasableBroadcastItems.Take(countToRelease).ToList(),
-                    targetSlug,
-                    out error))
-                {
-                    return false;
-                }
-                XSystemEvent.Publish(
-                    "AutoReleaseBroadcast",
-                    XSystemEventLevel.Information,
-                    $"{countToRelease} Broadcast Records were automatically released to {targetSlug.SlugLetter.SlugDisplayName()}.");
-                return true;
-            }
-            finally
-            {
-                _UnlockAll();
-            }
-        }
+//         public bool TryAutoReleaseBroadcast(out string error)
+//         {
+//             error = null;
+//             _LockAll();
+//             try
+//             {
+//                 if (!_systemSettings.AutoReleaseBroadcastEnabled)
+//                 {
+//                     return false;
+//                 }
+// 
+//                 if (!_slugManager.GetTargetSlugForBroadcastRelease(
+//                     _systemSettings.GetItem(),
+//                     out Slug targetSlug))
+//                 {
+//                     return false;
+//                 }
+// 
+//                 List<BroadcastItem> releasableBroadcastItems = _broadcast.GetReleasableItems(
+//                     _systemSettings.LastCsnReleased,
+//                     _systemSettings.LargestRotationReceived);
+// 
+//                 int waitingCount = targetSlug.Cleared
+//                     ? Constant.LoadSize
+//                     : targetSlug.WaitingCount;
+// 
+//                 if (!_GetAutoCountToRelease(
+//                     releasableBroadcastItems.Count,
+//                     waitingCount,
+//                     out int countToRelease))
+//                 {
+//                     return false;
+//                 }
+//                 // countToRelease will always be <= releasableBroadcastItems.Count
+//                 if (!_ReleaseBroadcast(
+//                     true,
+//                     releasableBroadcastItems.Take(countToRelease).ToList(),
+//                     targetSlug,
+//                     out error))
+//                 {
+//                     return false;
+//                 }
+//                 XSystemEvent.Publish(
+//                     "AutoReleaseBroadcast",
+//                     XSystemEventLevel.Information,
+//                     $"{countToRelease} Broadcast Records were automatically released to {targetSlug.SlugLetter.SlugDisplayName()}.");
+//                 return true;
+//             }
+//             finally
+//             {
+//                 _UnlockAll();
+//             }
+//         }
 
         public bool TryReleaseBroadcast(
             SlugLetter slugLetter,
@@ -3661,17 +4025,17 @@ namespace Mss.Data
 
                 if (targetSlug.SlugLetter == SlugLetter.A)
                 {
-                    _systemSettings.SlugALoadNumber = _systemSettings.NextLoadNumber;
                     if (firstReleaseToSlug)
                     {
+                        _systemSettings.SlugALoadNumber = _systemSettings.NextLoadNumber;
                         _systemSettings.SlugALoadStartedOn = DateTime.Now;
                     }
                 }
                 else // has to be Slug B
                 {
-                    _systemSettings.SlugBLoadNumber = _systemSettings.NextLoadNumber;
                     if (firstReleaseToSlug)
                     {
+                        _systemSettings.SlugBLoadNumber = _systemSettings.NextLoadNumber;
                         _systemSettings.SlugBLoadStartedOn = DateTime.Now;
                     }
                 }
@@ -3817,15 +4181,25 @@ namespace Mss.Data
             }
             string largestCsn = broadcastToRecover.Last().Csn;
             string smallestCsn = broadcastToRecover.First().Csn;
+            int largestRotation = int.Parse(largestCsn.Left(largestCsn.Length - 1));
+            int smallestRotation = int.Parse(smallestCsn.Left(smallestCsn.Length - 1));
             if (_systemSettings.LastCsnReleased == largestCsn)
             {
-                _systemSettings.LastCsnReleased = smallestCsn.Right(1) == Constant.VehicleRow1CsnSuffix
-                    ? $"{broadcastToRecover.First().Rotation}{Constant.VehicleRow2CsnSuffix}"
-                    : $"{broadcastToRecover.First().Rotation - 1}{Constant.VehicleRow1CsnSuffix}";
+                string lastCsnReleasedCandidate = smallestCsn.Right(1) == Constant.VehicleRow1CsnSuffix
+                    ? $"{smallestRotation}{Constant.VehicleRow2CsnSuffix}"
+                    : $"{smallestRotation - 1}{Constant.VehicleRow1CsnSuffix}";
+                if (!_broadcast.ContainsKey(lastCsnReleasedCandidate))
+                {
+                    lastCsnReleasedCandidate = $"{smallestRotation - 1}{Constant.VehicleRow1CsnSuffix}";
+                }
+                _systemSettings.LastCsnReleased = lastCsnReleasedCandidate;
+//                 _systemSettings.LastCsnReleased = smallestCsn.Right(1) == Constant.VehicleRow1CsnSuffix
+//                     ? $"{smallestRotation}{Constant.VehicleRow2CsnSuffix}"
+//                     : $"{smallestRotation - 1}{Constant.VehicleRow1CsnSuffix}";
             }
             else
             {
-                errorMessage = $"You are attempting to abort a load which was not the last load started. You must first abort the last load started.";
+                errorMessage = $"You are attempting to abort a load which was not the last load released. You must first abort the last load released.";
                 return false;
             }
             if (load.SlugLetter == SlugLetter.A)
@@ -3915,6 +4289,10 @@ namespace Mss.Data
                     if (newPalletStatus != PalletStatus.Invalid)
                     {
                         palletItem.Status = newPalletStatus;
+                        if (newPalletStatus == PalletStatus.Hold)
+                        {
+                            palletItem.HoldCode = messageData.NewHoldCode;
+                        }
                     }
                     else if (messageData.MarkAudit)
                     {
@@ -3962,9 +4340,18 @@ namespace Mss.Data
                         || _ChangePitPalletStatus(Levels.Lower, statusChange, out error)
                         || _ChangeAssignmentPitPalletStatus(statusChange, out error))
                     {
-                        entry.Error = null;
-                        entry.Processed = true;
-                        entry.ProcessedOn = DateTime.Now;
+                        if (error.IsNullOrWhiteSpace())
+                        {
+                            entry.Error = null;
+                            entry.Processed = true;
+                            entry.ProcessedOn = DateTime.Now;
+                        }
+                        else
+                        {
+                            entry.Error = error;
+                            entry.Processed = false;
+                            entry.ProcessedOn = DateTime.Now;
+                        }
                     }
                     else
                     {
@@ -4018,10 +4405,12 @@ namespace Mss.Data
 //                     return false;
 //                 }
 
-                if (palletItem.IsStack)
+                if (palletItem.IsStack
+                    && newStatus != PalletStatus.Purge
+                    && newStatus != PalletStatus.OK)
                 {
-                    error = $"StatusChange Change ID {statusChange.ChangeID}. Cannot change the Pallet Status of a Stack.";
-                    return false;
+                    error = $"Cannot change the Pallet Status of a Stack {palletItem.PalletID} to {newStatus.ToText()}.";
+                    return true;  // Special Case
                 }
                 if (newStatus != PalletStatus.Purge)
                 {
@@ -4035,10 +4424,10 @@ namespace Mss.Data
                         else
                         {
                             palletItem.HoldCode = statusChange.HoldCode;
-                            //                         if (!statusChange.Comment.IsNullOrWhiteSpace())
-                            //                         {
-                            //                             palletItem.Comment = statusChange.Comment;
-                            //                         }
+//                         if (!statusChange.Comment.IsNullOrWhiteSpace())
+//                         {
+//                             palletItem.Comment = statusChange.Comment;
+//                         }
                         }
                     }
                     else if (newStatus == PalletStatus.OK || newStatus == PalletStatus.Reserved)
@@ -4089,12 +4478,14 @@ namespace Mss.Data
             {
                 // pitItem != null is guaranteed here
                 PalletItem palletItem = pitItem.Pallet;
-                if (palletItem.IsStack)
-                {
-                    error = $"Cannot change the Pallet Status of PIT Stack {palletItem.PalletID}.";
-                    return false;
-                }
                 PalletStatus newStatus = statusChange.PalletStatus;
+                if (palletItem.IsStack
+                    && newStatus != PalletStatus.Purge
+                    && newStatus != PalletStatus.OK)
+                {
+                    error = $"Cannot change the Pallet Status of PIT Stack {palletItem.PalletID} to {newStatus.ToText()}.";
+                    return true;  // Special Case
+                }
                 if (newStatus == PalletStatus.Invalid
                     || newStatus == PalletStatus.Unknown)
                 {
@@ -4201,12 +4592,14 @@ namespace Mss.Data
             {
                 // pitItem != null is guaranteed here
                 PalletItem palletItem = pitItem.Pallet;
-                if (palletItem.IsStack)
-                {
-                    error = $"Cannot change the Pallet Status of Assignment PIT Stack {palletItem.PalletID}.";
-                    return false;
-                }
                 PalletStatus newStatus = statusChange.PalletStatus;
+                if (palletItem.IsStack
+                    && newStatus != PalletStatus.Purge
+                    && newStatus != PalletStatus.OK)
+                {
+                    error = $"Cannot change the Pallet Status of Assignment PIT Stack {palletItem.PalletID} to {newStatus.ToText()}.";
+                    return true;  // Special Case
+                }
                 if (newStatus == PalletStatus.Invalid
                     || newStatus == PalletStatus.Unknown)
                 {

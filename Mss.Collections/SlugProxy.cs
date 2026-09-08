@@ -41,6 +41,14 @@ namespace Mss.Collections
             }
         }
 
+        public bool LoadLoadable
+        {
+            get
+            {
+                return Items.All(l => l.Status == LoadItemStatus.Loadable || l.IsInvalid)
+                    && !Items.All(l => l.IsInvalid);
+            }
+        }
         public List<LoadItem> GetSlugInPickSearchOrder()
         {
             List<LoadItem> allItems = Items;
@@ -66,5 +74,33 @@ namespace Mss.Collections
 
         public bool IsInvalid => Items.All(l => l.IsInvalid);
 
+        public string SmallestRotation
+        {
+            get
+            {
+                LoadItem smallest = Items
+                    .Where(l => l.Status == LoadItemStatus.Done)
+                    .OrderBy(l => l.Broadcast.Csn)
+                    .FirstOrDefault();
+                return smallest != null
+                    ? BroadcastItem.RotationTextFromCsn(smallest.Broadcast.Csn)
+                    : "Error!";
+            }
+        }
+
+        public string LargestRotation
+        {
+            get
+            {
+                LoadItem largest = Items
+                    .Where(l => l.Status == LoadItemStatus.Done || l.Status == LoadItemStatus.Loadable)
+                    .OrderBy(l => l.Broadcast.Csn)
+                    .LastOrDefault();
+                return largest != null
+                    ? BroadcastItem.RotationTextFromCsn(largest.Broadcast.Csn)
+                    : "Error!";
+            }
+        }
+        public int PalletCount => Items.Count(l => l.Status >= LoadItemStatus.Done);
     }
 }

@@ -30,11 +30,11 @@ namespace Mss.Collections
             }
         }
 
-        public bool AutoReleaseBroadcastEnabled
-        {
-            get => GetItemProperty<bool>(nameof(SystemSettingsItem.AutoReleaseBroadcastEnabled));
-            set => SetItemProperty(nameof(SystemSettingsItem.AutoReleaseBroadcastEnabled), value);
-        }
+//         public bool AutoReleaseBroadcastEnabled
+//         {
+//             get => GetItemProperty<bool>(nameof(SystemSettingsItem.AutoReleaseBroadcastEnabled));
+//             set => SetItemProperty(nameof(SystemSettingsItem.AutoReleaseBroadcastEnabled), value);
+//         }
 
         public bool AutoAcceptLoadsEnabled
         {
@@ -54,11 +54,11 @@ namespace Mss.Collections
             set => SetItemProperty(nameof(SystemSettingsItem.FifoMode), value);
         }
 
-        public LoadDirectorMode LoadDirectorMode
-        {
-            get => GetItemProperty<LoadDirectorMode>(nameof(SystemSettingsItem.LoadDirectorMode));
-            set => SetItemProperty(nameof(SystemSettingsItem.LoadDirectorMode), value);
-        }
+//         public LoadDirectorMode LoadDirectorMode
+//         {
+//             get => GetItemProperty<LoadDirectorMode>(nameof(SystemSettingsItem.LoadDirectorMode));
+//             set => SetItemProperty(nameof(SystemSettingsItem.LoadDirectorMode), value);
+//         }
 
         public int LargestRotationReceived
         {

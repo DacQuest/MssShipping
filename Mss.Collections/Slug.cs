@@ -129,12 +129,14 @@ namespace Mss.Collections
                 {
                     return;
                 }
-                loadItem.Status = LoadItemStatus.Pickable;
-                loadItem.Pallet = new PalletItem();
-                loadItem.Crane = CraneNumber.None;
-                loadItem.PickedOn = Constant.BeginningOfTime;
-
-                this[loadItem.NodeIndex] = loadItem;
+                if (loadItem.Status <= LoadItemStatus.Presequenced)
+                {
+                    loadItem.Status = LoadItemStatus.Pickable;
+                    loadItem.Pallet = new PalletItem();
+                    loadItem.Crane = CraneNumber.None;
+                    loadItem.PickedOn = Constant.BeginningOfTime;
+                    this[loadItem.NodeIndex] = loadItem;
+                }
             }
             finally
             {
@@ -296,6 +298,70 @@ namespace Mss.Collections
                 {
                     return this.All(l => l.Status == LoadItemStatus.Loadable || l.IsInvalid)
                         && !this.All(l => l.IsInvalid);
+                }
+                finally
+                {
+                    Unlock();
+                }
+            }
+        }
+
+        public string SmallestCsnOnDoneLoad
+        {
+            get
+            {
+                _ = Lock();
+                try
+                {
+                    LoadItem smallest = this
+                        .Where(l => l.Status == LoadItemStatus.Done)
+                        .OrderBy(l => l.Broadcast.Csn)
+                        .FirstOrDefault();
+                    if (smallest != null)
+                    {
+                        return smallest.Broadcast.Csn;
+                    }
+                    return "Error!";
+                }
+                finally
+                {
+                    Unlock();
+                }
+            }
+        }
+
+        public string LargestCsnOnDoneLoad
+        {
+            get
+            {
+                _ = Lock();
+                try
+                {
+                    LoadItem largest = this
+                        .Where(l => l.Status == LoadItemStatus.Done)
+                        .OrderBy(l => l.Broadcast.Csn)
+                        .LastOrDefault();
+                    if (largest != null)
+                    {
+                        return largest.Broadcast.Csn;
+                    }
+                    return "Error!";
+                }
+                finally
+                {
+                    Unlock();
+                }
+            }
+        }
+
+        public int DonePalletCount
+        {
+            get
+            {
+                _ = Lock();
+                try
+                {
+                   return this.Count(l => l.Status == LoadItemStatus.Done);
                 }
                 finally
                 {

@@ -89,7 +89,7 @@ namespace Mss.Collections
                 return;
             }
 
-            int currentRotation = BroadcastItem.RotationFromCsn(lastCsnReleased);
+            int currentRotation = BroadcastItem.SequenceFromCsn(lastCsnReleased);
             if (lastCsnReleased.Right(1) == Constant.VehicleRow2CsnSuffix)
             {
                 string matchingRow1Csn = BroadcastItem.MakeCsn(currentRotation, Constant.VehicleRow1CsnSuffix);
@@ -106,14 +106,14 @@ namespace Mss.Collections
             while (currentRotation <= largestRotationReceived)
             {
                 IEnumerable<BroadcastItem> currentItems = broadcastItems
-                    .Where(b => b.Rotation == currentRotation)
+                    .Where(b => b.Sequence == currentRotation)
                     .OrderBy(b => b.Csn);
 
                 int count = currentItems.Count();
                 if (count == 2)
                 {
-                    if (!broadcastItems.First().Csn.EndsWith(Constant.VehicleRow2CsnSuffix)
-                        || !broadcastItems.Last().Csn.EndsWith(Constant.VehicleRow1CsnSuffix))
+                    if (!currentItems.First().Csn.EndsWith(Constant.VehicleRow2CsnSuffix)
+                        || !currentItems.Last().Csn.EndsWith(Constant.VehicleRow1CsnSuffix))
                     {
                         foreach (BroadcastItem currentItem in currentItems)
                         {
@@ -173,7 +173,7 @@ namespace Mss.Collections
                     .Where(b =>
                     {
                         return b.Csn.IsGreaterThan(lastCsnReleased, true)
-                            && b.Rotation <= largestRotationReceived;
+                            && b.Sequence <= largestRotationReceived;
                     })
                     .OrderBy(b => b.Csn);
                 return broadcastItems.ToList();
@@ -236,9 +236,9 @@ namespace Mss.Collections
         public void PurgeOldBroadcast()
         {
             _ = Lock();
-            bool oldSetting = InhibitChangeNotifications;
-            InhibitChangeNotifications = true;
-            bool touch = false;
+//             bool oldSetting = InhibitChangeNotifications;
+//             InhibitChangeNotifications = true;
+//             bool touch = false;
             try
             {
                 int activeCount = this.Where(b => b.Value.Active).Count();
@@ -255,8 +255,8 @@ namespace Mss.Collections
                         .Take(countToPurge);
                     foreach (BroadcastItem broadcastItem in listToPurge)
                     {
-                        _ = Remove(broadcastItem.Csn);
-                        touch = true;
+                        _ = Remove(broadcastItem.Csn, true);
+//                         touch = true;
                     }
                 }
             }
@@ -266,11 +266,11 @@ namespace Mss.Collections
             }
             finally
             {
-                InhibitChangeNotifications = oldSetting;
-                if (touch)
-                {
-                    Touch();
-                }
+//                 InhibitChangeNotifications = oldSetting;
+//                 if (touch)
+//                 {
+//                     Touch();
+//                 }
                 Unlock();
             }
         }

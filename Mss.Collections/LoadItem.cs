@@ -25,6 +25,8 @@ namespace Mss.Collections
         public bool IsDoneOrInvalid => Status == LoadItemStatus.Done
                     || IsInvalid;
 
+        public bool IsLoadLabelLocation => NodeIndex == Constant.LoadLabelSlugLocationNodeIndex;
+
         public static int LoadIndexFromGridRowColumn(
             Levels gridLevel,
             int row,

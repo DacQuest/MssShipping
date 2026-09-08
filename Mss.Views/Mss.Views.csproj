@@ -621,6 +621,9 @@
     <EmbeddedResource Include="PitView.resx">
       <DependentUpon>PitView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PlcTagsView.resx">
+      <DependentUpon>PlcTagsView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -628,6 +631,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="QuickBinFillForm.resx">
       <DependentUpon>QuickBinFillForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReprintLabelConfirmationForm.resx">
+      <DependentUpon>ReprintLabelConfirmationForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SearchResultReport.resx">
       <DependentUpon>SearchResultReport.cs</DependentUpon>
@@ -732,6 +738,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Magna.ico" />
+    <None Include="Resources\PurpleRightArrow48.png" />
+    <None Include="Resources\PurpleRightArrow24.png" />
     <None Include="Resources\GreenPlus48.png" />
     <None Include="Resources\RedMinus48.png" />
   </ItemGroup>

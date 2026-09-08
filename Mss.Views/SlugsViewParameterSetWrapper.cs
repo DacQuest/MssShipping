@@ -35,13 +35,13 @@ namespace Mss.Views
             PickListValues = "true,false")]
         public bool AllowRollback => _allowRollback;
 
-        private bool _allowCloseLoad = false;
+        private bool _allowCloseReopenLoad = false;
         [XConfigurationProperty(
             @"",
             false,
             DefaultValue = "false",
             PickListValues = "true,false")]
-        public bool AllowCloseLoad => _allowCloseLoad;
+        public bool AllowCloseReopenLoad => _allowCloseReopenLoad;
 
 //         private bool _allowShortLoad = false;
 //         [XConfigurationProperty(
@@ -75,11 +75,11 @@ namespace Mss.Views
             PickListValues = "true,false")]
         public bool AllowReleaseBroadcast => _allowReleaseBroadcast;
 
-        private bool _showShortages = false;
+        private bool _showShortages = true;
         [XConfigurationProperty(
             @"",
             false,
-            DefaultValue = "false",
+            DefaultValue = "true",
             PickListValues = "true,false")]
         public bool ShowShortages => _showShortages;
 

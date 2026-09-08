@@ -27,6 +27,9 @@ namespace Mss.Common
         //         public static bool ValidJobID(this string jobID)
         //             => !jobID.IsNullOrWhiteSpace();
 
+        public static bool ValidTrailerNumber(this string trailerNumber)
+            => !trailerNumber.IsNullOrWhiteSpace() && trailerNumber != Constant.NoTrailerNumber;
+
         public static bool ValidSku(this string sku) //??? USE XValueValidator?
             => !sku.IsNullOrWhiteSpace();
 

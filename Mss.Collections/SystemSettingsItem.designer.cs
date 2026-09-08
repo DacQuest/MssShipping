@@ -32,13 +32,13 @@ namespace Mss.Collections
             set => SetEnum(nameof(PreferredSlug), value);
         }
 
-        [XDataItemProperty(
-           Comment = ".")]
-        public bool AutoReleaseBroadcastEnabled
-        {
-            get => GetBoolean(nameof(AutoReleaseBroadcastEnabled));
-            set => SetBoolean(nameof(AutoReleaseBroadcastEnabled), value);
-        }
+//         [XDataItemProperty(
+//            Comment = ".")]
+//         public bool AutoReleaseBroadcastEnabled
+//         {
+//             get => GetBoolean(nameof(AutoReleaseBroadcastEnabled));
+//             set => SetBoolean(nameof(AutoReleaseBroadcastEnabled), value);
+//         }
 
         [XDataItemProperty(
            Comment = ".")]
@@ -64,13 +64,13 @@ namespace Mss.Collections
             set => SetEnum(nameof(FifoMode), value);
         }
 
-        [XDataItemProperty(
-            Comment = ".")]
-        public LoadDirectorMode LoadDirectorMode
-        {
-            get => GetEnum<LoadDirectorMode>(nameof(LoadDirectorMode));
-            set => SetEnum(nameof(LoadDirectorMode), value);
-        }
+//         [XDataItemProperty(
+//             Comment = ".")]
+//         public LoadDirectorMode LoadDirectorMode
+//         {
+//             get => GetEnum<LoadDirectorMode>(nameof(LoadDirectorMode));
+//             set => SetEnum(nameof(LoadDirectorMode), value);
+//         }
 
         [XDataItemProperty(
             Comment = "The largest Rotation Number received.")]

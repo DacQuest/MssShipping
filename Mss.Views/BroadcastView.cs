@@ -30,17 +30,18 @@ namespace Mss.Views
         private SystemSettingsProxy _systemSettingsProxy;
         private SlugProxy _slugAProxy;
         private SlugProxy _slugBProxy;
-//         private StorageProxy _storageProxy;
+        //         private StorageProxy _storageProxy;
+        private Font _rowHeaderFont = new Font("Segoe UI", 9, FontStyle.Bold);
 
 
         public BroadcastView()
         {
             InitializeComponent();
 
-            _broadcastGrid.DataSource = _bindingSource;
-            _broadcastGrid.AutoGenerateColumns = false;
-            _broadcastGrid.AutoSize = false;
-            _broadcastGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            _dgvBroadcast.DataSource = _bindingSource;
+            _dgvBroadcast.AutoGenerateColumns = false;
+            _dgvBroadcast.AutoSize = false;
+            _dgvBroadcast.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
         }
 
@@ -67,11 +68,11 @@ namespace Mss.Views
             //             XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
             //             _storageProxy.DataItemChanged += _Storage_DataItemChanged;
 
-            _broadcastGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            _broadcastGrid.ColumnHeadersHeight = 30; // Set to desired height in pixels
-            _broadcastGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-
-            _broadcastGrid.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+            _dgvBroadcast.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _dgvBroadcast.ColumnHeadersHeight = 30; // Set to desired height in pixels
+            _dgvBroadcast.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+//             _broadcastGrid.RowHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            _dgvBroadcast.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
 
             DataGridViewImageColumn imageColumn;
             DataGridViewTextBoxColumn column;
@@ -82,7 +83,7 @@ namespace Mss.Views
                 HeaderText = "",
                 Name = "StatusImageColumn"
             };
-            _ = _broadcastGrid.Columns.Add(imageColumn);
+            _ = _dgvBroadcast.Columns.Add(imageColumn);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -92,7 +93,7 @@ namespace Mss.Views
                 MinimumWidth = 100,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _ = _broadcastGrid.Columns.Add(column);
+            _ = _dgvBroadcast.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -102,7 +103,7 @@ namespace Mss.Views
                 MinimumWidth = 100,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _ = _broadcastGrid.Columns.Add(column);
+            _ = _dgvBroadcast.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -112,7 +113,7 @@ namespace Mss.Views
                 MinimumWidth = 100,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _ = _broadcastGrid.Columns.Add(column);
+            _ = _dgvBroadcast.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -122,7 +123,7 @@ namespace Mss.Views
                 MinimumWidth = 140,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _ = _broadcastGrid.Columns.Add(column);
+            _ = _dgvBroadcast.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -132,7 +133,7 @@ namespace Mss.Views
                 MinimumWidth = 100,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _ = _broadcastGrid.Columns.Add(column);
+            _ = _dgvBroadcast.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -142,7 +143,7 @@ namespace Mss.Views
                 MinimumWidth = 120,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            _ = _broadcastGrid.Columns.Add(column);
+            _ = _dgvBroadcast.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -152,7 +153,7 @@ namespace Mss.Views
                 SortMode = DataGridViewColumnSortMode.Automatic,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
             };
-            _ = _broadcastGrid.Columns.Add(column);
+            _ = _dgvBroadcast.Columns.Add(column);
 
 //             _navigatorBtnEdit.Visible = _parameters.AllowEdit;
             _navigatorBtnRelease.Visible = _parameters.AllowRelease;
@@ -251,7 +252,7 @@ namespace Mss.Views
 
 //            _bindingSource.DataSource = _broadcastItems;
             _bindingSource.DataSource = broadcastItems;
-            _broadcastGrid.Update();
+            _dgvBroadcast.Update();
             _UpdateRecoverButton();
             _UpdateReleaseButton();
         }
@@ -630,6 +631,12 @@ namespace Mss.Views
             return true;
         }
 
+        public override void ViewClosed()
+        {
+            _rowHeaderFont?.Dispose();
+            base.ViewClosed();
+        }
+
         private void _NavigatorBtnExport_Click(object sender, EventArgs e)
         {
 //             _ExportToCsv();
@@ -683,6 +690,31 @@ namespace Mss.Views
         private void _NavigatorBtnClose_Click(object sender, EventArgs e)
         {
             CloseView();
+        }
+
+        private void _DgvBroadcast_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            DataGridView grid = (DataGridView)sender;
+            string rowNum = (e.RowIndex + 1).ToString();
+
+            StringFormat centerFormat = new StringFormat
+            {
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
+
+            Rectangle headerBounds = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                grid.RowHeadersWidth,
+                e.RowBounds.Height);
+
+            e.Graphics.DrawString(
+                rowNum,
+                _rowHeaderFont,
+                SystemBrushes.ControlText,
+                headerBounds,
+                centerFormat);
         }
 
         //public override void ViewClosed()

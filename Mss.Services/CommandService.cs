@@ -89,10 +89,10 @@ namespace Mss.Services
                 _CloseLoad_OnMessage,
                 XMessageScopes.All);
 
-            Subscribe(
-                AcceptLoadMessageData.AcceptLoadMessageTopic,
-                _AcceptLoad_OnMessage,
-                XMessageScopes.All);
+//             Subscribe(
+//                 AcceptLoadMessageData.AcceptLoadMessageTopic,
+//                 _AcceptLoad_OnMessage,
+//                 XMessageScopes.All);
 
             Subscribe(
                 RecoverBroadcastMessageData.RecoverBroadcastMessageTopicName,
@@ -154,19 +154,19 @@ namespace Mss.Services
             SetExtendedServiceStatus("Waiting...");
         }
 
-        private void _AcceptLoad_OnMessage(
-            object sender,
-            XMessageEventArgs e)
-        {
-            AcceptLoadMessageData md = (AcceptLoadMessageData)e.MessageData;
-            SetExtendedServiceStatus($"Accepting Load on {md.SlugLetter.SlugDisplayName()}...");
-            if (_dataLayer.TryAcceptLoad(md.SlugLetter, out string error))
-            {
-                md.SystemEvent?.Publish();
-            }
-            md.PublishResponse(new AcceptLoadMessageData(md.SlugLetter, error));
-            SetExtendedServiceStatus("Waiting...");
-        }
+//         private void _AcceptLoad_OnMessage(
+//             object sender,
+//             XMessageEventArgs e)
+//         {
+//             AcceptLoadMessageData md = (AcceptLoadMessageData)e.MessageData;
+//             SetExtendedServiceStatus($"Accepting Load on {md.SlugLetter.SlugDisplayName()}...");
+//             if (_dataLayer.TryAcceptLoad(md.SlugLetter, out string error))
+//             {
+//                 md.SystemEvent?.Publish();
+//             }
+//             md.PublishResponse(new AcceptLoadMessageData(md.SlugLetter, error));
+//             SetExtendedServiceStatus("Waiting...");
+//         }
 
         private void _AbortLoad_OnMessage(
             object sender,

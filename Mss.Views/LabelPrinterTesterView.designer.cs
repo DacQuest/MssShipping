@@ -95,7 +95,7 @@
             this._btnPrintTrailerLabel.TabIndex = 3;
             this._btnPrintTrailerLabel.Text = "Trailer Label";
             this._btnPrintTrailerLabel.UseVisualStyleBackColor = true;
-            this._btnPrintTrailerLabel.Click += new System.EventHandler(this._BtnPrintTrailerLabel_Click);
+            this._btnPrintTrailerLabel.Click += new System.EventHandler(this._BtnPrintLoadLabel_Click);
             // 
             // LabelPrinterTesterView
             // 

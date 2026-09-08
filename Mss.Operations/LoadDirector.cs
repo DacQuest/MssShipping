@@ -18,9 +18,6 @@ namespace Mss.Operations
 {
     public class LoadDirector : LineOperationBase
     {
-        private bool _rejectedByOperator = false;
-        private bool _broadcastSkuMismatch = false;
-
         private LoadDirectorParameterSetWrapper _parameters;
 
         protected Levels Level => _parameters.Level;
@@ -41,8 +38,8 @@ namespace Mss.Operations
             }
         }
 
-        protected bool AutoReleaseNonLoadPalletsInManualMode
-            => _parameters.AutoReleaseNonLoadPalletsInManualMode;
+        protected bool AutoReleaseNonLoadPallets
+            => _parameters.AutoReleaseNonLoadPallets;
 
         protected string CurrentLoadItemName = "Load Item";
         protected LoadItem CurrentLoadItem { get; set; }
@@ -69,30 +66,45 @@ namespace Mss.Operations
             set => SetVariable(IsLoadPalletName, value);
         }
 
-        public bool AutoMode => SystemSettings.LoadDirectorMode == LoadDirectorMode.Auto;
-
-        public bool ManualLabelPrinterAvailable => _parameters.ManualLabelPrinterAvailable;
-
-        protected string PrintLeftLabelName = "Print Front Left Label";
-        protected bool PrintLeftLabel
+        protected string IsStackName = "Is Stack";
+        protected bool IsStack
         {
-            get => GetVariable<bool>(PrintLeftLabelName);
-            set => SetVariable(PrintLeftLabelName, value);
+            get => GetVariable<bool>(IsStackName);
+            set => SetVariable(IsStackName, value);
         }
 
-        protected string PrintRightLabelName = "Print Front Right Label";
-        protected bool PrintRightLabel
+        protected string RejectedByOperatorName = "Rejected By Operator";
+        protected bool RejectedByOperator
         {
-            get => GetVariable<bool>(PrintRightLabelName);
-            set => SetVariable(PrintRightLabelName, value);
+            get => GetVariable<bool>(RejectedByOperatorName);
+            set => SetVariable(RejectedByOperatorName, value);
         }
 
-        protected string PrintRearLabelName = "Print Rear Label";
-        protected bool PrintRearLabel
-        {
-            get => GetVariable<bool>(PrintRearLabelName);
-            set => SetVariable(PrintRearLabelName, value);
-        }
+        //         public bool AutoMode => SystemSettings.LoadDirectorMode == LoadDirectorMode.Auto;
+        //         public bool ManualMode => true;
+
+        //         public bool ManualLabelPrinterAvailable => _parameters.ManualLabelPrinterAvailable;
+
+        //         protected string PrintLeftLabelName = "Print Front Left Label";
+        //         protected bool PrintLeftLabel
+        //         {
+        //             get => GetVariable<bool>(PrintLeftLabelName);
+        //             set => SetVariable(PrintLeftLabelName, value);
+        //         }
+
+        //         protected string PrintRightLabelName = "Print Front Right Label";
+        //         protected bool PrintRightLabel
+        //         {
+        //             get => GetVariable<bool>(PrintRightLabelName);
+        //             set => SetVariable(PrintRightLabelName, value);
+        //         }
+
+        //         protected string PrintRearLabelName = "Print Rear Label";
+        //         protected bool PrintRearLabel
+        //         {
+        //             get => GetVariable<bool>(PrintRearLabelName);
+        //             set => SetVariable(PrintRearLabelName, value);
+        //         }
 
         //==================================================================================
 
@@ -108,23 +120,20 @@ namespace Mss.Operations
         {
             XOperationUIMessageData messageData = new XOperationUIMessageData();
             messageData.SetMessageValue(
-                Constant.LD_PalletItemName,
-                CurrentPallet);
-            messageData.SetMessageValue(
                 Constant.LD_LoadItemName,
                 CurrentLoadItem);
             messageData.SetMessageValue(
-                Constant.LD_IsAutoModeName,
-                SystemSettings != null && AutoMode);
+                Constant.LD_PalletItemName,
+                CurrentPallet);
             messageData.SetMessageValue(
-                Constant.LD_AutoReleaseNonLoadPalletsInManualModeName,
-                AutoReleaseNonLoadPalletsInManualMode);
+                Constant.LD_IsStackName,
+                IsStack);
+            messageData.SetMessageValue(
+                Constant.LD_AutoReleaseNonLoadPalletsName,
+                AutoReleaseNonLoadPallets);
             messageData.SetMessageValue(
                 Constant.LD_IsAwaitingOperatorResponseName,
                 CurrentState.Name == AwaitingOperatorResponseState);
-            messageData.SetMessageValue(
-                Constant.LD_BroadcastSkuMismatchName,
-                _broadcastSkuMismatch);
             return messageData;
         }
 
@@ -133,16 +142,12 @@ namespace Mss.Operations
 
         protected override void ResetOperationVariables()
         {
-            _broadcastSkuMismatch = false;
-            _rejectedByOperator = false;
+            RejectedByOperator = false;
             IsLoadPallet = false;
+            IsStack = false;
             PalletAccepted = false;
             PalletRejected = false;
             CurrentLoadItem = null;
-
-//             PrintLeftLabel = SystemSettings.PrintFrontLeftLabelAt == PrintingOperation.LoadDirector;
-//             PrintRightLabel = SystemSettings.PrintFrontRightLabelAt == PrintingOperation.LoadDirector;
-//             PrintRearLabel = SystemSettings.PrintRearLabelAt == PrintingOperation.LoadDirector;
 
             base.ResetOperationVariables();
         }
@@ -151,24 +156,53 @@ namespace Mss.Operations
         {
             base.DoStart();
 
-//             PrintLeftLabel = SystemSettings.PrintFrontLeftLabelAt == PrintingOperation.LoadDirector;
-//             PrintRightLabel = SystemSettings.PrintFrontRightLabelAt == PrintingOperation.LoadDirector;
-//             PrintRearLabel = SystemSettings.PrintRearLabelAt == PrintingOperation.LoadDirector;
-
-            _broadcastSkuMismatch = false;
-            _rejectedByOperator = false;
+            RejectedByOperator = false;
             IsLoadPallet = false;
+            IsStack = false;
             PalletAccepted = false;
             PalletRejected = false;
             CurrentLoadItem = null;
 
             SystemSettings.DataItemChanged += _SystemSettings_DataItemChanged;
 
+            if (Level == Levels.Lower)
+            {
+                Subscribe(
+                    PrintLabelMessageData.PrintLoadLabelRequest,
+                    _PrintLoadLabelRequest_OnMessage,
+                    XMessageScopes.All);
+            }
+
+        }
+
+        protected override void AutoSubscribe()
+        {
+            Subscribe(
+                PrintLabelMessageData.ReprintShippingLabelRequest,
+                _ReprintShippingLabelRequest_OnMessage,
+                XMessageScopes.All);
+
+//             if (Level == Levels.Lower)
+//             {
+//                 Subscribe(
+//                     PrintLabelMessageData.PrintLoadLabelRequest,
+//                     _PrintLoadLabelRequest_OnMessage,
+//                     XMessageScopes.All);
+//             }
+
         }
 
         protected override void DoStop()
         {
+            if (Level == Levels.Lower)
+            {
+                Unsubscribe(
+                    PrintLabelMessageData.PrintLoadLabelRequest,
+                    XMessageScopes.All);
+            }
+
             SystemSettings.DataItemChanged -= _SystemSettings_DataItemChanged;
+
             base.DoStop();
         }
 
@@ -176,10 +210,6 @@ namespace Mss.Operations
         {
             if (CurrentState.Name == AwaitingPalletState)
             {
-//                 PrintLeftLabel = SystemSettings.PrintFrontLeftLabelAt == PrintingOperation.LoadDirector;
-//                 PrintRightLabel = SystemSettings.PrintFrontRightLabelAt == PrintingOperation.LoadDirector;
-//                 PrintRearLabel = SystemSettings.PrintRearLabelAt == PrintingOperation.LoadDirector;
-
                 RunCurrentStateHandler();
             }
         }
@@ -192,30 +222,43 @@ namespace Mss.Operations
 
         protected override void ProcessPalletStateHandler()
         {
-            //             SetExtendedState(
-            //                 $"Processing Pallet {PalletID}",
+//             SetExtendedState(
+//                 $"Processing Pallet {PalletID}",
 
-            //                 true);
-            int moveCommand = Constant.NoMoveCommand;
-            string extendedState = string .Empty;
+//                 true);
 
-            if (!PalletAccepted && !PalletRejected && PalletID.ValidFrontPalletID())
+            int moveCommand;
+            string extendedState;
+
+            if (PalletID.ValidPalletID() && !PalletAccepted && !PalletRejected)
             {
-
                 if (DataLayer.ProcessPalletAtLoadDirector(
                     OperationCode,
                     Level,
                     PalletID,
                     out PalletItem palletItem,
                     out LoadItem loadItem,
-                    out moveCommand,
-                    out extendedState,
                     out string fault))
                 {
                     IsLoadPallet = true;
                     CurrentLoadItem = loadItem;
                     CurrentPallet = CurrentLoadItem.Pallet;
-                    _rejectedByOperator = false;
+                    RejectedByOperator = false;
+                    if (!_PrintShippingLabels(CurrentLoadItem, out fault))
+                    {
+                        SetOperationFaulted(fault);
+                        return;
+                    }
+//                     if (CurrentLoadItem.IsLoadLabelLocation
+//                          && !_PrintLoadLabel(
+//                              Constant.DefaultTrailerID,
+//                              CurrentLoadItem.SlugLetter,
+//                              out fault))
+//                     {
+//                         SetOperationFaulted(fault);
+//                         return;
+//                     }
+                    SetCurrentState(AwaitingOperatorResponseState);
                 }
                 else
                 {
@@ -227,64 +270,18 @@ namespace Mss.Operations
                     IsLoadPallet = false;
                     CurrentLoadItem = null;
                     CurrentPallet = palletItem;
-                    _rejectedByOperator = false;
-
-                }
-
-                if (AutoMode)
-                {
-                    if (IsLoadPallet)
-                    {
-                        BroadcastItem broadcastItem = CurrentLoadItem.Broadcast;
-
-                        if (broadcastItem.Sku != CurrentPallet.Sku)
-                        {
-                            XSystemEvent.Publish(
-                                "SKU Mismatch",
-                                XSystemEventLevel.Notification,
-                                $" SKU Mismatch between Broadcast and Load Pallet. Pallet={CurrentPallet.PalletID} SKU={CurrentPallet.Sku}. Broadcast SKU={broadcastItem.Sku} CSN={broadcastItem.Csn}");
-                            _broadcastSkuMismatch = true;
-                            PalletRejected = true;
-                            _rejectedByOperator = false;
-                            SendUIMessage();
-                        }
-                    }
-                    else
+                    RejectedByOperator = false;
+                    IsStack = CurrentPallet.IsStack;
+                    if (AutoReleaseNonLoadPallets || IsStack)
                     {
                         PalletRejected = true;
-                        _rejectedByOperator = false;
-                    }
-                }
-                else
-                {
-                    if (IsLoadPallet)
-                    {
-                        BroadcastItem broadcastItem = CurrentLoadItem.Broadcast;
-
-                        if (broadcastItem.Sku != CurrentPallet.Sku)
-                        {
-                            XSystemEvent.Publish(
-                                "SKU Mismatch",
-                                XSystemEventLevel.Notification,
-                                $" SKU Mismatch between Broadcast and Load Pallet. Pallet={CurrentPallet.PalletID} SKU={CurrentPallet.Sku}. Broadcast SKU={broadcastItem.Sku} CSN={broadcastItem.Csn}");
-                            _broadcastSkuMismatch = true;
-                            PalletRejected = true;
-                            _rejectedByOperator = false;
-                            SendUIMessage();
-                        }
+                        RejectedByOperator = false;
                     }
                     else
                     {
-                        if (AutoReleaseNonLoadPalletsInManualMode)
-                        {
-                            PalletRejected = true;
-                            _rejectedByOperator = false;
-                        }
-                        else
-                        {
-                            SetCurrentState(AwaitingOperatorResponseState);
-                        }
+                        SetCurrentState(AwaitingOperatorResponseState);
                     }
+
                 }
                 SendUIMessage();
             }
@@ -304,7 +301,45 @@ namespace Mss.Operations
             out int moveCommand,
             out string extendedState)
         {
-            throw new NotImplementedException("LoadDirector is not yet implemented!");
+            moveCommand = Constant.NoMoveCommand;
+            extendedState = string.Empty;
+            if (PalletRejected)
+            {
+                if (IsLoadPallet)
+                {
+                    DataLayer.RollBackLoadPick(PalletID, false);
+                    DataLayer.SetPitPallet(
+                        Level,
+                        CurrentPallet,
+                        PitCode.Purge);
+                    if (RejectedByOperator)
+                    {
+                        XSystemEvent.Publish(
+                            $"{Level.ToText()} Load Director",
+                            XSystemEventLevel.Notification,
+                            $"Pallet {PalletID} was rejected by the operator on the {Level} Level");
+                    }
+                }
+                moveCommand = Constant.LoadDirectorMoveCommandRelease;
+                extendedState = IsStack
+                    ? Level == Levels.Upper
+                        ? $"({Constant.PalletTypeStack})  Releasing Stack {PalletID} to Pallet Return"
+                        : $"({Constant.PalletTypeStack})  Releasing Stack {PalletID} to Purge"
+                    : IsLoadPallet
+                        ? $"({Constant.PalletTypeRejected})  Releasing Rejected Load Pallet {PalletID}"
+                        : $"({Constant.PalletTypePurge})  Releasing Purge Pallet {PalletID}";
+            }
+            else if (PalletAccepted)
+            {
+                if (!DataLayer.TrySetPresequenced(PalletID, out string fault))
+                {
+                    SetOperationFaulted(fault);
+                    return false;
+                }
+                moveCommand = Constant.LoadDirectorMoveCommandRelease;
+                extendedState = $"({Constant.PalletTypeLoad})  Releasing Load Pallet {PalletID}";
+            }
+            return moveCommand != Constant.NoMoveCommand;
         }
 
         #endregion
@@ -329,8 +364,7 @@ namespace Mss.Operations
                 SendUIMessage();
                 return;
             }
-            string currentStateName = CurrentState.Name;
-            if (currentStateName == AwaitingOperatorResponseState
+            if (CurrentState.Name == AwaitingOperatorResponseState
                 && uiMessageData.ContainsMessageValue(Constant.LD_OperatorResponseName))
             {
                 LoadDirectorOperatorResponse response
@@ -342,7 +376,10 @@ namespace Mss.Operations
                         PalletAccepted = true;
                         break;
                     case LoadDirectorOperatorResponse.Reject:
-                        _rejectedByOperator = true;
+                        if (IsLoadPallet)
+                        {
+                            RejectedByOperator = true;
+                        }
                         PalletRejected = true;
                         break;
                 }
@@ -357,17 +394,26 @@ namespace Mss.Operations
 
         //==================================================================================
 
-        #region WaitMoveCompleted State
+        #region AwaitingMoveCompletedState
 
         protected override bool DoMoveCompleted()
         {
-            throw new NotImplementedException("LoadDirector.DoMoveCompleted() is not implemented!");
-//             if (CachedMoveCommand == Constant.PurgeMoveCommandToPurgeLane)
+//             if (IsLoadPallet)
 //             {
-//                 PurgePalletWriter.WritePurgePallet(CurrentPallet);
-//                 DataLayer.RemovePitPallet(CurrentPallet.PalletID);
+//                 if (PalletAccepted)
+//                 {
+//                     
+//                 }
+//                 else if (PalletRejected)
+//                 {
+//                     
+//                 }
+//                 else
+//                 {
+//                     return false;
+//                 }
 //             }
-//             return true;
+            return true;
         }
 
         #endregion
@@ -376,10 +422,31 @@ namespace Mss.Operations
 
         #region Label Printing
 
-        private void _ReprintLabelRequest_OnMessage(object sender, XMessageEventArgs e)
+        private void _PrintLoadLabelRequest_OnMessage(object sender, XMessageEventArgs e)
         {
-            ReprintLabelMessageData md = (ReprintLabelMessageData)e.MessageData;
-            Slug slug = null;
+            PrintLabelMessageData md = (PrintLabelMessageData)e.MessageData;
+
+            if (!_PrintLoadLabel(
+                md.SlugLetter,
+                md.TrailerNumber,
+                md.SmallestRotation,
+                md.LargestRotation,
+                md.PalletCount,
+                out string fault))
+            {
+                SetOperationFaulted(fault);
+            }
+        }
+        private void _ReprintShippingLabelRequest_OnMessage(object sender, XMessageEventArgs e)
+        {
+            PrintLabelMessageData md = (PrintLabelMessageData)e.MessageData;
+
+            if (md.SlugLevel != Level)
+            {
+                return; // wrong level
+            }
+
+            Slug slug;
             if (md.SlugLetter == SlugLetter.A)
             {
                 slug = SlugA;
@@ -396,7 +463,7 @@ namespace Mss.Operations
                     $"Received unknown Slug Letter {md.SlugLetter.ToText()} while attempting to reprint a Shipping Label.");
                 return;
             }
-            if (!_PrintShippingLabel(
+            if (!_PrintShippingLabels(
                 slug[md.LoadIndex],
                 out string fault))
             {
@@ -404,74 +471,32 @@ namespace Mss.Operations
             }
         }
 
-//         private bool _PrintLearLabel(
-//             PalletItem palletItem,
-//             out string fault)
-//         {
-//             fault = string.Empty;
-// 
-//             if (!_parameters.LabelPrintingEnabled)
-//             {
-//                 return true;
-//             }
-// 
-//             if (!ManualLabelPrinterEnabled)
-//             {
-//                 XSystemEvent.Publish(
-//                     ConfigurationItem.Name,
-//                     XSystemEventLevel.Notification,
-//                     "Label Printer not connected");
-//                 return false;
-//             }
-// 
-//             try
-//             {
-//                 WriteTag(
-//                     Constant.ManualLabelPrinterRoleName,
-//                     Constant.LabelPrintCommandRoleName,
-//                     ShippingLabelFormatter.FormatLearLabel(palletItem));
-// 
-//                 fault = string.Empty;
-//                 XSystemEvent.Publish(
-//                     ConfigurationItem.Name,
-//                     XSystemEventLevel.Notification,
-//                      $"Printed Lear Label: PalletID={palletItem.PalletIDText} JobID={palletItem.JobIDText} SKU={palletItem.Sku}");
-//                 return true;
-//             }
-//             catch (Exception x)
-//             {
-//                 x.PublishSystemEvent(ConfigurationItem.Name);
-//                 fault = "Exception thrown while printing Lear Pallet Label. See System Events.";
-//                 return false;
-//             }
-//         }
-
-        private bool _PrintShippingLabel(
+        private bool _PrintShippingLabels(
             LoadItem loadItem,
             out string fault)
         {
-            fault = string.Empty;
 
-//             if (!_parameters.LabelPrintingEnabled)
-//             {
-//                 return true;
-//             }
+            return loadItem.Pallet.VehicleRow == VehicleRow.Row2
+                ? _PrintShippingLabel(loadItem, Constant.RearSeatLabelCode, out fault)
+                : _parameters.PrintLeftLabelFirst
+                    ? !_PrintShippingLabel(loadItem, Constant.LeftSeatLabelCode, out fault)
+                        || !_PrintShippingLabel(loadItem, Constant.RightSeatLabelCode, out fault)
+                    : !_PrintShippingLabel(loadItem, Constant.RightSeatLabelCode, out fault)
+                        || !_PrintShippingLabel(loadItem, Constant.LeftSeatLabelCode, out fault);
 
-            if (!ManualLabelPrinterAvailable)
-            {
-                XSystemEvent.Publish(
-                    ConfigurationItem.Name,
-                    XSystemEventLevel.Notification,
-                    "Label Printer not connected");
-                return false;
-            }
+        }
 
+        private bool _PrintShippingLabel(
+            LoadItem loadItem,
+            string vehicleLocation,
+            out string fault)
+        {
             try
             {
-//                 WriteTag(
-//                     Constant.ManualLabelPrinterRoleName,
-//                     Constant.LabelPrintCommandRoleName,
-//                     ShippingLabelFormatter.Format(loadItem, groupIndex));
+                WriteTag(
+                    Constant.ManualLabelPrinterRoleName,
+                    Constant.LabelPrintCommandRoleName,
+                    ShippingLabelFormatter.Format(loadItem, vehicleLocation));
 
                 fault = string.Empty;
                 return true;
@@ -484,68 +509,99 @@ namespace Mss.Operations
             }
         }
 
-        private void _PrintShippingLabels(LoadItem loadItem)
+        private bool _PrintLoadLabel(
+            SlugLetter slugLetter,
+            string trailerNumber,
+            string smallestRotation,
+            string largestRotation,
+            int palletCount,
+            out string fault)
         {
-            VehicleRow vehicleRow = loadItem.Pallet.VehicleRow;
-            if (vehicleRow == VehicleRow.Row1)
+            try
             {
-                if (PrintRightLabel)
-                {
-                    if (!_PrintShippingLabel(
-                        loadItem,
-                        out string fault))
-                    {
-                        SetOperationFaulted(fault);
-                        return;
-                    }
-                }
-                if (PrintLeftLabel)
-                {
-                    if (!_PrintShippingLabel(
-                        loadItem,
-                        out string fault))
-                    {
-                        SetOperationFaulted(fault);
-                        return;
-                    }
-                }
-            }
-            else if (vehicleRow == VehicleRow.Row2)
-            {
-                if (PrintRearLabel)
-                {
-                    if (!_PrintShippingLabel(
-                        loadItem,
-                        out string fault))
-                    {
-                        SetOperationFaulted(fault);
-                        return;
-                    }
-                }
-            }
-//             if (PrintRightLabel)
-//             {
-//                 if (!_PrintShippingLabel(
-//                     loadItem,
-//                     groupIndex,
-//                     out string fault))
-//                 {
-//                     SetOperationFaulted(fault);
-//                 }
-//             }
-//             if (PrintLeftLabel
-//                 && loadItem.Broadcasts[groupIndex].VehicleRow == VehicleRow.Row1)
-//             {
-//                 if (!_PrintShippingLabel(
-//                     loadItem,
-//                     groupIndex,
-//                     out string fault))
-//                 {
-//                     SetOperationFaulted(fault);
-//                 }
-//             }
+                WriteTag(
+                    Constant.ManualLabelPrinterRoleName,
+                    Constant.LabelPrintCommandRoleName,
+                    LoadLabelFormatter.Format(
+                        slugLetter,
+                        trailerNumber,
+                        smallestRotation,
+                        largestRotation,
+                        palletCount));
 
+                fault = string.Empty;
+                return true;
+            }
+            catch (Exception x)
+            {
+                x.PublishSystemEvent(ConfigurationItem.Name);
+                fault = "Exception thrown while printing Load Label. See System Events.";
+                return false;
+            }
         }
+
+        //         private void _PrintShippingLabels(LoadItem loadItem)
+        //         {
+        //             VehicleRow vehicleRow = loadItem.Pallet.VehicleRow;
+        //             if (vehicleRow == VehicleRow.Row1)
+        //             {
+        //                 if (PrintRightLabel)
+        //                 {
+        //                     if (!_PrintShippingLabel(
+        //                         loadItem,
+        //                         out string fault))
+        //                     {
+        //                         SetOperationFaulted(fault);
+        //                         return;
+        //                     }
+        //                 }
+        //                 if (PrintLeftLabel)
+        //                 {
+        //                     if (!_PrintShippingLabel(
+        //                         loadItem,
+        //                         out string fault))
+        //                     {
+        //                         SetOperationFaulted(fault);
+        //                         return;
+        //                     }
+        //                 }
+        //             }
+        //             else if (vehicleRow == VehicleRow.Row2)
+        //             {
+        //                 if (PrintRearLabel)
+        //                 {
+        //                     if (!_PrintShippingLabel(
+        //                         loadItem,
+        //                         out string fault))
+        //                     {
+        //                         SetOperationFaulted(fault);
+        //                         return;
+        //                     }
+        //                 }
+        //             }
+        // //             if (PrintRightLabel)
+        // //             {
+        // //                 if (!_PrintShippingLabel(
+        // //                     loadItem,
+        // //                     groupIndex,
+        // //                     out string fault))
+        // //                 {
+        // //                     SetOperationFaulted(fault);
+        // //                 }
+        // //             }
+        // //             if (PrintLeftLabel
+        // //                 && loadItem.Broadcasts[groupIndex].VehicleRow == VehicleRow.Row1)
+        // //             {
+        // //                 if (!_PrintShippingLabel(
+        // //                     loadItem,
+        // //                     groupIndex,
+        // //                     out string fault))
+        // //                 {
+        // //                     SetOperationFaulted(fault);
+        // //                 }
+        // //             }
+        // 
+        //         }
 
         #endregion Label Printing
 

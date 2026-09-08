@@ -29,82 +29,82 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.navigator = new System.Windows.Forms.ToolStrip();
-            this.navigatorBtnRefreshItem = new System.Windows.Forms.ToolStripButton();
-            this.navigatorBtnAddItem = new System.Windows.Forms.ToolStripButton();
-            this.navigatorBtnDelete = new System.Windows.Forms.ToolStripButton();
-            this.navigatorBtnAddSingleEmpty = new System.Windows.Forms.ToolStripButton();
-            this.navigatorBtnQuickAdd = new System.Windows.Forms.ToolStripButton();
+            this._navigator = new System.Windows.Forms.ToolStrip();
+            this._navigatorBtnRefreshItem = new System.Windows.Forms.ToolStripButton();
+            this._navigatorBtnAddItem = new System.Windows.Forms.ToolStripButton();
+            this._navigatorBtnDelete = new System.Windows.Forms.ToolStripButton();
+            this._navigatorBtnAddSingleEmpty = new System.Windows.Forms.ToolStripButton();
+            this._navigatorBtnQuickAdd = new System.Windows.Forms.ToolStripButton();
             this._lblCollectionName = new System.Windows.Forms.Label();
             this._dgvPit = new System.Windows.Forms.DataGridView();
-            this.navigator.SuspendLayout();
+            this._navigator.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._dgvPit)).BeginInit();
             this.SuspendLayout();
             // 
-            // navigator
+            // _navigator
             // 
-            this.navigator.BackColor = System.Drawing.SystemColors.Control;
-            this.navigator.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.navigator.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.navigator.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.navigatorBtnRefreshItem,
-            this.navigatorBtnAddItem,
-            this.navigatorBtnDelete,
-            this.navigatorBtnAddSingleEmpty,
-            this.navigatorBtnQuickAdd});
-            this.navigator.Location = new System.Drawing.Point(0, 0);
-            this.navigator.Name = "navigator";
-            this.navigator.Padding = new System.Windows.Forms.Padding(5, 2, 5, 2);
-            this.navigator.Size = new System.Drawing.Size(671, 35);
-            this.navigator.TabIndex = 0;
+            this._navigator.BackColor = System.Drawing.SystemColors.Control;
+            this._navigator.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this._navigator.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this._navigator.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._navigatorBtnRefreshItem,
+            this._navigatorBtnAddItem,
+            this._navigatorBtnDelete,
+            this._navigatorBtnAddSingleEmpty,
+            this._navigatorBtnQuickAdd});
+            this._navigator.Location = new System.Drawing.Point(0, 0);
+            this._navigator.Name = "_navigator";
+            this._navigator.Padding = new System.Windows.Forms.Padding(5, 2, 5, 2);
+            this._navigator.Size = new System.Drawing.Size(671, 35);
+            this._navigator.TabIndex = 0;
             // 
-            // navigatorBtnRefreshItem
+            // _navigatorBtnRefreshItem
             // 
-            this.navigatorBtnRefreshItem.Image = global::Mss.Views.Properties.Resources.GreenRefresh24;
-            this.navigatorBtnRefreshItem.Name = "navigatorBtnRefreshItem";
-            this.navigatorBtnRefreshItem.Size = new System.Drawing.Size(74, 28);
-            this.navigatorBtnRefreshItem.Text = "Refresh";
-            this.navigatorBtnRefreshItem.ToolTipText = "Refresh";
-            this.navigatorBtnRefreshItem.Click += new System.EventHandler(this._NavigatorBtnRefreshItem_Click);
+            this._navigatorBtnRefreshItem.Image = global::Mss.Views.Properties.Resources.GreenRefresh24;
+            this._navigatorBtnRefreshItem.Name = "_navigatorBtnRefreshItem";
+            this._navigatorBtnRefreshItem.Size = new System.Drawing.Size(74, 28);
+            this._navigatorBtnRefreshItem.Text = "Refresh";
+            this._navigatorBtnRefreshItem.ToolTipText = "Refresh";
+            this._navigatorBtnRefreshItem.Click += new System.EventHandler(this._NavigatorBtnRefreshItem_Click);
             // 
-            // navigatorBtnAddItem
+            // _navigatorBtnAddItem
             // 
-            this.navigatorBtnAddItem.Image = global::Mss.Views.Properties.Resources.GreenPlus24;
-            this.navigatorBtnAddItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.navigatorBtnAddItem.Name = "navigatorBtnAddItem";
-            this.navigatorBtnAddItem.Size = new System.Drawing.Size(89, 28);
-            this.navigatorBtnAddItem.Text = "Add Pallet";
-            this.navigatorBtnAddItem.Visible = false;
-            this.navigatorBtnAddItem.Click += new System.EventHandler(this._NavigatorBtnAddItem_Click);
+            this._navigatorBtnAddItem.Image = global::Mss.Views.Properties.Resources.GreenPlus24;
+            this._navigatorBtnAddItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._navigatorBtnAddItem.Name = "_navigatorBtnAddItem";
+            this._navigatorBtnAddItem.Size = new System.Drawing.Size(89, 28);
+            this._navigatorBtnAddItem.Text = "Add Pallet";
+            this._navigatorBtnAddItem.Visible = false;
+            this._navigatorBtnAddItem.Click += new System.EventHandler(this._NavigatorBtnAddItem_Click);
             // 
-            // navigatorBtnDelete
+            // _navigatorBtnDelete
             // 
-            this.navigatorBtnDelete.Image = global::Mss.Views.Properties.Resources.RedMinus24;
-            this.navigatorBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.navigatorBtnDelete.Name = "navigatorBtnDelete";
-            this.navigatorBtnDelete.Size = new System.Drawing.Size(100, 28);
-            this.navigatorBtnDelete.Text = "Delete Pallet";
-            this.navigatorBtnDelete.Visible = false;
-            this.navigatorBtnDelete.Click += new System.EventHandler(this._NavigatorBtnDelete_Click);
+            this._navigatorBtnDelete.Image = global::Mss.Views.Properties.Resources.RedMinus24;
+            this._navigatorBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._navigatorBtnDelete.Name = "_navigatorBtnDelete";
+            this._navigatorBtnDelete.Size = new System.Drawing.Size(100, 28);
+            this._navigatorBtnDelete.Text = "Delete Pallet";
+            this._navigatorBtnDelete.Visible = false;
+            this._navigatorBtnDelete.Click += new System.EventHandler(this._NavigatorBtnDelete_Click);
             // 
-            // navigatorBtnAddSingleEmpty
+            // _navigatorBtnAddSingleEmpty
             // 
-            this.navigatorBtnAddSingleEmpty.Image = global::Mss.Views.Properties.Resources.GreenPlus24;
-            this.navigatorBtnAddSingleEmpty.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.navigatorBtnAddSingleEmpty.Name = "navigatorBtnAddSingleEmpty";
-            this.navigatorBtnAddSingleEmpty.Size = new System.Drawing.Size(129, 28);
-            this.navigatorBtnAddSingleEmpty.Text = "Add Single Empty";
-            this.navigatorBtnAddSingleEmpty.Visible = false;
-            this.navigatorBtnAddSingleEmpty.Click += new System.EventHandler(this._NavigatorBtnAddSingleEmpty_Click);
+            this._navigatorBtnAddSingleEmpty.Image = global::Mss.Views.Properties.Resources.GreenPlus24;
+            this._navigatorBtnAddSingleEmpty.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._navigatorBtnAddSingleEmpty.Name = "_navigatorBtnAddSingleEmpty";
+            this._navigatorBtnAddSingleEmpty.Size = new System.Drawing.Size(129, 28);
+            this._navigatorBtnAddSingleEmpty.Text = "Add Single Empty";
+            this._navigatorBtnAddSingleEmpty.Visible = false;
+            this._navigatorBtnAddSingleEmpty.Click += new System.EventHandler(this._NavigatorBtnAddSingleEmpty_Click);
             // 
-            // navigatorBtnQuickAdd
+            // _navigatorBtnQuickAdd
             // 
-            this.navigatorBtnQuickAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.navigatorBtnQuickAdd.Name = "navigatorBtnQuickAdd";
-            this.navigatorBtnQuickAdd.Size = new System.Drawing.Size(99, 28);
-            this.navigatorBtnQuickAdd.Text = "Quick Add Pallet";
-            this.navigatorBtnQuickAdd.Visible = false;
-            this.navigatorBtnQuickAdd.Click += new System.EventHandler(this._NavigatorBtnQuickAdd_Click);
+            this._navigatorBtnQuickAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this._navigatorBtnQuickAdd.Name = "_navigatorBtnQuickAdd";
+            this._navigatorBtnQuickAdd.Size = new System.Drawing.Size(99, 28);
+            this._navigatorBtnQuickAdd.Text = "Quick Add Pallet";
+            this._navigatorBtnQuickAdd.Visible = false;
+            this._navigatorBtnQuickAdd.Click += new System.EventHandler(this._NavigatorBtnQuickAdd_Click);
             // 
             // _lblCollectionName
             // 
@@ -135,11 +135,13 @@
             this._dgvPit.Location = new System.Drawing.Point(3, 68);
             this._dgvPit.Name = "_dgvPit";
             this._dgvPit.ReadOnly = true;
-            this._dgvPit.RowHeadersVisible = false;
+            this._dgvPit.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
             this._dgvPit.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this._dgvPit.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._dgvPit.Size = new System.Drawing.Size(668, 241);
             this._dgvPit.TabIndex = 3;
+            this._dgvPit.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this._DgvPit_CellMouseClick);
+            this._dgvPit.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this._DgvPit_RowPostPaint);
             this._dgvPit.SelectionChanged += new System.EventHandler(this._DgvPit_SelectionChanged);
             // 
             // PitView
@@ -148,11 +150,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this._dgvPit);
             this.Controls.Add(this._lblCollectionName);
-            this.Controls.Add(this.navigator);
+            this.Controls.Add(this._navigator);
             this.Name = "PitView";
             this.Size = new System.Drawing.Size(671, 312);
-            this.navigator.ResumeLayout(false);
-            this.navigator.PerformLayout();
+            this._navigator.ResumeLayout(false);
+            this._navigator.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this._dgvPit)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -160,13 +162,13 @@
         }
 
         #endregion
-        protected System.Windows.Forms.ToolStrip navigator;
-        protected System.Windows.Forms.ToolStripButton navigatorBtnRefreshItem;
-        private System.Windows.Forms.ToolStripButton navigatorBtnAddItem;
-        private System.Windows.Forms.ToolStripButton navigatorBtnDelete;
+        protected System.Windows.Forms.ToolStrip _navigator;
+        protected System.Windows.Forms.ToolStripButton _navigatorBtnRefreshItem;
+        private System.Windows.Forms.ToolStripButton _navigatorBtnAddItem;
+        private System.Windows.Forms.ToolStripButton _navigatorBtnDelete;
         private System.Windows.Forms.Label _lblCollectionName;
-        private System.Windows.Forms.ToolStripButton navigatorBtnAddSingleEmpty;
-        private System.Windows.Forms.ToolStripButton navigatorBtnQuickAdd;
+        private System.Windows.Forms.ToolStripButton _navigatorBtnAddSingleEmpty;
+        private System.Windows.Forms.ToolStripButton _navigatorBtnQuickAdd;
         private System.Windows.Forms.DataGridView _dgvPit;
     }
 }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Mss.Data
 {
-    public static class TrailerLabelFormatter
+    public static class LoadLabelFormatter
     {
         public static string LabelPalletCount = "PALLET_COUNT";
         public static string LabelFirstRotation = "FIRST_ROTATION";
@@ -21,11 +21,20 @@ namespace Mss.Data
         public static string LabelBarcode = "TRAILER_LABEL_BARCODE";
 //         public static string LabelTriangleData = "TRIANGLE_DATA";
 
+//         public static XLabelDataPairs Format(
+//             string trailerID,
+//             Slug slug)
+//         {
+//             IEnumerable<LoadItem> loadItems = slug
+//                 Where.OrderBy(NodeIndex)
+//         }
+
         public static XLabelDataPairs Format(
-            int palletCount,
+            SlugLetter slugLetter,
+            string trailerID,
             string firstRotation,
             string lastRotation,
-            string trailerID)
+            int palletCount)
         {
             string barcode = $"{trailerID},{firstRotation},{lastRotation},{palletCount}";
             return new XLabelDataPairs(Constant.TrailerLabelName)

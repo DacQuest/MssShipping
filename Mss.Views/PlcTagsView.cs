@@ -41,25 +41,33 @@ namespace Mss.Views
         protected override void OpenView()
         {
 
-            toolStripTitleLabel.Text = _parameters.AllowTagWrites ? "PLC Monitor/Editor" : "PLC Monitor";
-            dataGrid.EditMode = DataGridViewEditMode.EditOnEnter;
-            dataGrid.DataSource = _bindingSource;
-            dataGrid.AutoGenerateColumns = false;
-            dataGrid.AutoSize = false;
-            dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-
-
-            XProxyCache.Acquire(
-                Constant.PlcTagsName,
-                out _plcTagsProxy);
+            XProxyCache.Acquire(Constant.PlcTagsName, out _plcTagsProxy);
             _plcTagsProxy.DataItemChanged += _PlcMonitorProxy_DataItemChanged;
             _plcTagsProxy.CollectionRefreshed += _PlcMonitorProxy_CollectionRefreshed;
+
+            toolStripTitleLabel.Text = _parameters.AllowTagWrites ? "PLC Monitor/Editor" : "PLC Monitor";
+            _dgvTags.EditMode = DataGridViewEditMode.EditOnEnter;
+            _dgvTags.DataSource = _bindingSource;
+            _dgvTags.AutoGenerateColumns = false;
+            _dgvTags.AutoSize = false;
+            _dgvTags.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+
 
 
             foreach (string deviceName in _plcTagsProxy.Values.Select(p => p.DisplayName).Distinct().OrderBy(s => s))
             {
                 toolStripDevicesComboBox.Items.Add(deviceName);
             }
+
+            _dgvTags.DataSource = _bindingSource;
+            _dgvTags.AutoGenerateColumns = false;
+            _dgvTags.AutoSize = false;
+            _dgvTags.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+
+            _dgvTags.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _dgvTags.ColumnHeadersHeight = 30; // Set to desired height in pixels
+            _dgvTags.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            _dgvTags.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
 
             DataGridViewImageColumn imageColumn;
             DataGridViewTextBoxColumn column;
@@ -70,7 +78,7 @@ namespace Mss.Views
                 HeaderText = "",
                 Name = "QualityImageColumn"
             };
-            dataGrid.Columns.Add(imageColumn);
+            _ = _dgvTags.Columns.Add(imageColumn);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -79,7 +87,7 @@ namespace Mss.Views
                 Name = "QualityTextColumn",
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            dataGrid.Columns.Add(column);
+            _ = _dgvTags.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -89,7 +97,7 @@ namespace Mss.Views
                 MinimumWidth = 70,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            dataGrid.Columns.Add(column);
+            _ = _dgvTags.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -99,7 +107,7 @@ namespace Mss.Views
                 MinimumWidth = 70,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            dataGrid.Columns.Add(column);
+            _ = _dgvTags.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -109,7 +117,7 @@ namespace Mss.Views
                 MinimumWidth = 70,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            dataGrid.Columns.Add(column);
+            _ = _dgvTags.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -119,7 +127,7 @@ namespace Mss.Views
                 MinimumWidth = 70,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            dataGrid.Columns.Add(column);
+            _ = _dgvTags.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -129,17 +137,17 @@ namespace Mss.Views
                 MinimumWidth = 50,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            dataGrid.Columns.Add(column);
+            _ = _dgvTags.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
                 HeaderText = "PLC Tag Name",
                 DataPropertyName = "PlcTagName",
                 Name = "PlcTagNameColumn",
-                MinimumWidth = 70,
+                MinimumWidth = 100,
                 SortMode = DataGridViewColumnSortMode.Automatic
             };
-            dataGrid.Columns.Add(column);
+            _ = _dgvTags.Columns.Add(column);
 
             column = new DataGridViewTextBoxColumn
             {
@@ -149,7 +157,7 @@ namespace Mss.Views
                 SortMode = DataGridViewColumnSortMode.Automatic,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
             };
-            dataGrid.Columns.Add(column);
+            _ = _dgvTags.Columns.Add(column);
 
 
 
@@ -284,8 +292,8 @@ namespace Mss.Views
                 .OrderBy(item => item.TagName)
                 .ToList();
             _bindingSource.DataSource = _currentTagList;
-            dataGrid.DefaultCellStyle.ForeColor = Color.Black;
-            dataGrid.Update();
+            _dgvTags.DefaultCellStyle.ForeColor = Color.Black;
+            _dgvTags.Update();
         }
 
         private void _ToolStripRefreshButton_Click(object sender, EventArgs e)

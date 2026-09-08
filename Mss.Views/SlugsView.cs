@@ -28,9 +28,6 @@ namespace Mss.Views
         private SystemSettingsProxy _systemSettingsProxy = null;
         private SlugProxy _slugAProxy = null;
         private SlugProxy _slugBProxy = null;
-        private PitProxy _upperPitProxy = null;
-        private PitProxy _lowerPitProxy = null;
-        private StorageProxy _storageProxy = null;
         private bool _showAbortLoadButtons = false;
         private bool _showCloseReopenLoadButtons = false;
         private bool _showAcceptLoadButtons = false;
@@ -38,6 +35,8 @@ namespace Mss.Views
         private bool _canReopenA = false;
         private bool _canCloseB = false;
         private bool _canReopenB = false;
+        private string _trailerANumber = Constant.NoTrailerNumber;
+        private string _trailerBNumber = Constant.NoTrailerNumber;
 
         public SlugsView()
         {
@@ -132,13 +131,9 @@ namespace Mss.Views
 //                 // show empty grid and message box
 //             }
 
-            XProxyCache.Acquire(Constant.UpperPitName, out _upperPitProxy);
-            XProxyCache.Acquire(Constant.LowerPitName, out _lowerPitProxy);
-            XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
-
             XProxyCache.Acquire(Constant.SystemSettingsName, out _systemSettingsProxy);
             _systemSettingsProxy.DataItemChanged += _SystemSettings_DataItemChanged;
-            _systemSettingsProxy.CollectionRefreshed += _SystemSettings_CollectionRefreshed;
+//             _systemSettingsProxy.CollectionRefreshed += _SystemSettings_CollectionRefreshed;
 
             XProxyCache.Acquire(Constant.SlugAName, out _slugAProxy);
             _slugAGridUpper.Initialize(
@@ -180,11 +175,6 @@ namespace Mss.Views
                 _parameters.ShowShortages,
                 _parameters.FlashGridCellTimeoutSeconds);
 
-//             XSharedCollectionConfigurationItem configurationItem =
-//                 XConfigurationManager.GetConfigurationItem<XSharedCollectionConfigurationItem>(
-//                     XConfigurationManager.strX_TAG_SHARED_COLLECTIONS_SECTION,
-//                     Constant.SlugAName);
-
             _lblSlugAName.Text = SlugLetter.A.SlugDisplayName();
             _lblSlugBName.Text = SlugLetter.B.SlugDisplayName();
 
@@ -198,7 +188,7 @@ namespace Mss.Views
             _btnAbortLoadA.Visible = _showAbortLoadButtons;
             _btnAbortLoadB.Visible = _showAbortLoadButtons;
 
-            _showCloseReopenLoadButtons = _parameters.AllowCloseLoad;
+            _showCloseReopenLoadButtons = _parameters.AllowCloseReopenLoad;
             _btnCloseReopenLoadA.Visible = _showCloseReopenLoadButtons;
             _btnCloseReopenLoadB.Visible = _showCloseReopenLoadButtons;
 
@@ -209,11 +199,36 @@ namespace Mss.Views
             _navigatorBtnReleaseBroadcast.Visible = _parameters.AllowReleaseBroadcast;
 
             _UpdateAbortLoadButtons();
-            _UpdateCloseLoadButtons();
+            _UpdateCloseReopenLoadButtons();
             _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
 
+            XMessaging.Publish(
+                TrailerNumberMessageData.TrailerNumberRequestMessageTopicName,
+                XMessageScopes.All);
+        }
 
+        protected override void AutoSubscribe()
+        {
+            Subscribe(
+                TrailerNumberMessageData.TrailerNumberMessageTopicName,
+                _TrailerNumber_OnMessage,
+                XMessageScopes.All);
+        }
+
+        private void _TrailerNumber_OnMessage(object sender, XMessageEventArgs e)
+        {
+            TrailerNumberMessageData md = (TrailerNumberMessageData)e.MessageData;
+            if (md.SlugLetter == SlugLetter.A)
+            {
+                _trailerANumber = md.TrailerNumber;
+                _lblTrailerANumber.Text = _trailerANumber;
+            }
+            else if (md.SlugLetter == SlugLetter.B)
+            {
+                _trailerBNumber = md.TrailerNumber;
+                _lblTrailerBNumber.Text = _trailerBNumber;
+            }
         }
 
         protected override void ProcessParameters(XConfigurationParameterSet parameters)
@@ -485,10 +500,10 @@ namespace Mss.Views
             _UpdateLoadNumbers();
         }
 
-        private void _SystemSettings_CollectionRefreshed(object sender, EventArgs eventArgs)
-        {
-            _UpdateLoadNumbers();
-        }
+//         private void _SystemSettings_CollectionRefreshed(object sender, EventArgs eventArgs)
+//         {
+//             _UpdateLoadNumbers();
+//         }
 
         private void _UpdateLoadNumbers()
         {
@@ -504,7 +519,7 @@ namespace Mss.Views
         private void _SlugA_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
         {
             _UpdateAbortLoadButtons();
-            _UpdateCloseLoadButtons();
+            _UpdateCloseReopenLoadButtons();
             _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
             _UpdateLoadReleaseButton();
@@ -513,7 +528,7 @@ namespace Mss.Views
         private void _SlugA_CollectionRefreshed(object sender, EventArgs eventArgs)
         {
             _UpdateAbortLoadButtons();
-            _UpdateCloseLoadButtons();
+            _UpdateCloseReopenLoadButtons();
             _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
             _UpdateLoadReleaseButton();
@@ -522,7 +537,7 @@ namespace Mss.Views
         private void _SlugB_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
         {
             _UpdateAbortLoadButtons();
-            _UpdateCloseLoadButtons();
+            _UpdateCloseReopenLoadButtons();
             _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
             _UpdateLoadReleaseButton();
@@ -531,7 +546,7 @@ namespace Mss.Views
         private void _SlugB_CollectionRefreshed(object sender, EventArgs eventArgs)
         {
             _UpdateAbortLoadButtons();
-            _UpdateCloseLoadButtons();
+            _UpdateCloseReopenLoadButtons();
             _UpdateAcceptLoadButtons();
             _UpdateLoadNumbers();
             _UpdateLoadReleaseButton();
@@ -539,16 +554,24 @@ namespace Mss.Views
 
         private void _UpdateAbortLoadButtons()
         {
+            if (!_showAbortLoadButtons)
+            {
+                return;
+            }
             // This requires some checks. If a load with smaller CSNs needs to be aborted, then both
             // loads must be aborted.
-            _btnAbortLoadA.Visible = _showAbortLoadButtons;
-            _btnAbortLoadB.Visible = _showAbortLoadButtons;
-            _btnAbortLoadA.Enabled = _showAbortLoadButtons && !_slugAProxy.Cleared;
-            _btnAbortLoadB.Enabled = _showAbortLoadButtons && !_slugBProxy.Cleared;
+//             _btnAbortLoadA.Visible = _showAbortLoadButtons;
+//             _btnAbortLoadB.Visible = _showAbortLoadButtons;
+            _btnAbortLoadA.Enabled = !_slugAProxy.Cleared;
+            _btnAbortLoadB.Enabled = !_slugBProxy.Cleared;
         }
 
-        private void _UpdateCloseLoadButtons()
+        private void _UpdateCloseReopenLoadButtons()
         {
+            if (!_showCloseReopenLoadButtons)
+            {
+                return;
+            }
             _canCloseA = _slugAProxy.HasOpenLoad;
             _canReopenA = !_slugAProxy.HasOpenLoad
                 && _slugAProxy.Items.Count(l => l.IsInvalid) < Constant.LoadSize;
@@ -563,7 +586,7 @@ namespace Mss.Views
                 _btnCloseReopenLoadA.Text = "Close Load A  ";
                 _btnCloseReopenLoadA.Image = Properties.Resources.RedMinus24;
             }
-            _btnCloseReopenLoadA.Visible = _showCloseReopenLoadButtons;
+//             _btnCloseReopenLoadA.Visible = _showCloseReopenLoadButtons;
             _btnCloseReopenLoadA.Enabled = _canCloseA || _canReopenA;
 
 
@@ -581,33 +604,35 @@ namespace Mss.Views
                 _btnCloseReopenLoadB.Text = "Close Load B  ";
                 _btnCloseReopenLoadB.Image = Properties.Resources.RedMinus24;
             }
-            _btnCloseReopenLoadB.Visible = _showCloseReopenLoadButtons;
+//             _btnCloseReopenLoadB.Visible = _showCloseReopenLoadButtons;
             _btnCloseReopenLoadB.Enabled = _canCloseB || _canReopenB;
         }
 
         private void _UpdateAcceptLoadButtons()
         {
+            if (!_showAcceptLoadButtons)
+            {
+                return;
+            }
 
-            //             bool acceptLoadA1st = _showAcceptLoadButtons
-            //                 && _slugAProxy.Completed
-            //                 && (_slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
-            //                         < _slugBProxy.Items.Max(i => i.Requirement.BroadcastNumber)
-            //                     || _slugBProxy.Cleared);
-            // 
-            //             bool acceptLoadB1st = _showAcceptLoadButtons
-            //                 && _slugBProxy.Completed
-            //                 && (_slugBProxy.Items.Max(i => i.Requirement.BroadcastNumber)
-            //                         < _slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
-            //                     || _slugAProxy.Cleared);
+//             bool acceptLoadA1st = _showAcceptLoadButtons
+//                 && _slugAProxy.Completed
+//                 && (_slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
+//                         < _slugBProxy.Items.Max(i => i.Requirement.BroadcastNumber)
+//                     || _slugBProxy.Cleared);
+// 
+//             bool acceptLoadB1st = _showAcceptLoadButtons
+//                 && _slugBProxy.Completed
+//                 && (_slugBProxy.Items.Max(i => i.Requirement.BroadcastNumber)
+//                         < _slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
+//                     || _slugAProxy.Cleared);
 
-            bool acceptLoadA1st = _showAcceptLoadButtons
-                && _slugAProxy.Completed;
-            //                 && (_slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
-            //                         < _slugBProxy.Items.Max(i => i.Requirement.BroadcastNumber)
-            //                     || _slugBProxy.Cleared);
+            bool acceptLoadA1st = _slugAProxy.Completed && !_trailerANumber.IsNullOrWhiteSpace();
+//                 && (_slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
+//                         < _slugBProxy.Items.Max(i => i.Requirement.BroadcastNumber)
+//                     || _slugBProxy.Cleared);
 
-            bool acceptLoadB1st = _showAcceptLoadButtons
-                && _slugBProxy.Completed;
+            bool acceptLoadB1st = _slugBProxy.Completed && !_trailerBNumber.IsNullOrWhiteSpace();
 //                 && (_slugBProxy.Items.Max(i => i.Requirement.BroadcastNumber)
 //                         < _slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
 //                     || _slugAProxy.Cleared);
@@ -615,22 +640,25 @@ namespace Mss.Views
             _btnAcceptLoadA.Enabled = acceptLoadA1st;
             _btnAcceptLoadB.Enabled = acceptLoadB1st;
 
-            _btnAcceptLoadA.Visible = _showAcceptLoadButtons;
-            _btnAcceptLoadB.Visible = _showAcceptLoadButtons;
+//             _btnAcceptLoadA.Visible = _showAcceptLoadButtons;
+//             _btnAcceptLoadB.Visible = _showAcceptLoadButtons;
         }
 
         private void _UpdateLoadReleaseButton()
         {
             // This requires some checks. If a load with smaller CSNs needs to be aborted, then both
             // loads must be aborted.
-            _navigatorBtnReleaseBroadcast.Visible = _parameters.AllowReleaseBroadcast;
-            _navigatorBtnReleaseBroadcast.Enabled = _parameters.AllowReleaseBroadcast
-                && (_slugAProxy.Cleared || _slugBProxy.Cleared);
+            if (!_parameters.AllowReleaseBroadcast)
+            {
+                return;
+            }
+//             _navigatorBtnReleaseBroadcast.Visible = _parameters.AllowReleaseBroadcast;
+            _navigatorBtnReleaseBroadcast.Enabled = _slugAProxy.Cleared || _slugBProxy.Cleared;
         }
 
         private void _BtnAcceptLoadA_Click(object sender, EventArgs e)
         {
-            if (!_slugAProxy.Completed)
+            if (!_slugAProxy.Completed || _trailerANumber.IsNullOrWhiteSpace())
             {
                 _btnAcceptLoadA.Enabled = false;
                 return;
@@ -640,7 +668,7 @@ namespace Mss.Views
 
         private void _BtnAcceptLoadB_Click(object sender, EventArgs e)
         {
-            if (!_slugBProxy.Completed)
+            if (!_slugBProxy.Completed || _trailerBNumber.IsNullOrWhiteSpace())
             {
                 _btnAcceptLoadB.Enabled = false;
                 return;
@@ -712,9 +740,9 @@ namespace Mss.Views
                 {
                     ParentForm.Cursor = Cursors.Default;
                 }
-                if (!string.IsNullOrWhiteSpace(responseMessageData.Error))
+                if (!responseMessageData.Error.IsNullOrWhiteSpace())
                 {
-                    MessageBox.Show(
+                    _ = MessageBox.Show(
                         this,
                         responseMessageData.Error,
                         "Error",
@@ -798,7 +826,7 @@ namespace Mss.Views
             if (_systemSettingsProxy != null)
             {
                 _systemSettingsProxy.DataItemChanged -= _SystemSettings_DataItemChanged;
-                _systemSettingsProxy.CollectionRefreshed -= _SystemSettings_CollectionRefreshed;
+//                 _systemSettingsProxy.CollectionRefreshed -= _SystemSettings_CollectionRefreshed;
                 XProxyCache.Release(_systemSettingsProxy);
                 _systemSettingsProxy = null;
             }
@@ -815,27 +843,6 @@ namespace Mss.Views
                 _slugBProxy.CollectionRefreshed -= _SlugB_CollectionRefreshed;
                 XProxyCache.Release(_slugBProxy);
                 _slugBProxy = null;
-            }
-            if (_upperPitProxy != null)
-            {
-//                 _upperPitProxy.DataItemChanged -= _UpperPit_DataItemChanged;
-//                 _upperPitProxy.CollectionRefreshed -= _UpperPit_CollectionRefreshed;
-                XProxyCache.Release(_upperPitProxy);
-                _upperPitProxy = null;
-            }
-            if (_lowerPitProxy != null)
-            {
-//                 _lowerPitProxy.DataItemChanged -= _LowerPit_DataItemChanged;
-//                 _lowerPitProxy.CollectionRefreshed -= _LowerPit_CollectionRefreshed;
-                XProxyCache.Release(_lowerPitProxy);
-                _lowerPitProxy = null;
-            }
-            if (_storageProxy != null)
-            {
-//                 _storageProxy.DataItemChanged -= _Storage_DataItemChanged;
-//                 _storageProxy.CollectionRefreshed -= _Storage_CollectionRefreshed;
-                XProxyCache.Release(_storageProxy);
-                _storageProxy = null;
             }
             return true;
         }

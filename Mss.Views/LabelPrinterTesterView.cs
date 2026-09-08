@@ -158,15 +158,16 @@ namespace Mss.Views
                 ShippingLabelFormatter.Format(_loadItem, "LH"));
         }
 
-        private void _BtnPrintTrailerLabel_Click(object sender, EventArgs e)
+        private void _BtnPrintLoadLabel_Click(object sender, EventArgs e)
         {
             _ = _device.WriteTag(
                 Constant.LabelPrintCommandRoleName,
-                TrailerLabelFormatter.Format(
-                    54,
+                LoadLabelFormatter.Format(
+                    SlugLetter.A,
+                    "07",
                     "1201",
                     "1232",
-                    "07"));
+                    54));
         }
 
         //protected override void AutoSubscribe()

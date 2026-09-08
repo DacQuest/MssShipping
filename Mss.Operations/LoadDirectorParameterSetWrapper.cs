@@ -19,30 +19,29 @@ namespace Mss.Operations
             PickListValues = "Lower, Upper")]
         public Levels Level => _level;
 
-        private bool _autoReleaseNonLoadPalletsInManualMode = true;
-        [XConfigurationProperty(
-            @"",
-            false,
-            DefaultValue = "true",
-            PickListValues = "true,false")]
-        public bool AutoReleaseNonLoadPalletsInManualMode => _autoReleaseNonLoadPalletsInManualMode;
-
-        private bool _manualLabelPrinterAvailable = false;
+        private bool _autoReleaseNonLoadPallets = false;
         [XConfigurationProperty(
             @"",
             false,
             DefaultValue = "false",
             PickListValues = "true,false")]
+        public bool AutoReleaseNonLoadPallets => _autoReleaseNonLoadPallets;
+
+        private bool _manualLabelPrinterAvailable = true;
+        [XConfigurationProperty(
+            @"",
+            false,
+            DefaultValue = "true",
+            PickListValues = "true,false")]
         public bool ManualLabelPrinterAvailable => _manualLabelPrinterAvailable;
 
-        //         private bool _manualLabelPrinterAvailable = false;
-        //         [XConfigurationProperty(
-        //             @"",
-        //             false,
-        //             DefaultValue = "false",
-        //             PickListValues = "true,false")]
-        //         public bool ManualLabelPrinterAvailable => _manualLabelPrinterAvailable;
-
+        private bool _printLeftLabelFirst = true;
+        [XConfigurationProperty(
+            @"",
+            false,
+            DefaultValue = "true",
+            PickListValues = "true,false")]
+        public bool PrintLeftLabelFirst => _printLeftLabelFirst;
 
     }
 }

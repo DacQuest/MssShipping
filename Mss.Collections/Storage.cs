@@ -106,6 +106,7 @@ namespace Mss.Collections
                         b.CraneNumber == craneNumber
                         && b.BinStatus == BinStatus.Pickable
                         && b.Pallet.Sku == Constant.StackSku1
+                        && b.Pallet.Status == PalletStatus.OK
                         && !b.Audit
                         && !b.Disabled
                         && !b.NotUsable);
@@ -135,6 +136,7 @@ namespace Mss.Collections
                         b.CraneNumber == craneNumber
                         && b.BinStatus == BinStatus.Pickable
                         && b.Pallet.Sku == Constant.StackSku2
+                        && b.Pallet.Status == PalletStatus.OK
                         && !b.Audit
                         && !b.Disabled
                         && !b.NotUsable);
@@ -286,7 +288,7 @@ namespace Mss.Collections
 
         public void ClearBinByPalletID(string palletID, bool audit)
         {
-            if (palletID == Constant.NoPalletID)
+            if (!palletID.ValidPalletID())
             {
                 return;
             }

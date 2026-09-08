@@ -28,44 +28,44 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.dataGrid = new System.Windows.Forms.DataGridView();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            this._dgvTags = new System.Windows.Forms.DataGridView();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripTitleLabel = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripRefreshButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripTagSetLabel = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripDevicesComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
+            this.toolStripTagSetLabel = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripDevicesComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripRefreshButton = new System.Windows.Forms.ToolStripButton();
+            ((System.ComponentModel.ISupportInitialize)(this._dgvTags)).BeginInit();
             this.toolStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // dataGrid
+            // _dgvTags
             // 
-            this.dataGrid.AllowUserToAddRows = false;
-            this.dataGrid.AllowUserToDeleteRows = false;
-            this.dataGrid.AllowUserToOrderColumns = true;
-            this.dataGrid.AllowUserToResizeRows = false;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dataGrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this._dgvTags.AllowUserToAddRows = false;
+            this._dgvTags.AllowUserToDeleteRows = false;
+            this._dgvTags.AllowUserToOrderColumns = true;
+            this._dgvTags.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this._dgvTags.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this._dgvTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dataGrid.GridColor = System.Drawing.SystemColors.Control;
-            this.dataGrid.Location = new System.Drawing.Point(0, 28);
-            this.dataGrid.MultiSelect = false;
-            this.dataGrid.Name = "dataGrid";
-            this.dataGrid.ReadOnly = true;
-            this.dataGrid.RowHeadersVisible = false;
-            this.dataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGrid.Size = new System.Drawing.Size(720, 368);
-            this.dataGrid.TabIndex = 1;
-            this.dataGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this._DataGrid_CellDoubleClick);
+            this._dgvTags.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this._dgvTags.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this._dgvTags.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this._dgvTags.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this._dgvTags.GridColor = System.Drawing.SystemColors.Control;
+            this._dgvTags.Location = new System.Drawing.Point(0, 28);
+            this._dgvTags.MultiSelect = false;
+            this._dgvTags.Name = "_dgvTags";
+            this._dgvTags.ReadOnly = true;
+            this._dgvTags.RowHeadersVisible = false;
+            this._dgvTags.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this._dgvTags.Size = new System.Drawing.Size(720, 368);
+            this._dgvTags.TabIndex = 1;
+            this._dgvTags.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this._DataGrid_CellDoubleClick);
             // 
             // toolStrip2
             // 
@@ -84,32 +84,10 @@
             // 
             // toolStripTitleLabel
             // 
-            this.toolStripTitleLabel.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toolStripTitleLabel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.toolStripTitleLabel.Name = "toolStripTitleLabel";
-            this.toolStripTitleLabel.Size = new System.Drawing.Size(87, 22);
+            this.toolStripTitleLabel.Size = new System.Drawing.Size(92, 22);
             this.toolStripTitleLabel.Text = "PLC Monitor";
-            // 
-            // toolStripRefreshButton
-            // 
-            this.toolStripRefreshButton.Image = global::Mss.Views.Properties.Resources.GreenRefresh24;
-            this.toolStripRefreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripRefreshButton.Name = "toolStripRefreshButton";
-            this.toolStripRefreshButton.Size = new System.Drawing.Size(66, 22);
-            this.toolStripRefreshButton.Text = "Refresh";
-            this.toolStripRefreshButton.Click += new System.EventHandler(this._ToolStripRefreshButton_Click);
-            // 
-            // toolStripTagSetLabel
-            // 
-            this.toolStripTagSetLabel.Name = "toolStripTagSetLabel";
-            this.toolStripTagSetLabel.Size = new System.Drawing.Size(67, 22);
-            this.toolStripTagSetLabel.Text = "Tag Group: ";
-            // 
-            // toolStripDevicesComboBox
-            // 
-            this.toolStripDevicesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolStripDevicesComboBox.Name = "toolStripDevicesComboBox";
-            this.toolStripDevicesComboBox.Size = new System.Drawing.Size(200, 25);
-            this.toolStripDevicesComboBox.SelectedIndexChanged += new System.EventHandler(this._ToolStripDevicesComboBox_SelectedIndexChanged);
             // 
             // toolStripSeparator1
             // 
@@ -121,15 +99,37 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
-            // PlcTagView
+            // toolStripTagSetLabel
+            // 
+            this.toolStripTagSetLabel.Name = "toolStripTagSetLabel";
+            this.toolStripTagSetLabel.Size = new System.Drawing.Size(68, 22);
+            this.toolStripTagSetLabel.Text = "Tag Group: ";
+            // 
+            // toolStripDevicesComboBox
+            // 
+            this.toolStripDevicesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripDevicesComboBox.Name = "toolStripDevicesComboBox";
+            this.toolStripDevicesComboBox.Size = new System.Drawing.Size(200, 25);
+            this.toolStripDevicesComboBox.SelectedIndexChanged += new System.EventHandler(this._ToolStripDevicesComboBox_SelectedIndexChanged);
+            // 
+            // toolStripRefreshButton
+            // 
+            this.toolStripRefreshButton.Image = global::Mss.Views.Properties.Resources.GreenRefresh24;
+            this.toolStripRefreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripRefreshButton.Name = "toolStripRefreshButton";
+            this.toolStripRefreshButton.Size = new System.Drawing.Size(66, 22);
+            this.toolStripRefreshButton.Text = "Refresh";
+            this.toolStripRefreshButton.Click += new System.EventHandler(this._ToolStripRefreshButton_Click);
+            // 
+            // PlcTagsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.toolStrip2);
-            this.Controls.Add(this.dataGrid);
-            this.Name = "PlcTagView";
+            this.Controls.Add(this._dgvTags);
+            this.Name = "PlcTagsView";
             this.Size = new System.Drawing.Size(718, 396);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._dgvTags)).EndInit();
             this.toolStrip2.ResumeLayout(false);
             this.toolStrip2.PerformLayout();
             this.ResumeLayout(false);
@@ -139,7 +139,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGrid;
+        private System.Windows.Forms.DataGridView _dgvTags;
         private System.Windows.Forms.ToolStrip toolStrip2;
         private System.Windows.Forms.ToolStripLabel toolStripTitleLabel;
         private System.Windows.Forms.ToolStripButton toolStripRefreshButton;

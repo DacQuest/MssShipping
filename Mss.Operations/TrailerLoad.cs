@@ -1,24 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DacQuest.DFX.Core.Configuration;
+﻿using DacQuest.DFX.Core.Configuration;
 using DacQuest.DFX.Core.DataItems.Collections;
 using DacQuest.DFX.Core.Messaging;
 using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Core.SystemEvents;
+using DacQuest.DFX.Devices;
 using DacQuest.DFX.Devices.Tags;
 using DacQuest.DFX.Operations;
 using Mss.Collections;
 using Mss.Common;
 using Mss.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Mss.Operations
 {
     public class TrailerLoad : XSimpleOperation
     {
         private TrailerLoadParameterSetWrapper _parameters;
+
+        protected string TrailerNumberName = "Trailer Number";
+        protected string TrailerNumber
+        {
+            get => GetVariable<string>(TrailerNumberName);
+            set => SetVariable(TrailerNumberName, value);
+        }
 
         protected string UpperLevelCompletedName = "Upper Level Completed";
         protected bool UpperLevelCompleted
@@ -34,19 +42,49 @@ namespace Mss.Operations
             set => SetVariable(LowerLevelCompletedName, value);
         }
 
-        protected string TrailerIDName = "Trailer ID";
-        protected string TrailerID
+        protected string LoadAcceptedName = "Load Accepted";
+        protected bool LoadAccepted
         {
-            get => GetVariable<string>(TrailerIDName);
-            set => SetVariable(TrailerIDName, value);
+            get => GetVariable<bool>(LoadAcceptedName);
+            set => SetVariable(LoadAcceptedName, value);
         }
 
-        protected string TrailerLoadedName = "Trailer Loaded";
-        protected bool TrailerLoaded
+        protected string LoadTrailerCommandName = "Load Trailer Command";
+        protected int LoadTrailerPermissive
         {
-            get => GetVariable<bool>(TrailerLoadedName);
-            set => SetVariable(TrailerLoadedName, value);
+            get => GetVariable<int>(LoadTrailerCommandName);
+            set => SetVariable(LoadTrailerCommandName, value);
         }
+
+        protected void WritePlc(string tagRoleName, object value)
+            => WriteTag(Constant.PlcRoleName, tagRoleName, value);
+
+        protected XTagData ReadPlc(string tagRoleName)
+            => ReadTag(Constant.PlcRoleName, tagRoleName, true);
+
+        protected void StartPlcTagCapture(
+            string tagRoleName,
+            XTagDataEventHandler handler,
+            XTagDataCaptureUpdateMode updateMode)
+                => StartTagDataCapture(Constant.PlcRoleName, tagRoleName, handler, updateMode);
+
+        protected void ClearSoftwareFaultInPlc()
+            => WritePlc(Constant.SoftwareFaultRoleName, 0);
+
+        protected void SetSoftwareFaultInPlc()
+            => WritePlc(Constant.SoftwareFaultRoleName, 1);
+
+        protected void SetOperationFaulted(string extendedState)
+        {
+            SetSoftwareFaultInPlc();
+            SetFaulted(extendedState);
+        }
+
+        //         protected bool TrailerLoaded
+        //         {
+        //             get => GetVariable<bool>(TrailerLoadedName);
+        //             set => SetVariable(TrailerLoadedName, value);
+        //         }
 
         bool LoadCompleted => LowerLevelCompleted && UpperLevelCompleted;
 
@@ -75,14 +113,145 @@ namespace Mss.Operations
         protected override void RegisterCustomStates()
         {
             RegisterState(AwaitingLoadCompletedState, "Awaiting Load Completed", AwaitingLoadCompletedStateHandler);
+            RegisterState(AwaitingLoadAcceptedState, "Awaiting Load Accepted", AwaitingLoadAcceptedStateHandler);
+            RegisterState(AwaitingTrailerNumberState, "Awaiting Trailer Number", AwaitingTrailerNumberStateHandler);
             RegisterState(AwaitingTrailerLoadedState, "Awaiting Trailer Loaded", AwaitingTrailerLoadedStateHandler);
-            RegisterState(AwaitingTrailerIDState, "Awaiting Trailer ID", AwaitingTrailerIDStateHandler);
             base.RegisterCustomStates();
+        }
+
+        protected override void ResetOperationVariables()
+        {
+            TrailerNumber = Constant.NoTrailerNumber;
+            UpperLevelCompleted = false;
+            LowerLevelCompleted = false;
+            LoadAccepted = false;
+//             TrailerLoaded = false;
+        }
+
+        protected override void AutoSubscribe()
+        {
+            Subscribe(
+                AcceptLoadMessageData.AcceptLoadMessageTopic,
+                _AcceptLoad_OnMessage,
+                XMessageScopes.All);
+
+            Subscribe(
+                PrintLabelMessageData.ReprintLoadLabelRequest,
+                _ReprintLoadLabel_OnMessage,
+                XMessageScopes.All);
+
+            base.AutoSubscribe();
+        }
+
+        private void _ReprintLoadLabel_OnMessage(
+            object sender,
+            XMessageEventArgs e)
+        {
+            PrintLabelMessageData md = (PrintLabelMessageData)e.MessageData;
+
+            if (md.SlugLetter != SlugLetter)
+            {
+                return;
+            }
+
+            // This will print directly when the TrailerLoad ops own printers
+            // For now it forwards the request to the Lower Load Director
+
+            if (!_PrintLoadLabel(
+                md.SlugLetter,
+                TrailerNumber,
+                md.SmallestRotation,
+                md.LargestRotation,
+                md.PalletCount,
+                out string fault))
+            {
+                SetFaulted(fault);
+            }
+        }
+
+        private bool _PrintLoadLabel(
+            SlugLetter slugLetter,
+            string trailerNumber,
+            string firstRotation,
+            string lastRotation,
+            int palletCount,
+            out string fault)
+        {
+            if (TrailerNumber.ValidTrailerNumber())
+            {
+                XMessaging.Publish(
+                    PrintLabelMessageData.PrintLoadLabelRequest,
+                    new PrintLabelMessageData(
+                        slugLetter,
+                        trailerNumber,
+                        firstRotation,
+                        lastRotation,
+                        palletCount),
+                    XMessageScopes.All,
+                    this);
+            }
+            fault = string.Empty;
+            return true;
+        }
+
+        private void _AcceptLoad_OnMessage(
+            object sender,
+            XMessageEventArgs e)
+        {
+            AcceptLoadMessageData md = (AcceptLoadMessageData)e.MessageData;
+            if (md.SlugLetter != SlugLetter)
+            {
+                return;
+            }
+            if (!TrailerNumber.ValidTrailerNumber())
+            {
+                return;
+            }
+            SetExtendedState($"Accepting Load on {md.SlugLetter.SlugDisplayName()}...", true);
+            string error;
+            if (CurrentState.Name == AwaitingLoadAcceptedState)
+            {
+                if (DataLayer.TryAcceptLoad(
+                    md.SlugLetter,
+                    TrailerNumber,
+                    out string smallestRotation,
+                    out string largestRotation,
+                    out int palletCount,
+                    out error))
+                {
+                    md.SystemEvent?.Publish();
+                    _SendLoadTrailerCommand();
+                    if (!_PrintLoadLabel(
+                        SlugLetter,
+                        TrailerNumber,
+                        smallestRotation,
+                        largestRotation,
+                        palletCount,
+                        out string fault))
+                    {
+                        SetFaulted(fault);
+                        return;
+                    }
+                    SetCurrentState(AwaitingTrailerLoadedState);
+                }
+            }
+            else
+            {
+                error = "Cannot Accept Load. Trailer Load operation is in the wrong state.";
+            }
+                md.PublishResponse(new AcceptLoadMessageData(md.SlugLetter, error));
+            ClearExtendedState(true);
         }
 
         protected override void DoStart()
         {
             base.DoStart();
+
+            TrailerNumber = Constant.NoTrailerNumber;
+            UpperLevelCompleted = false;
+            LowerLevelCompleted = false;
+            LoadAccepted = false;
+//             TrailerLoaded = false;
 
             DataLayer = DataLayer.Create(
                 out _storage,
@@ -106,38 +275,38 @@ namespace Mss.Operations
                 _slugB.Touched += _Slug_Touched;
             }
 
-            StartTagDataCapture(
-                    Constant.PlcRoleName,
+            LoadAccepted = DataLayer.IsLoadLoadable(SlugLetter);
+
+            ClearSoftwareFaultInPlc();
+
+            StartPlcTagCapture(
                     Constant.LowerLevelCompletedRoleName,
                     _LowerLevelCompleted_TagChanged,
                     XTagDataCaptureUpdateMode.OnChange);
 
-            StartTagDataCapture(
-                Constant.PlcRoleName,
+            StartPlcTagCapture(
                 Constant.UpperLevelCompletedRoleName,
                 _UpperLevelCompleted_TagChanged,
                 XTagDataCaptureUpdateMode.OnChange);
 
-            StartTagDataCapture(
-                Constant.PlcRoleName,
-                Constant.TrailerIDRoleName,
-                _TrailerID_TagChanged,
+            StartPlcTagCapture(
+                Constant.TrailerNumberRoleName,
+                _TrailerNumber_TagChanged,
                 XTagDataCaptureUpdateMode.OnChange);
 
-            StartTagDataCapture(
-                Constant.PlcRoleName,
-                Constant.TrailerLoadedRoleName,
-                _TrailerLoaded_TagChanged,
+            StartPlcTagCapture(
+                Constant.TrailerLoadTrailerPermissiveName,
+                _TrailerLoadTrailerPermissive_TagChanged,
                 XTagDataCaptureUpdateMode.OnChange);
 
         }
 
         private void _Slug_Touched(object sender, XMessageEventArgs eventArgs)
         {
-            if (DataLayer.IsLoadLoadable(SlugLetter))
-            {
-                SetCurrentState(AwaitingTrailerLoadedState);
-            }
+//             if (DataLayer.IsLoadLoadable(SlugLetter))
+//             {
+//                 SetCurrentState(AwaitingTrailerLoadedState);
+//             }
         }
 
         protected override void DoStop()
@@ -149,8 +318,10 @@ namespace Mss.Operations
         protected override void DoRewind()
         {
             ClearExtendedState(true);
-            if (DataLayer.IsLoadLoadable(SlugLetter))
+            LoadAccepted = DataLayer.IsLoadLoadable(SlugLetter);
+            if (LoadAccepted)
             {
+                _SendLoadTrailerCommand();
                 SetCurrentState(AwaitingTrailerLoadedState);
             }
             else
@@ -167,8 +338,8 @@ namespace Mss.Operations
             if (e.TagData.TryGetTagValue(out bool levelCompleted))
             {
                 LowerLevelCompleted = levelCompleted;
-                if (CurrentState.Name == AwaitingLoadCompletedState
-                    && LoadCompleted)
+                if (LoadCompleted
+                    && CurrentState.Name == AwaitingLoadCompletedState)
                 {
                     RunCurrentStateHandler();
                 }
@@ -180,38 +351,47 @@ namespace Mss.Operations
             if (e.TagData.TryGetTagValue(out bool levelCompleted))
             {
                 UpperLevelCompleted = levelCompleted;
-                if (CurrentState.Name == AwaitingLoadCompletedState
-                    && LoadCompleted)
+                string currentStateName = CurrentState.Name;
+                if (LoadCompleted
+                    && CurrentState.Name == AwaitingLoadCompletedState)
                 {
                     RunCurrentStateHandler();
                 }
             }
         }
 
-        private void _TrailerID_TagChanged(object sender, XTagDataEventArgs e)
+        private void _TrailerNumber_TagChanged(object sender, XTagDataEventArgs e)
         {
-            if (e.TagData.TryGetTagValue(out string trailerID))
+            if (e.TagData.TryGetTagValue(out string trailerNumber))
             {
-                TrailerID = trailerID;
+                TrailerNumber = trailerNumber.IsNullOrWhiteSpace()
+                    ? Constant.NoTrailerNumber
+                    : trailerNumber;
+
+                XMessaging.Publish(
+                    TrailerNumberMessageData.TrailerNumberMessageTopicName,
+                    new TrailerNumberMessageData(SlugLetter, TrailerNumber),
+                    XMessageScopes.All,
+                    null);
+
                 string currentStateName = CurrentState.Name;
-                if ((currentStateName == AwaitingTrailerIDState
-                        || currentStateName == AwaitingTrailerLoadedState)
-                    && !TrailerID.IsNullOrWhiteSpace())
+                if (TrailerNumber.ValidTrailerNumber()
+                    && currentStateName == AwaitingTrailerNumberState)
                 {
                     RunCurrentStateHandler();
                 }
             }
         }
 
-        private void _TrailerLoaded_TagChanged(object sender, XTagDataEventArgs e)
+        private void _TrailerLoadTrailerPermissive_TagChanged(object sender, XTagDataEventArgs e)
         {
-            if (e.TagData.TryGetTagValue(out bool trailerLoaded))
+            int previousState = LoadTrailerPermissive;
+            if (e.TagData.TryGetTagValue(out int loadTrailerPermissive))
             {
-                TrailerLoaded = trailerLoaded;
-                string currentStateName = CurrentState.Name;
-                if ((currentStateName == AwaitingTrailerIDState
-                        || currentStateName == AwaitingTrailerLoadedState)
-                    && TrailerLoaded)
+                LoadTrailerPermissive = loadTrailerPermissive;
+                if (previousState != Constant.NoMoveCommand
+                    && LoadTrailerPermissive == Constant.NoMoveCommand
+                    && CurrentState.Name == AwaitingTrailerLoadedState)
                 {
                     RunCurrentStateHandler();
                 }
@@ -228,7 +408,107 @@ namespace Mss.Operations
         {
             if (LoadCompleted)
             {
-                _ = DataLayer.TryAutoAcceptLoad(SlugLetter);
+                if (!TrailerNumber.ValidTrailerNumber())
+                {
+                    SetCurrentState(AwaitingTrailerNumberState);
+                    return;
+                }
+                if (DataLayer.TryAutoAcceptLoad(
+                    SlugLetter,
+                    TrailerNumber,
+                    out string smallestRotation,
+                    out string largestRotation,
+                    out int palletCount))
+                {
+                    _SendLoadTrailerCommand();
+                    if (!_PrintLoadLabel(
+                        SlugLetter,
+                        TrailerNumber,
+                        smallestRotation,
+                        largestRotation,
+                        palletCount,
+                        out string fault))
+                    {
+                        SetFaulted(fault);
+                        return;
+                    }
+                    SetCurrentState(AwaitingTrailerLoadedState);
+                }
+                else
+                {
+                    SetCurrentState(AwaitingLoadAcceptedState);
+                }
+            }
+        }
+
+        private void _SendLoadTrailerCommand()
+        {
+            LoadTrailerPermissive = Constant.LoadTrailerCommand;
+            WritePlc(
+                Constant.TrailerLoadTrailerPermissiveName,
+                LoadTrailerPermissive);
+        }
+
+        #endregion
+
+        //==================================================================================
+
+        #region AwaitingTrailerNumberState
+
+        protected readonly string AwaitingTrailerNumberState = "AwaitingTrailerNumber";
+
+        protected virtual void AwaitingTrailerNumberStateHandler()
+        {
+            if (TrailerNumber.ValidTrailerNumber())
+            {
+                if (!LoadCompleted)
+                {
+                    SetCurrentState(AwaitingLoadCompletedState);
+                    return;
+                }
+                if (DataLayer.TryAutoAcceptLoad(
+                    SlugLetter,
+                    TrailerNumber,
+                    out string smallestRotation,
+                    out string largestRotation,
+                    out int palletCount))
+                {
+                    _SendLoadTrailerCommand();
+                    if (!_PrintLoadLabel(
+                        SlugLetter,
+                        TrailerNumber,
+                        smallestRotation,
+                        largestRotation,
+                        palletCount,
+                        out string fault))
+                    {
+                        SetFaulted(fault);
+                        return;
+                    }
+                    SetCurrentState(AwaitingTrailerLoadedState);
+                }
+                else
+                {
+                    SetCurrentState(AwaitingLoadAcceptedState);
+                }
+            }
+        }
+
+        #endregion
+
+        //==================================================================================
+
+        #region AwaitingLoadAcceptedState
+
+        protected readonly string AwaitingLoadAcceptedState = "AwaitingLoadAccepted";
+
+        protected virtual void AwaitingLoadAcceptedStateHandler()
+        {
+            LoadAccepted = DataLayer.IsLoadLoadable(SlugLetter);
+
+            if (LoadAccepted)
+            {
+                SetCurrentState(AwaitingTrailerLoadedState);
             }
         }
 
@@ -242,59 +522,35 @@ namespace Mss.Operations
 
         protected virtual void AwaitingTrailerLoadedStateHandler()
         {
-            if (TrailerLoaded)
+            if (LoadTrailerPermissive == Constant.NoMoveCommand
+                && TrailerNumber.ValidTrailerNumber()
+                && DataLayer.IsLoadLoadable(SlugLetter))
             {
-                if (TrailerID.IsNullOrWhiteSpace())
+                if (!DataLayer.TryFinalizeLoad(
+                    SlugLetter,
+                    out string fault))
                 {
-                    SetCurrentState(AwaitingTrailerIDState);
-                    return;
-                }
-                if (!DataLayer.IsLoadLoadable(SlugLetter))
-                {
-                    SetCurrentState(AwaitingLoadCompletedState);
-                    return;
-                }
-                if (!DataLayer.FinalizeLoad(SlugLetter, TrailerID, out string error))
-                {
-                    SetFaulted(error);
+                    SetFaulted(fault);
                     return;
                 }
 
-                WriteTag(
-                    Constant.PlcRoleName,
-                    Constant.TrailerLoadedRoleName,
-                    false);
-
-                if (!DataLayer.TryAutoReleaseBroadcast(out error))
-                {
-                    if (!error.IsNullOrWhiteSpace())
-                    {
-                        XSystemEvent.Publish(
-                            ConfigurationItem.FriendlyName,
-                            XSystemEventLevel.Error,
-                            error);
-                    }
-                }
+//                 if (!DataLayer.FinalizeLoad(
+//                     SlugLetter,
+//                     out string error))
+//                 {
+//                     if (!error.IsNullOrEmpty())
+//                     {
+//                         XSystemEvent.Publish(
+//                             "FinalizeLoad",
+//                             XSystemEventLevel.Error,
+//                             $" {SlugLetter.SlugDisplayName()} Finalized Load Error: {error}.");
+//                     }
+//                     return;
+//                 }
 
                 SetCurrentState(DfxRewind);
             }
 
-        }
-
-        #endregion
-
-        //==================================================================================
-
-        #region AwaitingTrailerIDState
-
-        protected readonly string AwaitingTrailerIDState = "AwaitingTrailerID";
-
-        protected virtual void AwaitingTrailerIDStateHandler()
-        {
-            if (!TrailerID.IsNullOrWhiteSpace())
-            {
-                SetCurrentState(AwaitingTrailerLoadedState);
-            }
         }
 
         #endregion
