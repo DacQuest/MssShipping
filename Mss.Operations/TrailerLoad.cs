@@ -21,6 +21,26 @@ namespace Mss.Operations
     {
         private TrailerLoadParameterSetWrapper _parameters;
 
+        public string UpperLevelCompletedRoleName
+        {
+            get
+            {
+                return _parameters.SlugLetter == SlugLetter.A
+                    ? Constant.SlugAUpperLevelCompletedRoleName
+                    : Constant.SlugBUpperLevelCompletedRoleName;
+            }
+        }
+
+        public string LowerLevelCompletedRoleName
+        {
+            get
+            {
+                return _parameters.SlugLetter == SlugLetter.A
+                    ? Constant.SlugALowerLevelCompletedRoleName
+                    : Constant.SlugBLowerLevelCompletedRoleName;
+            }
+        }
+
         protected string TrailerNumberName = "Trailer Number";
         protected string TrailerNumber
         {
@@ -280,12 +300,12 @@ namespace Mss.Operations
             ClearSoftwareFaultInPlc();
 
             StartPlcTagCapture(
-                    Constant.LowerLevelCompletedRoleName,
-                    _LowerLevelCompleted_TagChanged,
-                    XTagDataCaptureUpdateMode.OnChange);
+                LowerLevelCompletedRoleName,
+                _LowerLevelCompleted_TagChanged,
+                XTagDataCaptureUpdateMode.OnChange);
 
             StartPlcTagCapture(
-                Constant.UpperLevelCompletedRoleName,
+                UpperLevelCompletedRoleName,
                 _UpperLevelCompleted_TagChanged,
                 XTagDataCaptureUpdateMode.OnChange);
 
@@ -523,7 +543,6 @@ namespace Mss.Operations
         protected virtual void AwaitingTrailerLoadedStateHandler()
         {
             if (LoadTrailerPermissive == Constant.NoMoveCommand
-                && TrailerNumber.ValidTrailerNumber()
                 && DataLayer.IsLoadLoadable(SlugLetter))
             {
                 if (!DataLayer.TryFinalizeLoad(

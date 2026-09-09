@@ -666,9 +666,9 @@ namespace Mss.Data
                 loadItem.Broadcast = broadcast;
                 slug[loadItem.NodeIndex] = loadItem;
 
-                _slugManager.SetNextPickable(
-                     loadItem,
-                     slug);
+//                 _slugManager.SetNextPickable(
+//                      loadItem,
+//                      slug);
                 fault = string.Empty;
                 return true;
             }
@@ -722,9 +722,9 @@ namespace Mss.Data
                 loadItem.Broadcast = broadcast;
                 slug[loadItem.NodeIndex] = loadItem;
 
-               _slugManager.SetNextPickable(
-                   loadItem,
-                    slug);
+//                _slugManager.SetNextPickable(
+//                    loadItem,
+//                     slug);
                 fault = string.Empty;
                 return true;
             }
@@ -1462,6 +1462,7 @@ namespace Mss.Data
             try
             {
                 loadItem = null;
+                return false;
                 return !_storage.AnyPickable(
                         CraneNumber.None,
                         palletItem.Sku)
@@ -2068,6 +2069,8 @@ namespace Mss.Data
                 loadItem = null;
                 return false;
             }
+            loadItem = null;
+            return false;
             return _TryAssignHotJobAtCrane(
                 craneNumber,
                 levels,
@@ -3357,7 +3360,7 @@ namespace Mss.Data
                     string sql = string.Format(
                         "INSERT INTO SHIP_LoadHeader (LoadNo, Slug, StartedDTTM, FinishedDTTM, PalletCount, StartCSN, StopCSN, TrailerNo) "
                             + " VALUES (              {0},    '{1}','{2}',       '{3}',        {4},         '{5}',    '{6}',   '{7}'); "
-                            + " SELECT Convert(BigInt, SCOPE_IDENTITY());",
+                            + " SELECT Convert(Int, SCOPE_IDENTITY());",
                         loadNumber,
                         slugLetter[0],
                         startedOn.ToString("G"),
