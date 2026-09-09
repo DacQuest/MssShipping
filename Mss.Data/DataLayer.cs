@@ -667,9 +667,8 @@ namespace Mss.Data
                 slug[loadItem.NodeIndex] = loadItem;
 
                 _slugManager.SetNextPickable(
-                     _systemSettings.GetItem(),
-                     slug,
-                     loadItem.SlugLevel);
+                     loadItem,
+                     slug);
                 fault = string.Empty;
                 return true;
             }
@@ -724,9 +723,8 @@ namespace Mss.Data
                 slug[loadItem.NodeIndex] = loadItem;
 
                _slugManager.SetNextPickable(
-                    _systemSettings.GetItem(),
-                    slug,
-                    loadItem.SlugLevel);
+                   loadItem,
+                    slug);
                 fault = string.Empty;
                 return true;
             }
@@ -755,25 +753,25 @@ namespace Mss.Data
                         fault);
                     return false;
                 }
-                if (loadItem.Status != LoadItemStatus.Presequenced)
-                {
-                    fault = $"({loadItem.Coordinates}) Attempted to set a Slug position to {LoadItemStatus.Sequenced.ToText()} when it was not set to {LoadItemStatus.Presequenced.ToText()}.";
-                    XSystemEvent.Publish(
-                        slug.CollectionConfiguration.Name,
-                        XSystemEventLevel.Warning,
-                        fault);
-                    return false;
-                }
-                if (!_MatchPreviousLoadItemStatus(
-                    false,
-                    slug,
-                    loadItem,
-                    LoadItemStatus.Sequenced,
-                    LoadItemStatus.Sequenced | LoadItemStatus.Done,
-                    out fault))
-                {
-                    return false;
-                }
+//                 if (loadItem.Status != LoadItemStatus.Presequenced)
+//                 {
+//                     fault = $"({loadItem.Coordinates}) Attempted to set a Slug position to {LoadItemStatus.Sequenced.ToText()} when it was not set to {LoadItemStatus.Presequenced.ToText()}.";
+//                     XSystemEvent.Publish(
+//                         slug.CollectionConfiguration.Name,
+//                         XSystemEventLevel.Warning,
+//                         fault);
+//                     return false;
+//                 }
+//                 if (!_MatchPreviousLoadItemStatus(
+//                     false,
+//                     slug,
+//                     loadItem,
+//                     LoadItemStatus.Sequenced,
+//                     LoadItemStatus.Sequenced | LoadItemStatus.Done,
+//                     out fault))
+//                 {
+//                     return false;
+//                 }
                 loadItem.Status = LoadItemStatus.Sequenced;
                 BroadcastItem broadcast = loadItem.Broadcast;
                 broadcast.Shortage = false;
@@ -781,9 +779,8 @@ namespace Mss.Data
                 slug[loadItem.NodeIndex] = loadItem;
 
                _slugManager.SetNextPickable(
-                    _systemSettings.GetItem(),
-                    slug,
-                    loadItem.SlugLevel);
+                    loadItem,
+                    slug);
                 fault = string.Empty;
                 return true;
             }
@@ -840,9 +837,8 @@ namespace Mss.Data
                 slug[loadItem.NodeIndex] = loadItem;
 
                _slugManager.SetNextPickable(
-                    _systemSettings.GetItem(),
-                    slug,
-                    loadItem.SlugLevel);
+                    loadItem,
+                    slug);
                 fault = string.Empty;
                 return true;
             }
@@ -1490,7 +1486,7 @@ namespace Mss.Data
             PalletItem palletItem,
             out LoadItem loadItem)
         {
-            if (!_slugManager.TryGetPrimarySlug(
+            if (!_slugManager.TryGetPrimarySlugForPick(
                 _systemSettings.GetItem(),
                 out Slug primarySlug,
                 out Slug secondarySlug))
@@ -1965,7 +1961,7 @@ namespace Mss.Data
                 {
                     return false;
                 }
-                if (!_slugManager.TryGetPrimarySlug(
+                if (!_slugManager.TryGetPrimarySlugForPick(
                     _systemSettings.GetItem(),
                     out Slug primaryLoad,
                     out Slug secondaryLoad))
@@ -3611,7 +3607,7 @@ namespace Mss.Data
                 Dictionary<string, int> skuCounts = _storage.GetPickableSkuCounts(
                     out List<PalletPickModeKeys> reservedPalletKeys);
 
-                if (_slugManager.TryGetPrimarySlug(
+                if (_slugManager.TryGetPrimarySlugForShortages(
                     _systemSettings.GetItem(),
                     out primarySlug,
                     out secondarySlug))
@@ -4045,6 +4041,7 @@ namespace Mss.Data
 //                 {
 //                     targetSlug.ApplyInitialPickableStatuses();
 //                 }
+                targetSlug.ApplyInitialPickableStatuses();
 
                 error = string.Empty;
                 XMessaging.Publish(
@@ -4210,7 +4207,7 @@ namespace Mss.Data
             {
                 _systemSettings.SlugBLoadNumber--;
             }
-            load.Clear(true);
+            load.SafeClear(true);
             if (recoverBroadcast)
             {
                 List<string> csnListToRecover = _broadcast.Values

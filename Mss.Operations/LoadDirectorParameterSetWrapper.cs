@@ -35,13 +35,13 @@ namespace Mss.Operations
             PickListValues = "true,false")]
         public bool ManualLabelPrinterAvailable => _manualLabelPrinterAvailable;
 
-        private bool _printLeftLabelFirst = true;
+        private bool _printRightLabelFirst = true;
         [XConfigurationProperty(
             @"",
             false,
             DefaultValue = "true",
             PickListValues = "true,false")]
-        public bool PrintLeftLabelFirst => _printLeftLabelFirst;
+        public bool PrintRightLabelFirst => _printRightLabelFirst;
 
     }
 }

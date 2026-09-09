@@ -42,6 +42,27 @@ namespace Mss.Collections
             }
         }
 
+        public void ApplyInitialPickableStatuses()
+        {
+            _ = Lock();
+            try
+            {
+                foreach (int nodeIndex in Constant.InitialPickableStatusIndexes)
+                {
+                    var loadItem = this[nodeIndex];
+                    if (loadItem.Status == LoadItemStatus.Pending)
+                    {
+                        loadItem.Status = LoadItemStatus.Pickable;
+                        this[nodeIndex] = loadItem;
+                    }
+                }
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
         public bool IsNextInLaneToSequence(int nodeIndex)
         {
             _ = Lock();

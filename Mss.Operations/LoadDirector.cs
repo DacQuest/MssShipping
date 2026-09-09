@@ -478,11 +478,11 @@ namespace Mss.Operations
 
             return loadItem.Pallet.VehicleRow == VehicleRow.Row2
                 ? _PrintShippingLabel(loadItem, Constant.RearSeatLabelCode, out fault)
-                : _parameters.PrintLeftLabelFirst
-                    ? !_PrintShippingLabel(loadItem, Constant.LeftSeatLabelCode, out fault)
-                        || !_PrintShippingLabel(loadItem, Constant.RightSeatLabelCode, out fault)
-                    : !_PrintShippingLabel(loadItem, Constant.RightSeatLabelCode, out fault)
-                        || !_PrintShippingLabel(loadItem, Constant.LeftSeatLabelCode, out fault);
+                : _parameters.PrintRightLabelFirst
+                    ? (_PrintShippingLabel(loadItem, Constant.RightSeatLabelCode, out fault)
+                        && _PrintShippingLabel(loadItem, Constant.LeftSeatLabelCode, out fault))
+                    : (_PrintShippingLabel(loadItem, Constant.LeftSeatLabelCode, out fault)
+                        && _PrintShippingLabel(loadItem, Constant.RightSeatLabelCode, out fault));
 
         }
 

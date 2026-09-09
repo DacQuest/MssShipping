@@ -130,12 +130,14 @@ namespace Mss.Data
             return slug != null;
         }
 
-        internal bool TryGetPrimarySlug(
+        internal bool TryGetPrimarySlugForPick(
             SystemSettingsItem systemSettingsItem,
             out Slug primarySlug,
             out Slug secondarySlug)
         {
-            if (!TryGetPrimarySlug(systemSettingsItem, out primarySlug))
+            if (!TryGetPrimarySlugForPick(
+                systemSettingsItem,
+                out primarySlug))
             {
                 secondarySlug = null;
                 return false;
@@ -144,7 +146,7 @@ namespace Mss.Data
             return true;
         }
 
-        internal bool TryGetPrimarySlug(
+        internal bool TryGetPrimarySlugForPick(
             SystemSettingsItem systemSettingsItem,
             out Slug primarySlug)
         {
@@ -161,6 +163,89 @@ namespace Mss.Data
                         || slugPickPriority == SlugPickPriority.SlugA
                         || slugPickPriority == SlugPickPriority.SlugAOnly);
                 bool slugBPicksToDo = _slugB.Any(l => l.Status == LoadItemStatus.Pickable)
+                    && (slugPickPriority == SlugPickPriority.SmallerLoadNumber
+                        || slugPickPriority == SlugPickPriority.SlugB
+                        || slugPickPriority == SlugPickPriority.SlugBOnly);
+
+                primarySlug = null;
+                if (!slugAPicksToDo && !slugBPicksToDo)
+                {
+                    primarySlug = null;
+                }
+                else if (slugAPicksToDo && slugBPicksToDo)
+                {
+                    if (slugPickPriority == SlugPickPriority.SlugA
+                        || slugPickPriority == SlugPickPriority.SlugAOnly)
+                    {
+                        primarySlug = _slugA;
+                    }
+                    else if (slugPickPriority == SlugPickPriority.SlugB
+                        || slugPickPriority == SlugPickPriority.SlugBOnly)
+                    {
+                        primarySlug = _slugB;
+                    }
+                    else if (slugPickPriority == SlugPickPriority.SmallerLoadNumber)
+                    {
+                        int loadIDA = systemSettingsItem.SlugALoadNumber;
+                        int loadIDB = systemSettingsItem.SlugBLoadNumber;
+                        primarySlug = loadIDA < loadIDB ? _slugA : (Slug)_slugB;
+                    }
+                }
+                else if (slugAPicksToDo
+                    && !slugBPicksToDo
+                    && slugPickPriority != SlugPickPriority.SlugBOnly)
+                {
+                    primarySlug = _slugA;
+                }
+                else if (!slugAPicksToDo
+                    && slugPickPriority != SlugPickPriority.SlugAOnly
+                    && slugBPicksToDo)
+                {
+                    primarySlug = _slugB;
+                }
+                return primarySlug != null;
+            }
+            finally
+            {
+                Unlock();
+            }
+        }
+
+        internal bool TryGetPrimarySlugForShortages(
+            SystemSettingsItem systemSettingsItem,
+            out Slug primarySlug,
+            out Slug secondarySlug)
+        {
+            if (!TryGetPrimarySlugForShortages(
+                systemSettingsItem,
+                out primarySlug))
+            {
+                secondarySlug = null;
+                return false;
+            }
+            secondarySlug = GetOtherSlug(primarySlug);
+            return true;
+        }
+
+        internal bool TryGetPrimarySlugForShortages(
+            SystemSettingsItem systemSettingsItem,
+            out Slug primarySlug)
+        {
+            Lock();
+            try
+            {
+                SlugPickPriority slugPickPriority = systemSettingsItem.SlugPickPriority;
+                if (slugPickPriority == SlugPickPriority.Balanced)
+                {
+                    return _GetBalancedPrimarySlug(out primarySlug);
+                }
+                bool slugAPicksToDo = _slugA.Any(l => l.Status == LoadItemStatus.Pending
+                        || l.Status == LoadItemStatus.Pickable)
+                    && (slugPickPriority == SlugPickPriority.SmallerLoadNumber
+                        || slugPickPriority == SlugPickPriority.SlugA
+                        || slugPickPriority == SlugPickPriority.SlugAOnly);
+                bool slugBPicksToDo = _slugB.Any(l => l.Status == LoadItemStatus.Pending
+                        || l.Status == LoadItemStatus.Pickable)
                     && (slugPickPriority == SlugPickPriority.SmallerLoadNumber
                         || slugPickPriority == SlugPickPriority.SlugB
                         || slugPickPriority == SlugPickPriority.SlugBOnly);
@@ -238,83 +323,29 @@ namespace Mss.Data
         }
 
         internal void SetNextPickable(
-            SystemSettingsItem systemSettingsItem,
-            Slug thisSlug,
-            Levels level)
+            LoadItem loadItem,
+            Slug thisSlug)
         {
-//             Lock();
-//             try
-//             {
-//                 Load otherLoad;
-//                 bool isPrimaryLoad = true;
-//                 if (TryGetPrimaryLoad(
-//                     systemSettingsItem,
-//                     out Load primaryLoad,
-//                     out Load secondaryLoad))
-//                 {
-//                     isPrimaryLoad = primaryLoad.LoadLetter == thisLoad.LoadLetter;
-//                     otherLoad = isPrimaryLoad ? secondaryLoad : primaryLoad;
-//                 }
-//                 else
-//                 {
-//                     otherLoad = GetOtherLoad(thisLoad);
-//                 }
-//                 int activeLaneCount = thisLoad.GetActiveLanes(level);
-//                 int activePalletCount = thisLoad.GetActivePallets(level);
-//                 int otherActivePalletCount = otherLoad.GetActivePallets(level);
-//                 int totalActivePalletCount = activePalletCount + otherActivePalletCount;
-// 
-//                 if (totalActivePalletCount >= Constant.MaxActivePalletsPerLevel + Constant.MaxPalletsPerRecirc)
-//                 {
-//                     // Nothing can be done
-//                     return false;
-//                 }
-//                 else if (activePalletCount >= Constant.MaxActivePalletsPerLoadLevel + Constant.MaxPalletsPerRecirc)
-//                 {
-//                     // Nothing can be done
-//                     return false;
-//                 }
-// 
-// 
-// 
-// 
-//             }
-//             finally
-//             {
-//                 Unlock();
-//             }
-// 
-//             if (isPrimaryLoad)
-//             {
-// 
-//             }
-//             else
-//             {
-// 
-//             }
-// 
-// 
-//             int eligibleLaneCount;
-//             for (int index = 0; index < upperLevelIndexes.Length; index++)
-//             {
-//                 int loadIndex = upperLevelIndexes[index];
-//                 LoadItemStatus status = load[loadIndex].Status;
-//                 while (status >= LoadItemStatus.Pickable)
-//                 {
-//                     loadIndex = Constant.NextInLaneLoadIndex[loadIndex];
-// 
-//                 }
-//             }
+            Lock();
+            try
+            {
+                int nextIndex = Constant.NextInLaneLoadIndex[loadItem.NodeIndex];
+                if (nextIndex == Constant.AfterLast)
+                {
+                    return;
+                }
+                LoadItem nextLoadItem = thisSlug[nextIndex];
+                if (nextLoadItem.Status == LoadItemStatus.Pending)
+                {
+                    nextLoadItem.Status = LoadItemStatus.Pickable;
+                    thisSlug[nextLoadItem.NodeIndex] = nextLoadItem;
+                }
+            }
+            finally
+            {
+                Unlock();
+            }
         }
-
-//         private int GetActiveCounts(
-//             Load load,
-//             Levels level,
-//             out)
-//         {
-// 
-//         }
-
 
         internal void GetPickableLoadItems(
             Slug primarySlug,

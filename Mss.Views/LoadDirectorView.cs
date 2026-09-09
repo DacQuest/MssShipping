@@ -27,6 +27,8 @@ namespace Mss.Views
         private SlugProxy _slugBProxy;
         private SystemSettingsProxy _systemSettingsProxy;
         private bool _isAwaitingOperatorResponsState = false;
+        private bool _palletReleased = false;
+        private LoadItem _currentLoadItem = null;
 
         public LoadDirectorView()
         {
@@ -85,9 +87,12 @@ namespace Mss.Views
                 bool isStack = uiMessageData.GetMessageValue<bool>(Constant.LD_IsStackName);
                 bool autoReleaseNonLoadPallets = uiMessageData.GetMessageValue<bool>(Constant.LD_AutoReleaseNonLoadPalletsName);
                 _isAwaitingOperatorResponsState = uiMessageData.GetMessageValue<bool>(Constant.LD_IsAwaitingOperatorResponseName);
-                bool isLoadPallet = false;
+//                 bool isLoadPallet;
                 if (palletItem == null)
                 {
+//                     isLoadPallet = false;
+                    _currentLoadItem = null;
+                    _palletReleased = false;
                     _lblPalletID.Text = string.Empty;
                     _lblSku.Text = string.Empty;
                     _lblJobID.Text = string.Empty;
@@ -95,27 +100,31 @@ namespace Mss.Views
                     _lblStack.Visible = false;
                     _EnableAcceptButton(false);
                     _EnableRejectButton(false);
+                    _btnReprintCurrentShippingLabel.Enabled = false;
                 }
                 else if (loadItem == null)
                 {
+                    _currentLoadItem = null;
                     _lblPalletID.Text = palletItem.PalletID;
                     _lblSku.Text = palletItem.Sku;
                     _lblJobID.Text = palletItem.JobID;
                     _lblPurge.Visible = !isStack;
                     _lblStack.Visible = isStack;
                     _EnableAcceptButton(false);
-                    _EnableRejectButton(!autoReleaseNonLoadPallets);
+                    _EnableRejectButton(!autoReleaseNonLoadPallets && !_palletReleased);
+                    _btnReprintCurrentShippingLabel.Enabled = false;
                 }
                 else 
                 {
-                    isLoadPallet = true;
+                    _currentLoadItem = loadItem;
                     _lblPalletID.Text = palletItem.PalletID;
                     _lblSku.Text = palletItem.Sku;
                     _lblJobID.Text = palletItem.JobID;
                     _lblPurge.Visible = false;
                     _lblStack.Visible = false;
-                    _EnableAcceptButton(isLoadPallet);
-                    _EnableRejectButton(isLoadPallet);
+                    _EnableAcceptButton(!_palletReleased);
+                    _EnableRejectButton(!_palletReleased);
+                    _btnReprintCurrentShippingLabel.Enabled = true;
                 }
             }
         }
@@ -233,6 +242,7 @@ namespace Mss.Views
 
         private void _BtnAccept_Click(object sender, EventArgs e)
         {
+            _palletReleased = true;
             _EnableAcceptButton(false);
             _EnableRejectButton(false);
 
@@ -243,6 +253,7 @@ namespace Mss.Views
 
         private void _BtnReject_Click(object sender, EventArgs e)
         {
+            _palletReleased = true;
             _EnableAcceptButton(false);
             _EnableRejectButton(false);
 
@@ -265,6 +276,36 @@ namespace Mss.Views
             _btnReject.BackColor = enable
                 ? Color.Red
                 : SystemColors.Control;
+        }
+
+        private void _BtnReprintCurrentShippingLabel_Click(object sender, EventArgs e)
+        {
+            _ReprintCurrentShippingLabel();
+        }
+
+        private void _ReprintCurrentShippingLabel()
+        {
+            if (_currentLoadItem == null)
+            {
+                _btnReprintCurrentShippingLabel.Enabled = false;
+                return;
+            }
+            using (ReprintLabelConfirmationForm form = new ReprintLabelConfirmationForm(
+                true,
+                $"Do you want to reprint the Shipping Label for Pallet {_currentLoadItem.Pallet.PalletID}"))
+            {
+                if (form.ShowDialog(this) == DialogResult.Yes)
+                {
+                    XMessaging.Publish(
+                        PrintLabelMessageData.ReprintShippingLabelRequest,
+                        new PrintLabelMessageData(
+                            _currentLoadItem.SlugLetter,
+                            _currentLoadItem.SlugLevel,
+                            _currentLoadItem.NodeIndex),
+                        XMessageScopes.All,
+                        this);
+                }
+            }
         }
 
         //public override void ViewClosed()

@@ -247,8 +247,9 @@ namespace Mss.Common
 
         // === THESE ARRAYS APPLY TO LOADS OF 54 PALLETS ====================================================
 
-        public static readonly int[] UpperLevelStartIndexes = new[] { 0, 1, 2, 24, 25, 26 };
-        public static readonly int[] LowerLevelStartIndexes = new[] { 27, 28, 29, 51, 52, 53 };
+//         public static readonly int[] UpperLevelStartIndexes = new[] { 0, 1, 2, 24, 25, 26 };
+//         public static readonly int[] LowerLevelStartIndexes = new[] { 27, 28, 29, 51, 52, 53 };
+        public static readonly int[] InitialPickableStatusIndexes = new[] { 0, 1, 2, 24, 25, 26, 27, 28, 29, 51, 52, 53 };
 
         public static readonly int[] PickSearchOrder = new int[]
         {
