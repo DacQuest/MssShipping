@@ -83,6 +83,15 @@ namespace Mss.Operations
                 if (_isLoadPallet)
                 {
                     DataLayer.RemovePitPallet(CurrentPallet.PalletID);
+                    if (!DataLayer.TrySetSequenced(CurrentPallet.PalletID, out string fault))
+                    {
+                        DataLayer.RollBackLoadPick(CurrentPallet.PalletID, false);
+                        DataLayer.SetPitPallet(Level, CurrentPallet, PitCode.Purge);
+                        XSystemEvent.Publish(
+                            ConfigurationItem.Name,
+                            XSystemEventLevel.Warning,
+                           fault + " Purged the Pallet.");
+                    }
                 }
                 DataLayer.RemoveRecircBufferPallet(CurrentPallet.PalletID);
             }

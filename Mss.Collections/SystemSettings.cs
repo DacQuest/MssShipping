@@ -300,7 +300,8 @@ namespace Mss.Collections
             _ = Lock();
             try
             {
-                return MasterUpperOutboundsEnabled && GetUpperOutboundEnabled(craneNumber);
+                return MasterUpperOutboundsEnabled
+                    && GetUpperOutboundEnabled(craneNumber);
             }
             finally
             {
@@ -375,16 +376,7 @@ namespace Mss.Collections
 
         public bool GetLoadPicksEnabled(CraneNumber craneNumber)
         {
-            _ = Lock();
-            try
-            {
-                return GetItem().LoadPicksEnabled[(int)craneNumber];
-            }
-            finally
-            {
-                Unlock();
-            }
-
+            return GetItem().LoadPicksEnabled[(int)craneNumber];
         }
 
         public void SetLoadPicksEnabled(CraneNumber craneNumber, bool value)
@@ -420,12 +412,14 @@ namespace Mss.Collections
             _ = Lock();
             try
             {
+                bool outboundEnabled = level == Levels.Lower
+                    ? LowerOutboundEnabled(craneNumber)
+                    : UpperOutboundEnabled(craneNumber);
+
                 return IsCraneInAutoMode(craneNumber)
                     && MasterLoadPicksEnabled
                     && GetLoadPicksEnabled(craneNumber)
-                    && level == Levels.Lower
-                        ? LowerOutboundEnabled(craneNumber)
-                        : UpperOutboundEnabled(craneNumber);
+                    && outboundEnabled;
             }
             finally
             {
@@ -485,8 +479,7 @@ namespace Mss.Collections
                 return IsCraneInAutoMode(craneNumber)
                     && MasterStackPicksEnabled
                     && GetStackPicksEnabled(craneNumber)
-                    && MasterUpperOutboundsEnabled
-                    && UpperOutboundEnabled(craneNumber);
+                    && UpperOutboundEnabled(craneNumber); // Master checked here
             }
             finally
             {
@@ -540,12 +533,14 @@ namespace Mss.Collections
             _ = Lock();
             try
             {
+                bool outboundEnabled = level == Levels.Lower
+                    ? LowerOutboundEnabled(craneNumber)
+                    : UpperOutboundEnabled(craneNumber);
+
                 return IsCraneInAutoMode(craneNumber)
                     && MasterPurgePicksEnabled
                     && GetPurgePicksEnabled(craneNumber)
-                    && level == Levels.Lower
-                        ? LowerOutboundEnabled(craneNumber)
-                        : UpperOutboundEnabled(craneNumber);
+                    && outboundEnabled;
             }
             finally
             {

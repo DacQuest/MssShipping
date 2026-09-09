@@ -364,8 +364,6 @@ namespace Mss.Views
 
                 LoadItemStatus status = loadItem.Status;
 
-//                 bool labelReprintPossible = status >= LoadItemStatus.Presequenced
-//                         && status <= LoadItemStatus.Loadable;
                 bool allowReprintShippingLabel = _allowReprintLabel
                     && status >= LoadItemStatus.Presequenced
                     && status <= LoadItemStatus.Loadable;
