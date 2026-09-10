@@ -32,11 +32,20 @@ namespace Mss.Collections
                     $"Failed to open the {Constant.SystemSettingsName} collection");
                 return false;
             }
+
             _ = systemSettings.Lock();
-            string lastCsnReleased = systemSettings.LastCsnReleased;
-            int largestRotationReceived = systemSettings.LargestRotationReceived;
-            systemSettings.Unlock();
-            systemSettings.Close();
+            string lastCsnReleased;
+            int largestRotationReceived;
+            try
+            {
+                lastCsnReleased = systemSettings.LastCsnReleased;
+                largestRotationReceived = systemSettings.LargestRotationReceived;
+            }
+            finally
+            {
+                systemSettings.Unlock();
+                systemSettings.Close();
+            }
 
 //             list = null;
 //             _ = Lock();

@@ -172,8 +172,8 @@ namespace Mss.Data
             _ = _assignmentPit.Lock();
             _ = _lowerPit.Lock();
             _ = _upperPit.Lock();
-            _ = _systemSettings.Lock();
             _ = _broadcast.Lock();
+            _ = _systemSettings.Lock();
             _ = _holdCodes.Lock();
             _ = _lowerRecirc.Lock();
             _ = _upperRecirc.Lock();
@@ -186,8 +186,8 @@ namespace Mss.Data
             _upperRecirc.Unlock();
             _lowerRecirc.Unlock();
             _holdCodes.Unlock();
-            _broadcast.Unlock();
             _systemSettings.Unlock();
+            _broadcast.Unlock();
             _upperPit.Unlock();
             _lowerPit.Unlock();
             _assignmentPit.Unlock();
