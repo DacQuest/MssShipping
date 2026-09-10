@@ -1028,6 +1028,7 @@ namespace Mss.Data
                 else if (palletItem.Status == PalletStatus.Purge
                     || palletItem.Status == PalletStatus.Unknown)
                 {
+                    PalletStatus originalStatus = palletItem.Status;
                     palletItem.Status = PalletStatus.Purge;
                     _ = _assignmentPit.Remove(palletID);
                     if (_GetAvailableLevel(Levels.Lower, out availableLevel))
@@ -1044,7 +1045,9 @@ namespace Mss.Data
                             SetPitPallet(Levels.None, palletItem, PitCode.Upper);
                             extendedState = $"Routing Pallet {palletID} to Purge via Upper Level.";
                         }
-                        string comment = $"Pallet {palletItem.PalletID} received at Assignment1 with no data";
+                        string comment = originalStatus == PalletStatus.Unknown
+                            ? $"Pallet {palletItem.PalletID} received at Assignment1 with no data"
+                            : $"Purge Pallet {palletItem.PalletID} received at Assignment1";
                         palletItem.Comment = comment;
                         XSystemEvent.Publish(
                             "Assignment 1",
@@ -1131,6 +1134,7 @@ namespace Mss.Data
                 else if (palletItem.Status == PalletStatus.Purge
                     || palletItem.Status == PalletStatus.Unknown)
                 {
+                    PalletStatus originalStatus = palletItem.Status;
                     palletItem.Status = PalletStatus.Purge;
                     _ = _assignmentPit.Remove(palletID);
                     if (_GetAvailableLevel(Levels.Lower, out availableLevel))
@@ -1147,7 +1151,9 @@ namespace Mss.Data
                             SetPitPallet(Levels.None, palletItem, PitCode.Upper);
                             extendedState = $"Routing Pallet {palletID} to Purge via Upper Level.";
                         }
-                        string comment = $"Pallet {palletItem.PalletID} received at Assignment2 with no data";
+                        string comment = originalStatus == PalletStatus.Unknown
+                            ? $"Pallet {palletItem.PalletID} received at Assignment2 with no data"
+                            : $"Purge Pallet {palletItem.PalletID} received at Assignment2";
                         palletItem.Comment = comment;
                         XSystemEvent.Publish(
                             "Assignment 1",

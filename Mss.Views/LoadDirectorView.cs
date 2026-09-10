@@ -27,8 +27,10 @@ namespace Mss.Views
         private SlugProxy _slugBProxy;
         private SystemSettingsProxy _systemSettingsProxy;
         private bool _isAwaitingOperatorResponsState = false;
-        private bool _palletReleased = false;
         private LoadItem _currentLoadItem = null;
+        private bool _palletReleased = false;
+//         private bool _autoReleaseNonLoadPallets = false;
+//         private bool _isStack = false;
 
         public LoadDirectorView()
         {
@@ -86,11 +88,8 @@ namespace Mss.Views
                 PalletItem palletItem = uiMessageData.GetMessageValue<PalletItem>(Constant.LD_PalletItemName);
                 bool isStack = uiMessageData.GetMessageValue<bool>(Constant.LD_IsStackName);
                 bool autoReleaseNonLoadPallets = uiMessageData.GetMessageValue<bool>(Constant.LD_AutoReleaseNonLoadPalletsName);
-                _isAwaitingOperatorResponsState = uiMessageData.GetMessageValue<bool>(Constant.LD_IsAwaitingOperatorResponseName);
-//                 bool isLoadPallet;
                 if (palletItem == null)
                 {
-//                     isLoadPallet = false;
                     _currentLoadItem = null;
                     _palletReleased = false;
                     _lblPalletID.Text = string.Empty;
@@ -111,10 +110,10 @@ namespace Mss.Views
                     _lblPurge.Visible = !isStack;
                     _lblStack.Visible = isStack;
                     _EnableAcceptButton(false);
-                    _EnableRejectButton(!autoReleaseNonLoadPallets && !_palletReleased);
+                    _EnableRejectButton(!autoReleaseNonLoadPallets && !isStack && !_palletReleased);
                     _btnReprintCurrentShippingLabel.Enabled = false;
                 }
-                else 
+                else
                 {
                     _currentLoadItem = loadItem;
                     _lblPalletID.Text = palletItem.PalletID;
@@ -163,13 +162,20 @@ namespace Mss.Views
             }
             else
             {
-                _lblState.ForeColor = Color.Black;
-                _lblState.BackColor = _isAwaitingOperatorResponsState
-                    ? Color.Yellow
-                    : Color.White;
-                stateText = _isAwaitingOperatorResponsState
-                    ? "Awaiting Operator Response"
-                    : messageData.State;
+                _isAwaitingOperatorResponsState = messageData.State == Constant.AwaitingOperatorResponseStateName;
+                if (_isAwaitingOperatorResponsState)
+                {
+                    _lblState.BackColor = Color.Yellow;
+                    _lblState.ForeColor = Color.Black;
+                    stateText = "Awaiting Operator Response";
+                }
+                else
+                {
+                    _lblState.BackColor =  Color.White;
+                    _lblState.ForeColor = Color.Black;
+                    stateText = messageData.State;
+                    _palletReleased = false;
+                }
                 stateText = messageData.ExtendedState.IsNullOrWhiteSpace()
                     ? stateText
                     : string.Format(

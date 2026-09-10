@@ -236,7 +236,7 @@ namespace Mss.Common
         public const string LD_PalletItemName = "LD_PalletItem";
         public const string LD_IsStackName = "LD_IsStack";
         public const string LD_AutoReleaseNonLoadPalletsName = "LD_AutoReleaseNonLoadPallets";
-        public const string LD_IsAwaitingOperatorResponseName = "LD_IsAwaitingOperatorResponse";
+        public const string AwaitingOperatorResponseStateName = "AwaitingOperatorResponse";
 
         public const string LeftSeatLabelCode = "LH";
         public const string RightSeatLabelCode = "RH";

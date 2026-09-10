@@ -20,7 +20,7 @@ namespace Mss.ShippingAgent
                 typeof(Program),
                 typeof(XAgentApplicationContext),
                 Properties.Resources.TempIcon,
-                false);
+                true);
         }
     }
 }

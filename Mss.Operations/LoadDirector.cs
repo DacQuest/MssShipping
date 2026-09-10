@@ -131,9 +131,6 @@ namespace Mss.Operations
             messageData.SetMessageValue(
                 Constant.LD_AutoReleaseNonLoadPalletsName,
                 AutoReleaseNonLoadPallets);
-            messageData.SetMessageValue(
-                Constant.LD_IsAwaitingOperatorResponseName,
-                CurrentState.Name == AwaitingOperatorResponseState);
             return messageData;
         }
 
@@ -348,7 +345,7 @@ namespace Mss.Operations
 
         #region AwaitingOperatorResponseState
 
-        protected readonly string AwaitingOperatorResponseState = "AwaitingOperatorResponse";
+        protected readonly string AwaitingOperatorResponseState = Constant.AwaitingOperatorResponseStateName;
 
         protected virtual void AwaitingOperatorResponseStateHandler()
         {
