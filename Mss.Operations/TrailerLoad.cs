@@ -156,11 +156,23 @@ namespace Mss.Operations
                 XMessageScopes.All);
 
             Subscribe(
+                TrailerNumberMessageData.TrailerNumberRequestMessageTopicName,
+                _TrailerNumberRequest_OnMessage,
+                XMessageScopes.All);
+
+            Subscribe(
                 PrintLabelMessageData.ReprintLoadLabelRequest,
                 _ReprintLoadLabel_OnMessage,
                 XMessageScopes.All);
 
             base.AutoSubscribe();
+        }
+
+        private void _TrailerNumberRequest_OnMessage(
+            object sender,
+            XMessageEventArgs e)
+        {
+            _PublishTrailerNumber();
         }
 
         private void _ReprintLoadLabel_OnMessage(
@@ -388,11 +400,7 @@ namespace Mss.Operations
                     ? Constant.NoTrailerNumber
                     : trailerNumber;
 
-                XMessaging.Publish(
-                    TrailerNumberMessageData.TrailerNumberMessageTopicName,
-                    new TrailerNumberMessageData(SlugLetter, TrailerNumber),
-                    XMessageScopes.All,
-                    null);
+                _PublishTrailerNumber();
 
                 string currentStateName = CurrentState.Name;
                 if (TrailerNumber.ValidTrailerNumber()
@@ -401,6 +409,15 @@ namespace Mss.Operations
                     RunCurrentStateHandler();
                 }
             }
+        }
+
+        private void _PublishTrailerNumber()
+        {
+            XMessaging.Publish(
+                TrailerNumberMessageData.TrailerNumberMessageTopicName,
+                new TrailerNumberMessageData(SlugLetter, TrailerNumber),
+                XMessageScopes.All,
+                null);
         }
 
         private void _TrailerLoadTrailerPermissive_TagChanged(object sender, XTagDataEventArgs e)
