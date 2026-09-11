@@ -1716,7 +1716,8 @@ namespace Mss.Operations
                         extendedState = $"({Constant.PalletTypeHotJob})  Putting Hot Job Pallet {CurrentPallet.PalletID} to {CurrentLoadItem.SlugLevel.ToText()} Outbound ({putCommand})";
                         PublishStateDetails();
                     }
-                    else if (CurrentPallet.IsStack
+                    else if (CurrentPallet != null
+                        && CurrentPallet.IsStack
                         && DataLayer.TryAllocateStorageStackPut(
                             CraneNumber,
                             CurrentPallet,
@@ -1728,10 +1729,11 @@ namespace Mss.Operations
                             : Constant.PalletTypeAudit;
                         extendedState = $"({palletType})  Putting Stack {CurrentPallet.PalletID} to {putCommand}";
                     }
-                    else if (DataLayer.TryAllocateStoragePut(
-                        CraneNumber,
-                        CurrentPallet,
-                        out binItem))
+                    else if (CurrentPallet != null
+                        && DataLayer.TryAllocateStoragePut(
+                            CraneNumber,
+                            CurrentPallet,
+                            out binItem))
                     {
                         putCommand = binItem.Location;
                         string palletType = CurrentCraneFunction == CraneFunction.Store

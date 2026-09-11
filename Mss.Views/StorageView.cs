@@ -229,6 +229,8 @@ namespace Mss.Views
             }
             if (_holdCodesProxy != null)
             {
+                _holdCodesProxy.DataItemChanged -= _HoldCodesProxy_DataItemChanged;
+                _holdCodesProxy.CollectionRefreshed -= _HoldCodesProxy_CollectionRefreshed;
                 XProxyCache.Release(_holdCodesProxy);
                 _holdCodesProxy = null;
             }
@@ -1657,7 +1659,6 @@ namespace Mss.Views
                     return;
                 }
                 //btnSearch.PerformClick();
-                _storageProxy.Refresh();
                 _RedoLastSearch();
             }
         }

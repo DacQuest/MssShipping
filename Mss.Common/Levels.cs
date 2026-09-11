@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mss.Common
 {
+    [Flags]
     public enum Levels
     {
         None  = 0,

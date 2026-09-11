@@ -613,12 +613,14 @@ namespace Mss.Views
             if (_slugAProxy != null)
             {
                 _slugAProxy.DataItemChanged -= _SlugAProxy_DataItemChanged;
+                _slugAProxy.DataItemChanged -= _SlugAProxy_CollectionRefreshed;
                 XProxyCache.Release(_slugAProxy);
                 _slugAProxy = null;
             }
             if (_slugBProxy != null)
             {
                 _slugBProxy.DataItemChanged -= _SlugBProxy_DataItemChanged;
+                _slugBProxy.DataItemChanged -= _SlugBProxy_CollectionRefreshed;
                 XProxyCache.Release(_slugBProxy);
                 _slugBProxy = null;
             }

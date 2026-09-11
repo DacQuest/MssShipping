@@ -87,8 +87,8 @@ namespace Mss.Views
             string title = $"{level.ToText()} {_slugLetter.ToText()}";
 
             XProxyCache.Acquire(_slugLetter.SlugName(), out _slugProxy);
-            _slugProxy.DataItemChanged += _Slug_DataItemChanged;
-            _slugProxy.CollectionRefreshed += _Slug_ColletionRefreshed;
+            _slugProxy.DataItemChanged += _SlugProxy_DataItemChanged;
+            _slugProxy.CollectionRefreshed += _SlugProxy_CollectionRefreshed;
 //             if (_showShortages)
 //             {
 //                 XProxyCache.Acquire(Constant.StorageName, out _storageProxy);
@@ -198,12 +198,12 @@ namespace Mss.Views
 
         //         public Levels Level => _level;
 
-        private void _Slug_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
+        private void _SlugProxy_DataItemChanged(object sender, XDataItemChangedEventArgs eventArgs)
         {
             RefreshItem((LoadItem)eventArgs.DataItem, false);
         }
 
-        private void _Slug_ColletionRefreshed(object sender, EventArgs eventArgs)
+        private void _SlugProxy_CollectionRefreshed(object sender, EventArgs eventArgs)
         {
             RefreshItems(_slugProxy.Items);
         }

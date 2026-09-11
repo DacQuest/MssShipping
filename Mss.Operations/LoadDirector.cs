@@ -112,7 +112,7 @@ namespace Mss.Operations
 
         protected override void RegisterCustomStates()
         {
-            RegisterState(AwaitingOperatorResponseState, "Awaiting Operator Response", AwaitingOperatorResponseStateHandler);
+            RegisterState(AwaitingOperatorResponseState, Constant.AwaitingOperatorResponseDisplay, AwaitingOperatorResponseStateHandler);
             base.RegisterCustomStates();
         }
 
@@ -125,9 +125,9 @@ namespace Mss.Operations
             messageData.SetMessageValue(
                 Constant.LD_PalletItemName,
                 CurrentPallet);
-            messageData.SetMessageValue(
-                Constant.LD_IsStackName,
-                IsStack);
+//             messageData.SetMessageValue(
+//                 Constant.LD_IsStackName,
+//                 IsStack);
             messageData.SetMessageValue(
                 Constant.LD_AutoReleaseNonLoadPalletsName,
                 AutoReleaseNonLoadPallets);
@@ -278,7 +278,6 @@ namespace Mss.Operations
                     {
                         SetCurrentState(AwaitingOperatorResponseState);
                     }
-
                 }
                 SendUIMessage();
             }
@@ -345,7 +344,7 @@ namespace Mss.Operations
 
         #region AwaitingOperatorResponseState
 
-        protected readonly string AwaitingOperatorResponseState = Constant.AwaitingOperatorResponseStateName;
+        protected readonly string AwaitingOperatorResponseState = "AwaitingOperatorResponse";
 
         protected virtual void AwaitingOperatorResponseStateHandler()
         {
@@ -395,21 +394,16 @@ namespace Mss.Operations
 
         protected override bool DoMoveCompleted()
         {
-//             if (IsLoadPallet)
-//             {
-//                 if (PalletAccepted)
-//                 {
-//                     
-//                 }
-//                 else if (PalletRejected)
-//                 {
-//                     
-//                 }
-//                 else
-//                 {
-//                     return false;
-//                 }
-//             }
+            if (IsLoadPallet
+                && PalletAccepted
+                && !_parameters.RecircBufferEnabled)
+            {
+                if (!DataLayer.TrySetNextPickableAtLoadDirector(CurrentPallet.PalletID, out string fault))
+                {
+                    SetOperationFaulted(fault);
+                    return false;
+                }
+            }
             return true;
         }
 

@@ -839,6 +839,19 @@ namespace Mss.Data
                _slugManager.SetNextPickable(
                     loadItem,
                     slug);
+
+                if (slug.LoadDone)
+                {
+                    if (slug.SlugLetter == SlugLetter.A)
+                    {
+                        _systemSettings.SlugALoadCompletedOn = DateTime.Now;
+                    }
+                    else
+                    {
+                        _systemSettings.SlugBLoadCompletedOn = DateTime.Now;
+                    }
+                }
+
                 fault = string.Empty;
                 return true;
             }
@@ -1468,7 +1481,7 @@ namespace Mss.Data
             try
             {
                 loadItem = null;
-                return false;
+//                 return false;
                 return !_storage.AnyPickable(
                         CraneNumber.None,
                         palletItem.Sku)
@@ -2076,7 +2089,7 @@ namespace Mss.Data
                 return false;
             }
             loadItem = null;
-            return false;
+//             return false;
             return _TryAssignHotJobAtCrane(
                 craneNumber,
                 levels,
@@ -2618,6 +2631,25 @@ namespace Mss.Data
             {
                 _UnlockAll();
             }
+        }
+
+        public bool TrySetNextPickableAtLoadDirector(string palletID, out string fault)
+        {
+            if (!_slugManager.TryGetSlugByPalletID(
+                palletID,
+                out Slug slug,
+                out LoadItem loadItem))
+            {
+                fault = $"Pallet ID {palletID} not found on either slug when attempting to set the Next Status to {LoadItemStatus.Pickable}.";
+                XSystemEvent.Publish(
+                    slug.CollectionConfiguration.Name,
+                    XSystemEventLevel.Error,
+                    "Operation faulted. " + fault);
+                return false;
+            }
+            _slugManager.SetNextPickable(loadItem, slug);
+            fault = string.Empty;
+            return true;
         }
 
         #endregion

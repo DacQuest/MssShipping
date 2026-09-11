@@ -19,11 +19,11 @@ namespace Mss.Views
             {
                 components.Dispose();
             }
-            //            if (_holdCodesProxy != null)
-            //            {
-            //                XProxyCache.Release(_holdCodesProxy);
-            //                _holdCodesProxy = null;
-            //            }
+            if (_holdCodesProxy != null)
+            {
+                XProxyCache.Release(_holdCodesProxy);
+                _holdCodesProxy = null;
+            }
             base.Dispose(disposing);
         }
 
