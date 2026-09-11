@@ -323,5 +323,18 @@ namespace Mss.Views
             form.ShowDialog(this);
             form.Dispose();
         }
+
+        public override bool ViewClosing(bool force)
+        {
+            if (_plcTagsProxy != null)
+            {
+                _plcTagsProxy.DataItemChanged -= _PlcMonitorProxy_DataItemChanged;
+                _plcTagsProxy.CollectionRefreshed -= _PlcMonitorProxy_CollectionRefreshed;
+                XProxyCache.Release(_plcTagsProxy);
+                _plcTagsProxy = null;
+            }
+
+            return true;
+        }
     }
 }

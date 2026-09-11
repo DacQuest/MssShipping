@@ -43,5 +43,13 @@ namespace Mss.Operations
             PickListValues = "true,false")]
         public bool PrintRightLabelFirst => _printRightLabelFirst;
 
+        private bool _recircBufferEnabled = false;
+        [XConfigurationProperty(
+            @"",
+            false,
+            DefaultValue = "false",
+            PickListValues = "true,false")]
+        public bool RecircBufferEnabled => _recircBufferEnabled;
+
     }
 }

@@ -28,9 +28,10 @@ namespace Mss.Views
         private SystemSettingsProxy _systemSettingsProxy;
         private bool _isAwaitingOperatorResponsState = false;
         private LoadItem _currentLoadItem = null;
-        private bool _palletReleased = false;
-//         private bool _autoReleaseNonLoadPallets = false;
-//         private bool _isStack = false;
+        private PalletItem _currentPallet = null;
+        private bool _operatorResponseSent = false;
+        private bool _autoReleaseNonLoadPallets = false;
+        private bool _isStack = false;
 
         public LoadDirectorView()
         {
@@ -39,7 +40,6 @@ namespace Mss.Views
 
         protected override void OpenView()
         {
-
             XProxyCache.Acquire(Constant.SystemSettingsName, out _systemSettingsProxy);
            _systemSettingsProxy.DataItemChanged += _SystemSettings_DataItemChanged;
 
@@ -72,6 +72,8 @@ namespace Mss.Views
                 _parameters.FlashGridCellTimeoutSeconds);
 
             base.OpenView();
+
+            _RequestPalletData();
         }
 
         protected override void ProcessParameters(XConfigurationParameterSet parameters)
@@ -86,46 +88,76 @@ namespace Mss.Views
             {
                 LoadItem loadItem = uiMessageData.GetMessageValue<LoadItem>(Constant.LD_LoadItemName);
                 PalletItem palletItem = uiMessageData.GetMessageValue<PalletItem>(Constant.LD_PalletItemName);
-                bool isStack = uiMessageData.GetMessageValue<bool>(Constant.LD_IsStackName);
-                bool autoReleaseNonLoadPallets = uiMessageData.GetMessageValue<bool>(Constant.LD_AutoReleaseNonLoadPalletsName);
+//                 _isStack = uiMessageData.GetMessageValue<bool>(Constant.LD_IsStackName);
+                _autoReleaseNonLoadPallets = uiMessageData.GetMessageValue<bool>(Constant.LD_AutoReleaseNonLoadPalletsName);
                 if (palletItem == null)
                 {
+                    _currentPallet = null;
                     _currentLoadItem = null;
-                    _palletReleased = false;
+                    _isStack = false;
+                    _operatorResponseSent = false;
                     _lblPalletID.Text = string.Empty;
                     _lblSku.Text = string.Empty;
                     _lblJobID.Text = string.Empty;
                     _lblPurge.Visible = false;
                     _lblStack.Visible = false;
-                    _EnableAcceptButton(false);
-                    _EnableRejectButton(false);
+                    _EnableButtons(false);
                     _btnReprintCurrentShippingLabel.Enabled = false;
                 }
                 else if (loadItem == null)
                 {
+                    _currentPallet = palletItem;
+                    _isStack = _currentPallet.IsStack;
                     _currentLoadItem = null;
                     _lblPalletID.Text = palletItem.PalletID;
                     _lblSku.Text = palletItem.Sku;
                     _lblJobID.Text = palletItem.JobID;
-                    _lblPurge.Visible = !isStack;
-                    _lblStack.Visible = isStack;
-                    _EnableAcceptButton(false);
-                    _EnableRejectButton(!autoReleaseNonLoadPallets && !isStack && !_palletReleased);
+                    _lblPurge.Visible = !_isStack;
+                    _lblStack.Visible = _isStack;
+                    _EnableButtons(true);
                     _btnReprintCurrentShippingLabel.Enabled = false;
                 }
                 else
                 {
                     _currentLoadItem = loadItem;
+                    _currentPallet = palletItem;
+                    _isStack = false;
                     _lblPalletID.Text = palletItem.PalletID;
                     _lblSku.Text = palletItem.Sku;
                     _lblJobID.Text = palletItem.JobID;
                     _lblPurge.Visible = false;
                     _lblStack.Visible = false;
-                    _EnableAcceptButton(!_palletReleased);
-                    _EnableRejectButton(!_palletReleased);
+                    _EnableButtons(true);
                     _btnReprintCurrentShippingLabel.Enabled = true;
                 }
             }
+        }
+
+        private void _EnableButtons(bool enable)
+        {
+            bool canRespond = enable
+                && _currentPallet != null
+                && _isAwaitingOperatorResponsState
+                && !_operatorResponseSent;
+
+            if (!canRespond)
+            {
+                _EnableAcceptButton(false);
+                _EnableRejectButton(false);
+                return;
+            }
+            if (_currentLoadItem == null)
+            {
+                _EnableAcceptButton(false);
+                _EnableRejectButton(!_isStack
+                    && !_autoReleaseNonLoadPallets);
+            }
+            else
+            {
+                _EnableAcceptButton(true);
+                _EnableRejectButton(true);
+            }
+
         }
 
         protected override void ProcessStateMessage(XOperationStateMessageData messageData)
@@ -139,42 +171,45 @@ namespace Mss.Views
                 _lblPalletID.Text = string.Empty;
                 _lblSku.Text = string.Empty;
                 _lblJobID.Text = string.Empty;
-                _EnableAcceptButton(false);
-                _EnableRejectButton(false);
+                _EnableButtons(false);
                 _lblState.ForeColor = Color.Black;
                 _lblState.BackColor = Color.White;
+                _currentPallet = null;
+                _currentLoadItem = null;
+                _btnReprintCurrentShippingLabel.Enabled = false;
             }
             else if (status == XOperationStatus.Faulted)
             {
                 stateText = status.ToText();
-                _EnableAcceptButton(false);
-                _EnableRejectButton(false);
+                _EnableButtons(false);
                 _lblState.ForeColor = Color.Yellow;
                 _lblState.BackColor = Color.Red;
+                _currentPallet = null;
+                _currentLoadItem = null;
+                _btnReprintCurrentShippingLabel.Enabled = false;
             }
             else if (status == XOperationStatus.Paused)
             {
                 stateText = status.ToText();
-                _EnableAcceptButton(false);
-                _EnableRejectButton(false);
+                _EnableButtons(false);
                 _lblState.ForeColor = Color.Black;
                 _lblState.BackColor = Color.White;
             }
             else
             {
-                _isAwaitingOperatorResponsState = messageData.State == Constant.AwaitingOperatorResponseStateName;
+                _isAwaitingOperatorResponsState = messageData.State == Constant.AwaitingOperatorResponseDisplay;
                 if (_isAwaitingOperatorResponsState)
                 {
-                    _lblState.BackColor = Color.Yellow;
                     _lblState.ForeColor = Color.Black;
+                    _lblState.BackColor = Color.Yellow;
                     stateText = "Awaiting Operator Response";
                 }
                 else
                 {
-                    _lblState.BackColor =  Color.White;
                     _lblState.ForeColor = Color.Black;
+                    _lblState.BackColor =  Color.White;
                     stateText = messageData.State;
-                    _palletReleased = false;
+                    _operatorResponseSent = false;
                 }
                 stateText = messageData.ExtendedState.IsNullOrWhiteSpace()
                     ? stateText
@@ -182,6 +217,7 @@ namespace Mss.Views
                         "{0}: {1}",
                         messageData.State,
                         messageData.ExtendedState);
+                _EnableButtons(true);
             }
             _lblState.Text = stateText;
         }
@@ -192,11 +228,15 @@ namespace Mss.Views
             _slugAProxy.Refresh();
             _slugBProxy.Refresh();
             // Request Pallet Data
+            _RequestPalletData();
+            RequestStateRefresh();
+        }
+
+        private void _RequestPalletData()
+        {
             XOperationUIMessageData messageData = new XOperationUIMessageData();
             messageData.SetMessageValue(Constant.LD_RequestPalletDataName, true);
             SendUIMessage(messageData);
-
-            RequestStateRefresh();
         }
 
         private void _SlugA_CollectionRefreshed(object sender, EventArgs eventArgs)
@@ -248,7 +288,7 @@ namespace Mss.Views
 
         private void _BtnAccept_Click(object sender, EventArgs e)
         {
-            _palletReleased = true;
+            _operatorResponseSent = true;
             _EnableAcceptButton(false);
             _EnableRejectButton(false);
 
@@ -259,7 +299,7 @@ namespace Mss.Views
 
         private void _BtnReject_Click(object sender, EventArgs e)
         {
-            _palletReleased = true;
+            _operatorResponseSent = true;
             _EnableAcceptButton(false);
             _EnableRejectButton(false);
 

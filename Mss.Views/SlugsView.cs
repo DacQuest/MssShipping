@@ -690,14 +690,19 @@ namespace Mss.Views
         {
             // This will refresh the Load Proxy Items
             // which will in turn update the two grids.
-            ParentForm.Cursor = Cursors.WaitCursor;
-            XMessaging.Publish(
-                Constant.CalculateShortagesMessageTopicName,
-                XMessageScopes.All);
-            _slugAProxy.Refresh();
-            _slugBProxy.Refresh();
-
-            ParentForm.Cursor = Cursors.Default;
+            try
+            {
+                ParentForm.Cursor = Cursors.WaitCursor;
+                XMessaging.Publish(
+                    Constant.CalculateShortagesMessageTopicName,
+                    XMessageScopes.All);
+                _slugAProxy.Refresh();
+                _slugBProxy.Refresh();
+            }
+            finally
+            {
+                ParentForm.Cursor = Cursors.Default;
+            }
         }
 
         private void _AcceptLoad(SlugLetter slugLetter)

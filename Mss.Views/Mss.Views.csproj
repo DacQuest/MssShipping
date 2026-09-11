@@ -421,12 +421,6 @@
       <DependentUpon>LoadDirectorView.cs</DependentUpon>
     </Compile>
     <Compile Include="LoadDirectorViewParameterSetWrapper.cs" />
-    <Compile Include="PitGrid.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="PitGrid.designer.cs">
-      <DependentUpon>PitGrid.cs</DependentUpon>
-    </Compile>
     <Compile Include="PitMultiDeleteForm.cs">
       <SubType>Form</SubType>
     </Compile>
