@@ -46,13 +46,12 @@ namespace Mss.Services
 
         private int _statusChangePollingPeriodSeconds = 0;
         [XConfigurationProperty(
-            "MesDataServiceParameterSetWrapper.SkusPollingPeriodSeconds",
+            "MesDataServiceParameterSetWrapper.StatusChangePollingPeriodSeconds",
             false,
             ValidDirectives = XConfigurationDirectives.AliasAndEncrypt,
             ValidationRegexString = @"^\d+$", // 0 and up
             DefaultValue = "0")]
         public int StatusChangePollingPeriodSeconds => _statusChangePollingPeriodSeconds;
-
 
         private bool _processPalletStatusChangesOnStartUp = false;
         [XConfigurationProperty(
@@ -61,6 +60,24 @@ namespace Mss.Services
             DefaultValue = "false",
             PickListValues = "true,false")]
         public bool ProcessPalletStatusChangesOnStartUp => _processPalletStatusChangesOnStartUp;
+
+        private int _broadcastCoverageTimerPeriodSeconds = 60;
+        [XConfigurationProperty(
+            "MesDataServiceParameterSetWrapper.BroadcastCoverageTimerPeriodSeconds",
+            false,
+            ValidDirectives = XConfigurationDirectives.AliasAndEncrypt,
+            ValidationRegexString = @"^\d+$", // 0 and up
+            DefaultValue = "60")]
+        public int BroadcastCoverageTimerPeriodSeconds => _broadcastCoverageTimerPeriodSeconds;
+
+
+        private bool _updateBroadcastCoverageOnStartUp = false;
+        [XConfigurationProperty(
+            "",
+            false,
+            DefaultValue = "false",
+            PickListValues = "true,false")]
+        public bool UpdateBroadcastCoverageOnStartUp => _updateBroadcastCoverageOnStartUp;
 
     }
 }

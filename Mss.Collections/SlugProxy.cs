@@ -72,7 +72,11 @@ namespace Mss.Collections
 
         public bool HasOpenLoad => WaitingCount > 0 && WaitingCount < Constant.LoadSize;
 
-        public bool IsInvalid => Items.All(l => l.IsInvalid);
+        public bool CanCloseLoad => HasOpenLoad;
+
+        public bool CanReopenLoad => !Completed
+            && Items.Count(l => l.IsInvalid) > 0
+            && Items.Count(l => l.IsInvalid) < Constant.LoadSize;
 
         public string SmallestRotation
         {

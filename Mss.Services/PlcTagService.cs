@@ -318,11 +318,11 @@ namespace Mss.Services
         //public static readonly int MyCustomCommand2 = XService.FirstCustomCommand + 1;
 
         private PlcTags _plcTags;
-        private List<XDevice> _devices = new List<XDevice>();
+        private readonly List<XDevice> _devices = new List<XDevice>();
 
         protected override bool OnStart()
         {
-            XSharedCollection.Open(Constant.PlcTagsName, out _plcTags);
+            _ = XSharedCollection.Open(Constant.PlcTagsName, out _plcTags);
 
             try
             {
@@ -442,28 +442,47 @@ namespace Mss.Services
 
         private void _PlcMonitor_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
-            PlcTagItem plcMonitorItem = (PlcTagItem)e.DataItem;
-            if (plcMonitorItem.WriteTag)
+            try
             {
-                XDevice device = _devices.Single(p => p.DeviceName == plcMonitorItem.DeviceName);
-                object newValue = null;
-                switch (plcMonitorItem.DataType)
+//                 if (!(e.DataItem is PlcTagItem plcMonitorItem) || !plcMonitorItem.WriteTag)
+//                 {
+//                     return;
+//                 }
+                PlcTagItem plcMonitorItem = e.DataItem as PlcTagItem;
+                if (plcMonitorItem == null || !plcMonitorItem.WriteTag)
                 {
-                    case XValueDataType.Boolean:
-                        newValue = plcMonitorItem.NewBooleanValue;
-                        break;
-                    case XValueDataType.Int16:
-                        newValue = plcMonitorItem.NewInt16Value;
-                        break;
-                    case XValueDataType.Int32:
-                        newValue = plcMonitorItem.NewInt32Value;
-                        break;
-                    case XValueDataType.String:
-                        newValue = plcMonitorItem.NewStringValue;
-                        break;
-
+                    return;
                 }
-                device.WriteTag(plcMonitorItem.RoleName, newValue);
+
+                if (plcMonitorItem.WriteTag)
+                {
+                    XDevice device = _devices.Single(p => p.DeviceName == plcMonitorItem.DeviceName);
+                    if (device != null)
+                    {
+                        object newValue = null;
+                        switch (plcMonitorItem.DataType)
+                        {
+                            case XValueDataType.Boolean:
+                                newValue = plcMonitorItem.NewBooleanValue;
+                                break;
+                            case XValueDataType.Int16:
+                                newValue = plcMonitorItem.NewInt16Value;
+                                break;
+                            case XValueDataType.Int32:
+                                newValue = plcMonitorItem.NewInt32Value;
+                                break;
+                            case XValueDataType.String:
+                                newValue = plcMonitorItem.NewStringValue;
+                                break;
+
+                        }
+                        _ = device.WriteTag(plcMonitorItem.RoleName, newValue);
+                    }
+                }
+            }
+            catch (Exception x)
+            {
+                x.PublishSystemEvent("PLC Tag Service");
             }
         }
 
@@ -523,6 +542,13 @@ namespace Mss.Services
             {
                 device.StopAllTagDataCapture();
                 device.Close();
+            }
+            if (_plcTags != null)
+            {
+                _plcTags.DataItemChanged -= _PlcMonitor_DataItemChanged;
+                _plcTags.RemoveAll();
+                _plcTags.Close();
+                _plcTags = null;
             }
             // There is no need to call SetServiceStatus() when overriding
             return ExitCode;

@@ -23,6 +23,7 @@ namespace Mss.Services
         private const int _commandFetchBroadcast = FirstCustomCommand + 1;
         private const int _commandFetchHoldCodes = FirstCustomCommand + 2;
         private const int _commandProcessPalletStatusChanges = FirstCustomCommand + 3;
+        private const int _commandUpdateBroadcastCoverage = FirstCustomCommand + 4;
 
         private MesInterfaceServiceParameterSetWrapper _parameters;
 
@@ -46,6 +47,7 @@ namespace Mss.Services
         private long _broadcastTimerID = 0;
         private long _holdCodesTimerID = 0;
         private long _statusChangeTimerID = 0;
+        private long _broadcastCoverageTimerID = 0;
 
         protected override bool OnStart()
         {
@@ -67,6 +69,7 @@ namespace Mss.Services
             RegisterCustomCommand(_commandFetchBroadcast, "Fetch Broadcast Now");
             RegisterCustomCommand(_commandFetchHoldCodes, "Fetch Hold Codes Now");
             RegisterCustomCommand(_commandProcessPalletStatusChanges, "Process Status Changes Now");
+            RegisterCustomCommand(_commandUpdateBroadcastCoverage, "Update Broadcast Coverage Now");
 
             if (_parameters.FetchBroadcastOnStartUp)
             {
@@ -79,6 +82,10 @@ namespace Mss.Services
             if (_parameters.ProcessPalletStatusChangesOnStartUp)
             {
                 _ProcessPalletStatusChanges();
+            }
+            if (_parameters.UpdateBroadcastCoverageOnStartUp)
+            {
+                _UpdateBroadcastCoverage();
             }
 
             _StartAllPolling();
@@ -104,6 +111,7 @@ namespace Mss.Services
             _StartBroadcastPollingTimer();
             _StartHoldCodesPollingTimer();
             _StartStatusChangePollingTimer();
+            _StartBroadcastCoverageTimer();
         }
 
         private void _StopAllPolling()
@@ -111,6 +119,7 @@ namespace Mss.Services
             _StopBroadcastPollingTimer();
             _StopHoldCodesPollingTimer();
             _StopStatusChangePollingTimer();
+            _StopBroadcastCoverageTimer();
         }
 
         protected override void OnCustomCommand(int customCommand)
@@ -132,6 +141,11 @@ namespace Mss.Services
                     _StopStatusChangePollingTimer();
                     _ProcessPalletStatusChanges();
                     _StartStatusChangePollingTimer();
+                    break;
+                case _commandUpdateBroadcastCoverage:
+                    _StopBroadcastCoverageTimer();
+                    _UpdateBroadcastCoverage();
+                    _StartBroadcastCoverageTimer();
                     break;
             }
         }
@@ -268,8 +282,40 @@ namespace Mss.Services
                 out IEnumerable<StatusChangeQueue> pendingRequests))
             {
                 DataLayer.ProcessStatusChangeRequests(pendingRequests);
-                MesInterface.UpdateProcessedStatusChangeRequests(pendingRequests);
+                _ = MesInterface.UpdateProcessedStatusChangeRequests(pendingRequests);
             }
+        }
+
+        private void _StartBroadcastCoverageTimer()
+        {
+            _StopBroadcastCoverageTimer();
+            if (_parameters.BroadcastCoverageTimerPeriodSeconds > 0)
+            {
+                _broadcastCoverageTimerID = StartTimer(
+                    _BroadcastCoverageTimer_Expired,
+                    _parameters.BroadcastCoverageTimerPeriodSeconds * 1000, null);
+            }
+        }
+
+        private void _StopBroadcastCoverageTimer()
+        {
+            if (_broadcastCoverageTimerID > 0)
+            {
+                StopTimer(_broadcastCoverageTimerID);
+                _broadcastCoverageTimerID = 0;
+            }
+        }
+
+        private void _BroadcastCoverageTimer_Expired(XTimerEventArgs e)
+        {
+            _statusChangeTimerID = 0;
+            _UpdateBroadcastCoverage();
+            _StartBroadcastCoverageTimer();
+        }
+
+        private void _UpdateBroadcastCoverage()
+        {
+            DataLayer.WriteBroadcastCoverage();
         }
 
 

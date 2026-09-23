@@ -644,8 +644,34 @@ namespace Mss.Operations
 
         protected override void DoStop()
         {
+            if (_storage != null)
+            {
+                _storage.DataItemChanged -= _Storage_DataItemChanged;
+            }
+            if (_lowerPit != null)
+            {
+                _lowerPit.DataItemChanged -= _LowerPit_DataItemChanged;
+            }
+            if (_upperPit != null)
+            {
+                _upperPit.DataItemChanged -= _UpperPit_DataItemChanged;
+            }
+            if (_systemSettings != null)
+            {
+                _systemSettings.DataItemChanged -= _SystemSettings_DataItemChanged;
+            }
+            if (_slugA != null)
+            {
+                _slugA.DataItemChanged -= _SlugA_DataItemChanged;
+            }
+            if (_slugB != null)
+            {
+                _slugB.DataItemChanged -= _SlugB_DataItemChanged;
+            }
+
             StopAllTagDataCapture(Constant.PlcRoleName);
             _systemSettings.SetCraneMode(CraneNumber, CraneMode.Manual);
+
             base.DoStop();
         }
 
@@ -840,6 +866,7 @@ namespace Mss.Operations
             if (!QueryMesPallet(PalletID, out PalletItem mesPalletItem, out string fault))
             {
                 TelemetrySetCraneFaulted(fault);
+                return;
             }
 
             if (mesPalletItem.IsStack)
@@ -1701,6 +1728,7 @@ namespace Mss.Operations
                     DataLayer.CompleteStorageGetByLocation(GetCommand);
                     if (CurrentPallet != null
                         && !CurrentPallet.IsStack
+                        && CurrentPallet.Status == PalletStatus.OK
                         && DataLayer.TryAssignHotJobAtCrane(
                             CraneNumber,
                             LowerOutboundClear,
@@ -1743,7 +1771,7 @@ namespace Mss.Operations
                     }
                     else
                     {
-                        string fault = $"There is no available destination for Pallet {CurrentPallet.PalletID}.";
+                        string fault = $"There is no available destination for Pallet {PalletID}.";
                         XSystemEvent.Publish(
                             CraneNumber.ToText(),
                             XSystemEventLevel.Error,

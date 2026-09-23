@@ -42,6 +42,7 @@ namespace Mss.Views
         private bool _allowEditItem = false;
         private bool _allowRollback = false;
         private bool _showShortages = false;
+        private bool _showAtLoadDirector = false;
         private bool _allowInsertEmpty = false;
         private int _clickedLoadIndex = -1;
         private bool _flashInverted = false;
@@ -65,6 +66,7 @@ namespace Mss.Views
             bool allowRollback,
             bool allowInsertEmpty,
             bool showShortages,
+//             bool showAtLoadDirector,
             int flashDelayedPalletTimeoutSeconds)
         {
             _slugLetter = slugLetter;
@@ -75,6 +77,7 @@ namespace Mss.Views
             _allowInsertEmpty = allowInsertEmpty;
 //             _leftClickLabelReprint = leftClickLabelReprint;
             _showShortages = showShortages;
+//             _showAtLoadDirector = showAtLoadDirector;
             _flashDelayedPalletTimeoutSeconds = flashDelayedPalletTimeoutSeconds;
 
             BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -254,6 +257,15 @@ namespace Mss.Views
 //                 if (loadItem.InsertEmpty)
 //                 {
 //                     borderColor = Color.Lime;
+//                     wideBorder = true;
+//                 }
+//                 else
+//                 if (_showAtLoadDirector
+//                     && loadItem.Status >= LoadItemStatus.Picked
+//                     && loadItem.Status <= LoadItemStatus.Presequenced
+//                     && loadItem.AtLoadDirector)
+//                 {
+//                     borderColor = Color.Yellow;
 //                     wideBorder = true;
 //                 }
 //                 else

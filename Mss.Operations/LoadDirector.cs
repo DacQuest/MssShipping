@@ -255,7 +255,8 @@ namespace Mss.Operations
 //                         SetOperationFaulted(fault);
 //                         return;
 //                     }
-                    SetCurrentState(AwaitingOperatorResponseState);
+                    extendedState = $"({Constant.PalletTypeLoad}) Pallet {CurrentPallet.PalletID}";
+                    SetCurrentState(AwaitingOperatorResponseState, extendedState);
                 }
                 else
                 {
@@ -276,7 +277,8 @@ namespace Mss.Operations
                     }
                     else
                     {
-                        SetCurrentState(AwaitingOperatorResponseState);
+                        extendedState = $"({Constant.PalletTypePurge}) Pallet {CurrentPallet.PalletID}";
+                        SetCurrentState(AwaitingOperatorResponseState, extendedState);
                     }
                 }
                 SendUIMessage();

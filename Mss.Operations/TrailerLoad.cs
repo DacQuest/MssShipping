@@ -383,7 +383,6 @@ namespace Mss.Operations
             if (e.TagData.TryGetTagValue(out bool levelCompleted))
             {
                 UpperLevelCompleted = levelCompleted;
-                string currentStateName = CurrentState.Name;
                 if (LoadCompleted
                     && CurrentState.Name == AwaitingLoadCompletedState)
                 {
@@ -396,15 +395,14 @@ namespace Mss.Operations
         {
             if (e.TagData.TryGetTagValue(out string trailerNumber))
             {
-                TrailerNumber = trailerNumber.IsNullOrWhiteSpace()
+                TrailerNumber = !trailerNumber.ValidTrailerNumber()
                     ? Constant.NoTrailerNumber
                     : trailerNumber;
 
                 _PublishTrailerNumber();
 
-                string currentStateName = CurrentState.Name;
                 if (TrailerNumber.ValidTrailerNumber()
-                    && currentStateName == AwaitingTrailerNumberState)
+                    && CurrentState.Name == AwaitingTrailerNumberState)
                 {
                     RunCurrentStateHandler();
                 }

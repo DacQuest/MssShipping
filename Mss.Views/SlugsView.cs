@@ -229,6 +229,7 @@ namespace Mss.Views
                 _trailerBNumber = md.TrailerNumber;
                 _lblTrailerBNumber.Text = _trailerBNumber;
             }
+            _UpdateAcceptLoadButtons();
         }
 
         protected override void ProcessParameters(XConfigurationParameterSet parameters)
@@ -572,9 +573,8 @@ namespace Mss.Views
             {
                 return;
             }
-            _canCloseA = _slugAProxy.HasOpenLoad;
-            _canReopenA = !_slugAProxy.HasOpenLoad
-                && _slugAProxy.Items.Count(l => l.IsInvalid) < Constant.LoadSize;
+            _canCloseA = _slugAProxy.CanCloseLoad;
+            _canReopenA = _slugAProxy.CanReopenLoad;
 
             if (_canReopenA)
             {
@@ -586,13 +586,11 @@ namespace Mss.Views
                 _btnCloseReopenLoadA.Text = "Close Load A  ";
                 _btnCloseReopenLoadA.Image = Properties.Resources.RedMinus24;
             }
-//             _btnCloseReopenLoadA.Visible = _showCloseReopenLoadButtons;
             _btnCloseReopenLoadA.Enabled = _canCloseA || _canReopenA;
 
 
-            _canCloseB = _slugBProxy.HasOpenLoad;
-            _canReopenB = !_slugBProxy.HasOpenLoad
-                && _slugBProxy.Items.Count(l => l.IsInvalid) < Constant.LoadSize;
+            _canCloseB = _slugBProxy.CanCloseLoad;
+            _canReopenB = _slugBProxy.CanReopenLoad;
 
             if (_canReopenB)
             {
@@ -604,7 +602,6 @@ namespace Mss.Views
                 _btnCloseReopenLoadB.Text = "Close Load B  ";
                 _btnCloseReopenLoadB.Image = Properties.Resources.RedMinus24;
             }
-//             _btnCloseReopenLoadB.Visible = _showCloseReopenLoadButtons;
             _btnCloseReopenLoadB.Enabled = _canCloseB || _canReopenB;
         }
 
@@ -627,18 +624,18 @@ namespace Mss.Views
 //                         < _slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
 //                     || _slugAProxy.Cleared);
 
-            bool acceptLoadA1st = _slugAProxy.Completed && !_trailerANumber.IsNullOrWhiteSpace();
+            bool acceptLoadA = _slugAProxy.Completed && _trailerANumber.ValidTrailerNumber();
 //                 && (_slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
 //                         < _slugBProxy.Items.Max(i => i.Requirement.BroadcastNumber)
 //                     || _slugBProxy.Cleared);
 
-            bool acceptLoadB1st = _slugBProxy.Completed && !_trailerBNumber.IsNullOrWhiteSpace();
+            bool acceptLoadB = _slugBProxy.Completed && _trailerBNumber.ValidTrailerNumber();
 //                 && (_slugBProxy.Items.Max(i => i.Requirement.BroadcastNumber)
 //                         < _slugAProxy.Items.Max(i => i.Requirement.BroadcastNumber)
 //                     || _slugAProxy.Cleared);
 
-            _btnAcceptLoadA.Enabled = acceptLoadA1st;
-            _btnAcceptLoadB.Enabled = acceptLoadB1st;
+            _btnAcceptLoadA.Enabled = acceptLoadA;
+            _btnAcceptLoadB.Enabled = acceptLoadB;
 
 //             _btnAcceptLoadA.Visible = _showAcceptLoadButtons;
 //             _btnAcceptLoadB.Visible = _showAcceptLoadButtons;
@@ -658,7 +655,7 @@ namespace Mss.Views
 
         private void _BtnAcceptLoadA_Click(object sender, EventArgs e)
         {
-            if (!_slugAProxy.Completed || _trailerANumber.IsNullOrWhiteSpace())
+            if (!_slugAProxy.Completed || !_trailerANumber.ValidTrailerNumber())
             {
                 _btnAcceptLoadA.Enabled = false;
                 return;
@@ -668,7 +665,7 @@ namespace Mss.Views
 
         private void _BtnAcceptLoadB_Click(object sender, EventArgs e)
         {
-            if (!_slugBProxy.Completed || _trailerBNumber.IsNullOrWhiteSpace())
+            if (!_slugBProxy.Completed || !_trailerBNumber.ValidTrailerNumber())
             {
                 _btnAcceptLoadB.Enabled = false;
                 return;

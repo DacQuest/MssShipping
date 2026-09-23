@@ -24,11 +24,14 @@ namespace Mss.Common
         public static bool ValidRearPalletID(this string palletID)
             => XValueValidator.Validate(RearPalletIDValidatorName, palletID);
 
-        //         public static bool ValidJobID(this string jobID)
-        //             => !jobID.IsNullOrWhiteSpace();
+//         public static bool ValidJobID(this string jobID)
+//             => !jobID.IsNullOrWhiteSpace();
 
         public static bool ValidTrailerNumber(this string trailerNumber)
-            => !trailerNumber.IsNullOrWhiteSpace() && trailerNumber != Constant.NoTrailerNumber;
+        {
+            return trailerNumber.Length == 2
+                && trailerNumber.All(c => char.IsDigit(c));
+        }
 
         public static bool ValidSku(this string sku) //??? USE XValueValidator?
             => !sku.IsNullOrWhiteSpace();

@@ -408,12 +408,12 @@ namespace Mss.Views
             {
                 _pitProxy.DataItemChanged -= _PitProxy_DataItemChanged;
                 _pitProxy.CollectionRefreshed -= _PitProxy_CollectionRefreshed;
-                _pitProxy.Close();
+                XProxyCache.Release(_pitProxy);
                 _pitProxy = null;
             }
             if (_holdCodesProxy != null)
             {
-                _holdCodesProxy.Close();
+                XProxyCache.Release(_holdCodesProxy);
                 _holdCodesProxy = null;
             }
             return true;

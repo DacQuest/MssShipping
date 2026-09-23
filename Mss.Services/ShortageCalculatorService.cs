@@ -112,7 +112,6 @@ namespace Mss.Services
             _CalculateShortages();
         }
 
-
         private void _Collection_DataItemChanged(object sender, XDataItemChangedEventArgs e)
         {
             _CalculateShortages();

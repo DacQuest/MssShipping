@@ -19,7 +19,7 @@ namespace Mss.Collections
 // 
 //         public string PickModePalletID => PickModeValue;
 
-        public bool IsFrontBackBroadcast => Csn.EndsWith(Constant.VehicleRow1CsnSuffix);
+        public bool IsFrontBroadcast => Csn.EndsWith(Constant.VehicleRow1CsnSuffix);
 
         public bool IsBackBroadcast => Csn.EndsWith(Constant.VehicleRow2CsnSuffix);
 
@@ -32,6 +32,10 @@ namespace Mss.Collections
         public int Rotation => RotationFromCsn(Csn);
 
         public string RotationText => RotationTextFromCsn(Csn);
+
+        public VehicleRow VehicleRow => IsFrontBroadcast
+            ? VehicleRow.Row1
+            : VehicleRow.Row2;
 
 //         public string LabelRotationText => SequenceText.Right(4);
 

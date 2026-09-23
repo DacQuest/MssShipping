@@ -7,6 +7,7 @@ using DacQuest.DFX.Core.Strings;
 using DacQuest.DFX.Core.SystemEvents;
 using DevExpress.Charts.Native;
 using DevExpress.CodeParser;
+using DevExpress.Office.Utils;
 using DevExpress.XtraCharts.Native;
 using DevExpress.XtraReports.UI;
 using Mss.Collections;
@@ -221,12 +222,18 @@ namespace Mss.Data
             }
             finally
             {
-                if (touch)
+                try
                 {
-                    _systemSettings.LargestRotationReceived = largestRotationReceived;
-                    _broadcast.Touch();
+                    if (touch)
+                    {
+                        _systemSettings.LargestRotationReceived = largestRotationReceived;
+                        _broadcast.Touch();
+                    }
                 }
-                _UnlockAll();
+                finally
+                {
+                    _UnlockAll();
+                }
             }
         }
 
@@ -251,12 +258,18 @@ namespace Mss.Data
             }
             finally
             {
-                _holdCodes.InhibitChangeNotifications = setting;
-                if (touch)
+                try
                 {
-                    _holdCodes.Touch();
+                    _holdCodes.InhibitChangeNotifications = setting;
+                    if (touch)
+                    {
+                        _holdCodes.Touch();
+                    }
                 }
-                _UnlockAll();
+                finally
+                {
+                    _UnlockAll();
+                }
             }
         }
 
@@ -636,7 +649,7 @@ namespace Mss.Data
                 {
                     fault = $"Pallet ID {palletID} not found on either slug when attempting to set status to {LoadItemStatus.Picked}.";
                     XSystemEvent.Publish(
-                        slug.CollectionConfiguration.Name,
+                        "DataLayer",
                         XSystemEventLevel.Error,
                         fault);
                     return false;
@@ -692,7 +705,7 @@ namespace Mss.Data
                 {
                     fault = $"Pallet ID {palletID} not found on either slug when attempting to set status to {LoadItemStatus.Presequenced}.";
                     XSystemEvent.Publish(
-                        slug.CollectionConfiguration.Name,
+                        "DataLayer",
                         XSystemEventLevel.Error,
                         fault);
                     return false;
@@ -748,7 +761,7 @@ namespace Mss.Data
                 {
                     fault = $"Pallet ID {palletID} not found on either slug when attempting to set status to {LoadItemStatus.Sequenced}.";
                     XSystemEvent.Publish(
-                        slug.CollectionConfiguration.Name,
+                        "DataLayer",
                         XSystemEventLevel.Error,
                         fault);
                     return false;
@@ -804,7 +817,7 @@ namespace Mss.Data
                 {
                     fault = $"Pallet ID {palletID} not found on either slug when attempting to set status to {LoadItemStatus.Done}.";
                     XSystemEvent.Publish(
-                        slug.CollectionConfiguration.Name,
+                        "DataLayer",
                         XSystemEventLevel.Error,
                         fault);
                     return false;
@@ -1481,8 +1494,8 @@ namespace Mss.Data
             try
             {
                 loadItem = null;
-//                 return false;
-                return !_storage.AnyPickable(
+                return _systemSettings.MasterLoadPicksEnabled
+                    && !_storage.AnyPickable(
                         CraneNumber.None,
                         palletItem.Sku)
                     && _TryAssignHotJob(
@@ -1506,48 +1519,66 @@ namespace Mss.Data
             PalletItem palletItem,
             out LoadItem loadItem)
         {
+            loadItem = null;
             if (!_slugManager.TryGetPrimarySlugForPick(
                 _systemSettings.GetItem(),
-                out Slug primarySlug,
-                out Slug secondarySlug))
+                out Slug primarySlug))
             {
-                loadItem = null;
                 return false;
             }
-            loadItem = null;
-            Slug currentSlug = null;
             if (_CanPickToSlug(primarySlug.SlugLetter))
             {
-                currentSlug = primarySlug;
-                loadItem = currentSlug
+                IEnumerable<LoadItem> pickableloadItems = primarySlug
                     .GetLoadInPickSearchOrder()
-                    .Where(l => levels.IsFlagSet(l.SlugLevel))
-                    .FirstOrDefault(l =>
-                        l.Status == LoadItemStatus.Pickable
-                        && l.Broadcast.Sku == palletItem.Sku);
+                    .Where(l =>
+                    {
+                        return levels.IsFlagSet(l.SlugLevel)
+                            && l.Status == LoadItemStatus.Pickable
+                            && l.Broadcast.Sku == palletItem.Sku;
+                    });
+                foreach (LoadItem pickableItem in pickableloadItems)
+                {
+                    if (calledByCrane)
+                    {
+                        if (!_systemSettings.CanDoLoadPick(craneNumber, pickableItem.SlugLevel))
+                        {
+                            continue;
+                        }
+                    }
+                    loadItem = pickableItem;
+                    loadItem.Status = calledByCrane
+                        ? LoadItemStatus.Picking
+                        : LoadItemStatus.Picked;
+                    loadItem.Pallet = palletItem;
+                    loadItem.Crane = craneNumber;
+                    primarySlug[loadItem.NodeIndex] = loadItem;
+                    _ = _upperPit.Remove(palletItem.PalletID);
+                    _ = _lowerPit.Remove(palletItem.PalletID);
+                    break;
+                }
             }
-            if (loadItem == null
-                && _CanPickToSlug(secondarySlug.SlugLetter))
-            {
-                currentSlug = secondarySlug;
-                loadItem = currentSlug
-                    .GetLoadInPickSearchOrder()
-                    .Where(l => levels.IsFlagSet(l.SlugLevel))
-                    .FirstOrDefault(l =>
-                        l.Status == LoadItemStatus.Pickable
-                        && l.Broadcast.Sku == palletItem.Sku);
-            }
-            if (loadItem != null)
-            {
-                loadItem.Status = calledByCrane
-                    ? LoadItemStatus.Picking
-                    : LoadItemStatus.Picked;
-                loadItem.Pallet = palletItem;
-                loadItem.Crane = craneNumber;
-                currentSlug[loadItem.NodeIndex] = loadItem;
-                _ = _upperPit.Remove(palletItem.PalletID);
-                _ = _lowerPit.Remove(palletItem.PalletID);
-            }
+//             if (loadItem == null
+//                 && _CanPickToSlug(secondarySlug.SlugLetter))
+//             {
+//                 currentSlug = secondarySlug;
+//                 loadItem = currentSlug
+//                     .GetLoadInPickSearchOrder()
+//                     .Where(l => levels.IsFlagSet(l.SlugLevel))
+//                     .FirstOrDefault(l =>
+//                         l.Status == LoadItemStatus.Pickable
+//                         && l.Broadcast.Sku == palletItem.Sku);
+//             }
+//                 if (loadItem != null)
+//                 {
+//                     loadItem.Status = calledByCrane
+//                         ? LoadItemStatus.Picking
+//                         : LoadItemStatus.Picked;
+//                     loadItem.Pallet = palletItem;
+//                     loadItem.Crane = craneNumber;
+//                     currentSlug[loadItem.NodeIndex] = loadItem;
+//                     _ = _upperPit.Remove(palletItem.PalletID);
+//                     _ = _lowerPit.Remove(palletItem.PalletID);
+//                 }
             return loadItem != null;
         }
 
@@ -2088,8 +2119,6 @@ namespace Mss.Data
                 loadItem = null;
                 return false;
             }
-            loadItem = null;
-//             return false;
             return _TryAssignHotJobAtCrane(
                 craneNumber,
                 levels,
@@ -2100,7 +2129,7 @@ namespace Mss.Data
         // Must be called from within _LockAll()
         private bool _TryAssignHotJobAtCrane(
             CraneNumber craneNumber,
-            Levels level,
+            Levels levels,
             PalletItem palletItem,
             out LoadItem loadItem)
         {
@@ -2113,7 +2142,7 @@ namespace Mss.Data
                         palletItem.Sku)
                     && _TryAssignHotJob(
                         true,
-                        level,
+                        levels,
                         craneNumber,
                         palletItem,
                         out loadItem);
@@ -2601,8 +2630,8 @@ namespace Mss.Data
                         if (palletItem.IsStack && level == Levels.Lower)
                         {
                             RemovePitPallet(palletID);
+                            SetPitPallet(level, palletItem, PitCode.Purge);
                         }
-                        SetPitPallet(level, palletItem, PitCode.Purge);
                         return false;
                     }
                     else
@@ -2612,16 +2641,19 @@ namespace Mss.Data
                         return false;
                     }
                 }
-                if (fetchedPalletItem.Status == PalletStatus.Purge)
+                if (loadItem.SlugLevel != level)
                 {
+
                     RollBackLoadPick(palletID, false);
                     palletItem = fetchedPalletItem;
                     SetPitPallet(level, palletItem, PitCode.Purge);
                     return false;
                 }
-                if (loadItem.SlugLevel != level)
+                if (fetchedPalletItem.Status == PalletStatus.Purge)
                 {
-                    fault = $"Pallet {palletID} on the wrong level";
+                    RollBackLoadPick(palletID, false);
+                    palletItem = fetchedPalletItem;
+                    SetPitPallet(level, palletItem, PitCode.Purge);
                     return false;
                 }
                 palletItem = loadItem.Pallet;
@@ -2642,7 +2674,7 @@ namespace Mss.Data
             {
                 fault = $"Pallet ID {palletID} not found on either slug when attempting to set the Next Status to {LoadItemStatus.Pickable}.";
                 XSystemEvent.Publish(
-                    slug.CollectionConfiguration.Name,
+                    "DataLayer",
                     XSystemEventLevel.Error,
                     "Operation faulted. " + fault);
                 return false;
@@ -2691,9 +2723,15 @@ namespace Mss.Data
                     out LoadItem loadItem))
                 {
                     isLoadPallet = true;
+                    if (loadItem.SlugLevel != level)
+                    {
+                        fault = $"Load Pallet {palletID} on the wrong level";
+                        return false;
+                    }
                     if (loadItem.Status != LoadItemStatus.Presequenced)
                     {
-                        fault = $"({loadItem.Coordinates})  The Status of the Load Item for Pallet {loadItem.Pallet.PalletID} is {loadItem.Status.ToText()}. It should be {LoadItemStatus.Presequenced.ToText()}.";
+                        fault = $"Pallet {palletID} on {loadItem.SlugLetter.SlugDisplayName()} must have a Status of {LoadItemStatus.Presequenced.ToText()}.";
+//                         fault = $"({loadItem.Coordinates})  The Status of the Load Item for Pallet {loadItem.Pallet.PalletID} is {loadItem.Status.ToText()}. It should be {LoadItemStatus.Presequenced.ToText()}.";
                         return false;
                     }
                     if (slug.IsNextInLaneToSequence(loadItem.NodeIndex))
@@ -2880,6 +2918,9 @@ namespace Mss.Data
                 return false;
             }
 
+            palletItem = null;
+            moveCommand = Constant.NoMoveCommand;
+            extendedState = string.Empty;
             _LockAll();
             try
             {
@@ -2888,6 +2929,16 @@ namespace Mss.Data
                     out Slug slug,
                     out LoadItem loadItem))
                 {
+                    if (loadItem.SlugLevel != level)
+                    {
+                        fault = $"Load Pallet {palletID} on the wrong level";
+                        return false;
+                    }
+                    if (loadItem.Status != LoadItemStatus.Sequenced)
+                    {
+                        fault = $"Load Pallet {palletID} on {loadItem.SlugLetter.SlugDisplayName()} must have a Status of {LoadItemStatus.Sequenced.ToText()}.";
+                        return false;
+                    }
                     palletItem = loadItem.Pallet;
                     moveCommand = Constant.PurgeMoveCommandForward;
                     extendedState = $"({Constant.PalletTypeLoad})  Moving Pallet {palletItem.PalletID} forward to {loadItem.SlugLetter.SlugDisplayName()}";
@@ -2993,6 +3044,11 @@ namespace Mss.Data
                 if (loadItem.SlugLevel != level)
                 {
                     fault = $"Pallet {palletID} on the wrong level";
+                    return false;
+                }
+                if (loadItem.Status != LoadItemStatus.Sequenced)
+                {
+                    fault = $"Pallet {palletID} on {loadItem.SlugLetter.SlugDisplayName()} must have a Status of {LoadItemStatus.Sequenced.ToText()}.";
                     return false;
                 }
                 loadItem.Transferring = true;
@@ -3421,13 +3477,14 @@ namespace Mss.Data
                                 && pallet.Sku != Constant.Row2EmptyPalletSku)
                             {
                                 sql = string.Format(
-                                    "INSERT INTO SHIP_LoadDetail (HeaderID, VIN,  VehicleRow, PalletSKU, JobID) "
-                                        + " VALUES (              {0},      '{1}',{2},        '{3}',     '{4}');",
+                                    "INSERT INTO SHIP_LoadDetail (HeaderID, VIN,  VehicleRow, PalletSKU, JobID, Rotation) "
+                                        + " VALUES (              {0},      '{1}',{2},        '{3}',     '{4}', {5});",
                                     headerID,
                                     broadcast.Vin,
                                     (int)pallet.VehicleRow,
                                     pallet.Sku,
-                                    pallet.JobID);
+                                    pallet.JobID,
+                                    broadcast.Sequence);
                                 command.CommandText = sql;
                                 _ = command.ExecuteNonQuery();
                             }
@@ -3638,6 +3695,8 @@ namespace Mss.Data
             Slug secondarySlug = null;
             bool touchBroadcast = false;
 
+//             List<BroadcastCoverageData> records = new List<BroadcastCoverageData>();
+
             _LockAll();
             try
             {
@@ -3658,11 +3717,11 @@ namespace Mss.Data
                     {
                         bool shortage = false;
                         LoadItemStatus status = loadItem.Status;
+                        BroadcastItem broadcast = loadItem.Broadcast;
                         if (status == LoadItemStatus.Waiting   //??? Waiting?
                             || status == LoadItemStatus.Pending
                             || status == LoadItemStatus.Pickable)
                         {
-                            BroadcastItem broadcast = loadItem.Broadcast;
                             if (broadcast.PickMode == PickMode.ByPalletID)
                             {
                                 PalletPickModeKeys match = reservedPalletKeys
@@ -3685,7 +3744,8 @@ namespace Mss.Data
                             }
                             else
                             {
-                                string sku = loadItem.Broadcast.Sku;
+//                                 string sku = loadItem.Broadcast.Sku;
+                                string sku = broadcast.Sku;
                                 if (!skuCounts.TryGetValue(sku, out int count))
                                 {
                                     shortage = true;
@@ -3704,9 +3764,18 @@ namespace Mss.Data
                                 }
                             }
                         }
-                        if (loadItem.Broadcast.Shortage != shortage)
+//                         if (shortage)
+//                         {
+//                             records.Add(
+//                                 new BroadcastCoverageData(
+//                                     broadcast.Rotation,
+//                                     broadcast.Csn,
+//                                     broadcast.VehicleRow,
+//                                     broadcast.Sku,
+//                                     broadcast.Status.ToText()));
+//                         }
+                        if (broadcast.Shortage != shortage)
                         {
-                            BroadcastItem broadcast = loadItem.Broadcast;
                             broadcast.Shortage = shortage;
                             loadItem.Broadcast = broadcast;
                             _ = primarySlug.SetAt(loadItem.NodeIndex, loadItem, true);
@@ -3718,12 +3787,12 @@ namespace Mss.Data
                     foreach (LoadItem loadItem in secondaryItems)
                     {
                         bool shortage = false;
+                        BroadcastItem broadcast = loadItem.Broadcast;
                         LoadItemStatus status = loadItem.Status;
                         if (status == LoadItemStatus.Waiting   //??? Waiting?
                             || status == LoadItemStatus.Pending
                             || status == LoadItemStatus.Pickable)
                         {
-                            BroadcastItem broadcast = loadItem.Broadcast;
                             if (broadcast.PickMode == PickMode.ByPalletID)
                             {
                                 PalletPickModeKeys match = reservedPalletKeys
@@ -3746,7 +3815,7 @@ namespace Mss.Data
                             }
                             else
                             {
-                                string sku = loadItem.Broadcast.Sku;
+                                string sku = broadcast.Sku;
                                 if (!skuCounts.TryGetValue(sku, out int count))
                                 {
                                     shortage = true;
@@ -3765,9 +3834,18 @@ namespace Mss.Data
                                 }
                             }
                         }
-                        if (loadItem.Broadcast.Shortage != shortage)
+//                         if (shortage)
+//                         {
+//                             records.Add(
+//                                 new BroadcastCoverageData(
+//                                     broadcast.Rotation,
+//                                     broadcast.Csn,
+//                                     broadcast.VehicleRow,
+//                                     broadcast.Sku,
+//                                     broadcast.Status.ToText()));
+//                         }
+                        if (broadcast.Shortage != shortage)
                         {
-                            BroadcastItem broadcast = loadItem.Broadcast;
                             broadcast.Shortage = shortage;
                             loadItem.Broadcast = broadcast;
                             _ = secondarySlug.SetAt(loadItem.NodeIndex, loadItem, true);
@@ -3775,7 +3853,6 @@ namespace Mss.Data
                         }
                     }
                 }
-
 
                 List<BroadcastItem> broadcastItems = _broadcast
                     .GetCurrentBroadcastItems(
@@ -3825,6 +3902,16 @@ namespace Mss.Data
                             }
                         }
                     }
+//                     if (shortage)
+//                     {
+//                         records.Add(
+//                             new BroadcastCoverageData(
+//                                 broadcast.Rotation,
+//                                 broadcast.Csn,
+//                                 broadcast.VehicleRow,
+//                                 broadcast.Sku,
+//                                 broadcast.Status.ToText()));
+//                     }
                     if (broadcast.Shortage != shortage)
                     {
                         broadcast.Shortage = shortage;
@@ -3835,19 +3922,118 @@ namespace Mss.Data
             }
             finally
             {
-                if (touchPrimary)
+                try
                 {
-                    primarySlug.Touch();
+                    if (touchPrimary)
+                    {
+                        primarySlug.Touch();
+                    }
+                    if (touchSecondary)
+                    {
+                        secondarySlug.Touch();
+                    }
+                    if (touchBroadcast)
+                    {
+                        _broadcast.Touch();
+                    }
                 }
-                if (touchSecondary)
+                finally
                 {
-                    secondarySlug.Touch();
+                    _UnlockAll();
                 }
-                if (touchBroadcast)
+            }
+//             _WriteBroadcastCoverage(records);
+        }
+
+        public void WriteBroadcastCoverage()
+        {
+            List<BroadcastItem> broadcastItems = new List<BroadcastItem>();
+            _LockAll();
+            try
+            {
+                if (_slugManager.TryGetPrimarySlugForShortages(
+                    _systemSettings.GetItem(),
+                    out Slug primarySlug,
+                    out Slug secondarySlug))
                 {
-                    _broadcast.Touch();
+                    IEnumerable<LoadItem> slugBroadcasts = primarySlug
+                        .Concat(secondarySlug)
+                        .Where(l => l.Status >= LoadItemStatus.Pending)
+                        .OrderBy(l => l.Broadcast.Csn);
+                    foreach (LoadItem loadItem in slugBroadcasts)
+                    {
+                        LoadItemStatus status = loadItem.Status;
+                        if (status == LoadItemStatus.Pending
+                            || status == LoadItemStatus.Pickable)
+                        {
+                            broadcastItems.Add(loadItem.Broadcast);
+                        }
+                        else
+                        {
+                            BroadcastItem broadcastItem = loadItem.Broadcast;
+                            broadcastItem.Shortage = false;
+                            broadcastItems.Add(broadcastItem);
+                        }
+                    }
                 }
+                broadcastItems = broadcastItems
+                    .Concat(_broadcast.GetCurrentBroadcastItems(
+                        _systemSettings.LastCsnReleased,
+                        _systemSettings.LargestRotationReceived))
+                    .ToList();
+            }
+            finally
+            {
                 _UnlockAll();
+            }
+
+            try
+            {
+                string connectionString = XConfiguration.GetConnectionString(Constant.MesConnectionStringName);
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    const string deleteSql = @"delete from [SHIP_BroadcastCoverage]";
+                    using (SqlCommand deleteCommand = new SqlCommand(deleteSql, connection))
+                    {
+                        _ = deleteCommand.ExecuteNonQuery();
+                    }
+
+                    const string insertSql = @"
+                        insert into [SHIP_BroadcastCoverage]
+                            ([Rotation], [CSN], [VehicleRow], [PalletSKU], [Status])
+                        values
+                            (@Rotation, @CSN, @VehicleRow, @PalletSKU, @Status)";
+                    using (SqlCommand insertCommand = new SqlCommand(insertSql, connection))
+                    {
+                        _ = insertCommand.Parameters.Add("@Rotation", System.Data.SqlDbType.Int);
+                        _ = insertCommand.Parameters.Add("@CSN", System.Data.SqlDbType.VarChar, 25);
+                        _ = insertCommand.Parameters.Add("@VehicleRow", System.Data.SqlDbType.Int);
+                        _ = insertCommand.Parameters.Add("@PalletSKU", System.Data.SqlDbType.VarChar, 50);
+                        _ = insertCommand.Parameters.Add("@Status", System.Data.SqlDbType.VarChar, 50);
+
+                        foreach (BroadcastItem broadcastItem in broadcastItems)
+                        {
+                            string statusText = broadcastItem.Status == BroadcastStatus.Missing
+                                ? "Missing Record"
+                                : broadcastItem.Shortage
+                                    ? "Shortage"
+                                    : string.Empty;
+
+                            insertCommand.Parameters["@Rotation"].Value = broadcastItem.Rotation;
+                            insertCommand.Parameters["@CSN"].Value = broadcastItem.Csn;
+                            insertCommand.Parameters["@VehicleRow"].Value = (int)broadcastItem.VehicleRow;
+                            insertCommand.Parameters["@PalletSKU"].Value = broadcastItem.Sku;
+                            insertCommand.Parameters["@Status"].Value = statusText;
+                            _ = insertCommand.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (Exception x)
+            {
+                x.PublishSystemEvent("Broadcast Coverage");
             }
         }
 
@@ -4093,12 +4279,18 @@ namespace Mss.Data
             }
             finally
             {
-                if (touchCollections)
+                try
                 {
-                    targetSlug.Touch();
-                    _broadcast.Touch();
+                    if (touchCollections)
+                    {
+                        targetSlug.Touch();
+                        _broadcast.Touch();
+                    }
                 }
-                _UnlockAll();
+                finally
+                {
+                    _UnlockAll();
+                }
             }
         }
 
@@ -4402,12 +4594,12 @@ namespace Mss.Data
                         }
                         else
                         {
-                            error = $"Pallet for StatusChangeQueue Entry QueueID {entry.QueueID} was not found in Storage or PIT. Queue Entry not processed.";
+                            error = $"Pallet {statusChange.PalletID} for StatusChangeQueue Entry QueueID {entry.QueueID} was not found in Storage or PIT. Queue Entry not processed.";
                             XSystemEvent.Publish(
                                 Constant.PalletStatusChangeEventContext,
                                 XSystemEventLevel.Error,
                                 error);
-                            error = $"Pallet was not found in Storage or PIT. Queue Entry not processed.";
+                            error = $"Pallet {statusChange.PalletID} was not found in Storage or PIT. Not processed.";
                         }
                         entry.Processed = false;
                         entry.ProcessedOn = DateTime.Now;
