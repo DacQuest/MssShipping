@@ -23,7 +23,7 @@
           {
             "type": "command",
             "shell": "powershell",
-            "command": "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new(); Write-Output '=== DFX framework context (auto-injected at session start from C:\\Customers\\DacQuest\\FrameWorks\\DFX20\\Source\\.claude\\DFX-CONTEXT.md) ==='; Get-Content -Raw -Encoding UTF8 'C:\\Customers\\DacQuest\\FrameWorks\\DFX20\\Source\\.claude\\DFX-CONTEXT.md'",
+            "command": "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new(); Write-Output '=== DFX framework context (auto-injected at session start from C:\\Customers\\DacQuest\\FrameWorks\\DFX20\\Source\\.claude\\CLAUDE-DFX.md) ==='; Get-Content -Raw -Encoding UTF8 'C:\\Customers\\DacQuest\\FrameWorks\\DFX20\\Source\\.claude\\CLAUDE-DFX.md'",
             "timeout": 30,
             "statusMessage": "Injecting DFX framework context"
           }

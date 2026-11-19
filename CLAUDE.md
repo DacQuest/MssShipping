@@ -2,7 +2,7 @@
 
 **DFX project.** If the DFX framework context was not auto-injected at session start (look for
 an "=== DFX framework context" block in your context), read
-`C:\Customers\DacQuest\FrameWorks\DFX20\Source\.claude\DFX-CONTEXT.md` before doing any work here.
+`C:\Customers\DacQuest\FrameWorks\DFX20\Source\.claude\CLAUDE-DFX.md` before doing any work here.
 (The inject hook only runs in sessions launched from this repo; sessions launched from
 C:\Customers must read the file explicitly — cross-repo `@imports` do not expand.)
 
